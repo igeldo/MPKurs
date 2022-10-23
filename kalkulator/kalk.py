@@ -1,24 +1,9 @@
 from daten import Daten
-import operatoren as op
+from operatoren import Konstante
+import matplotlib.mathtext as mt
 
 def const(value):
-    return op.Konstante(value)
-
-
-def add(left, right):
-    return op.Addition(left, right)
-
-
-def sub(left, right):
-    return op.Subtraktion(left, right)
-
-
-def mul(left, right):
-    return op.Multiplikation(left, right)
-
-
-def div(left, right):
-    return op.Division(left, right)
+    return Konstante(value)
 
 
 def load(filename):
@@ -29,8 +14,10 @@ def read(name):
     return Daten.read(Daten, name)
 
 
-def write(name, value):
-    return Daten.write(Daten, name, value)
+def write(name, wert):
+    latex = wert.latex() + r"=" + wert.latexVector(wert.value())
+    mt.math_to_image(r"$" + latex + r"$", f"data/images/{name}.png", dpi=600)
+    return Daten.write(Daten, name, wert)
 
 
 def store(filename):

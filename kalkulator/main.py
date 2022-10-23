@@ -1,29 +1,47 @@
-import kalk as k
+import sys
+from kalk import const, read, write, load, store
 
 class Kalkulator:
 
-    def run(self):
-        k.load("data/input.json")
+    def run(self, InputFilename, OutputFilename):
+        '''
+            @brief  Run the calculator.
+            @param[in] InputFilename    - Path to the input .json file.
+            @param[in] OutputFilename   - Path to the outpu .json file.
+            @post Overrides the output file if it exists.
+        '''
+        
+        load(InputFilename)
 
-        a = k.read("a")
-        b = k.read("b")
+        a = read("a")
+        b = read("b")
 
-        r = k.add(a, b)
-        k.write("a+b", r)
+        write("a", a)
 
-        c = k.const(5)
-        r = k.add(a, k.add(b, c))
-        k.write("a+b+c", r)
+        r = a + b
+        write("a+b", r)
 
-        k.write("a-b", k.sub(a, b))
-        k.write("a*b", k.mul(a, b))
-        k.write("a/b", k.div(a, b))
+        c = const([1,2,3])
+        r = a + b + c
+        write("a+b+c", r)
+
+        write("a-b", a - b)
+        write("a*b", a * b)
+        write("a div b", a / b)
+
+        write("r", (a - b * c) / (a + b))
 
         for i in range(0, 11):
-            k.write(f"{i}*a", k.mul(k.const(i), a))
+            write(f"{i}", const(i) * a)
 
-        k.store("data/output.json")
+        store(OutputFilename)
+
 
 if __name__ == '__main__':
-    aKalkulator = Kalkulator()
-    aKalkulator.run()
+    '''
+        It is required to call the program with exectaly 2 arguments!
+        1. is the input file name
+        2. is the output file name.
+    '''
+    kalkulator = Kalkulator()
+    kalkulator.run(sys.argv[1], sys.argv[2])
