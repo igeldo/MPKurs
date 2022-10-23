@@ -16,7 +16,7 @@ def read(name):
 
 def write(name, wert):
     latex = wert.latex() + r"=" + wert.latexVector(wert.value())
-    mt.math_to_image(r"$" + latex + r"$", f"data/images/{name}.png", dpi=600)
+    mt.math_to_image(r"$" + latex + r"$", f"data/{name}.png", dpi=600)
     return Daten.write(Daten, name, wert)
 
 

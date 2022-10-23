@@ -12,7 +12,7 @@ Vektoren dargestellt.
 Der Kalkulator berechnet nicht nur das Ergebnis eines mathematischen
 Ausdrucks sondern dokumentiert auch den Rechenweg, in der Ausgabedate
 in einem JSON-Format und als grafische Darstellung der mathematischen
-Ausdrücke im Unterverzeichnis `data/images`.
+Ausdrücke im Unterverzeichnis `data`.
 
 Hinweis: Der Kalkulator ist ein Anwendungsbeispiel einer internen DSL.
 
