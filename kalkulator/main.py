@@ -21,7 +21,7 @@ class Kalkulator:
         r = a + b
         write("a+b", r)
 
-        c = const([1,2,3])
+        c = const(5)
         r = a + b + c
         write("a+b+c", r)
 
@@ -29,7 +29,7 @@ class Kalkulator:
         write("a*b", a * b)
         write("a div b", a / b)
 
-        write("r", (a - b * c) / (a + b))
+        write("result", (a - b * c) / (a + b))
 
         for i in range(0, 11):
             write(f"{i}", const(i) * a)
