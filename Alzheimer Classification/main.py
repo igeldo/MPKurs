@@ -1,6 +1,7 @@
 import numpy as np
 from skimage import data, io
 from matplotlib import pyplot as plt
+import tensorflow as tf
 
 def load_images():
 
