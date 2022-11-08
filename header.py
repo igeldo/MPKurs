@@ -10,7 +10,7 @@ class PhotonPack:
         self.dead = dead  # 1 if photon is "terminated"(absorpted or reflected)
         self.layer = layer  # layer in with the PhotonPack currently is
         self.stepSize = stepSize  # current step size [mm]
-        self.stepSizeL = stepSizeL  # step size left, dimensionless (why?)
+        self.stepSizeL = stepSizeL  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
 
 class Layer:
     def __init__(self, z0, z1, mua, mus, g, n=1):
