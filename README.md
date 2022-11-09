@@ -20,13 +20,13 @@ Following utilities are used:
 - Pycharm 2022.2.3 Professional Edition
 - Python 3.10
 - PyQt5 (5.15.7)
-- matplotlib (3.6.1)
+- matplotlib (3.6.2)
 - numpy (1.23.4)
 - packaging (21.3)
-- pip (22.3)
+- pip (22.3.1)
 - pyftdi (0.54.0)
 - pyserial (3.5)
 - pyusb (1.2.1)
 - scipy (1.9.3)
-- setuptools (65.5.0)
+- setuptools (65.5.1)
 - tiflash (1.3.0)
