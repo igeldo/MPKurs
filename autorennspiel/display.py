@@ -40,23 +40,15 @@ class Display:
         # set font size and style of the message
         large_text = pygame.font.Font(self.font_name, self.font_size)
         # set function to edit the message
-        textsurf, textrect = text_object(text, large_text)
+        text_surface = large_text.render(text, True, self.black)
+        text_rect = text_surface.get_rect()
         # set the position of the text on the screen
-        textrect.center = self.font_position
+        text_rect.center = self.font_position
         # display the message
-        window.blit(textsurf, textrect)
+        window.blit(text_surface, text_rect)
         pygame.display.update()
         # after the car crashed wait 3s
         time.sleep(3)
-        # call the loop function to restart the game
-        loop()
-
-    def text_object(self, text, font):
-        # function will display the message after the car crashed
-        # set color of the message
-        text_surface = font.render(text, True, self.black)
-        # after that restart the game and ready to give some input
-        return text_surface, text_surface.get_rect()
 
 
 def background(window, background_left, background_right):

@@ -1,6 +1,5 @@
 # author: Tessa Vogt
-# date: 21.10.2022
-# information from: https://geekyhumans.com/de/wie-man-ein-autorennspiel-in-python-erstellt/
+# date: 12.11.2022
 
 # Importieren der erforderlichen Bibliotheken
 import pygame
@@ -29,12 +28,6 @@ car_img = car.Car("car_1", "car_player").load_car()
 car_width = car.Car("car_1", "car_player").car_width
 
 
-# Absturzmeldungen einstellen und das Spiel neu starten
-def crash(self):
-    # creating the function that will display the game over message
-    display.Display().message_display("crash")
-
-
 # all the function are called using this function
 def loop():
     # set car position for x and y axis
@@ -53,7 +46,6 @@ def loop():
     enemy_starty = start_y
     # set enemies car height and width
     [enemy_width, enemy_height] = car.Car("car_2", "car_enemy").car_size
-
 
     # Bewegung des Fahrzeugs einstellen
     # if the game doesn't have any problem to start
@@ -93,8 +85,10 @@ def loop():
         car.car(window, x, y)
         # if the car goes out of range (sidewall of the road)
         if x < 130 or x > 700 - car_width:
-            # call crash function
-            crash()
+            # crash
+            display.Display().message_display(window, "crash")
+            # call the loop function to restart the game
+            loop()
         # Feindliche Autos werden zufällig kommen
         # setting how far the enemies car will go
         if enemy_starty > 600:
@@ -109,7 +103,10 @@ def loop():
         if y < enemy_starty + enemy_height:
             if enemy_startx < x < enemy_startx + enemy_width \
                     or enemy_startx < x + car_width < enemy_startx + enemy_width:
-                crash()
+                # crash
+                display.Display().message_display(window, "crash")
+                # call the loop function to restart the game
+                loop()
 
             # Quit-Code zum Beenden des Spiels
             # restart the game

@@ -31,7 +31,7 @@ class Car:
 def car(window, x, y):
     # set position of the car
     car_img = Car("car_1", "car_player").car_img
-    window.blit(car_img, (x, y))
+    # window.blit(car_img, (x, y))
 
 
 # define car functions that are coming from the opposite side
