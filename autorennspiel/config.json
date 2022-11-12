@@ -1,0 +1,93 @@
+{
+    "images": {
+        "general_img_path": "C:\\Users\\tvogt\\OneDrive\\Dokumente\\FH_Dortmund\\Programmierprojekt\\Auto-Rennspiel\\",
+
+        "car_1": {
+            "path": "car_1.png",
+            "size": [
+                70,
+                126
+            ]
+        },
+        "car_2": {
+            "path": "car_2.png",
+            "size": [
+                70,
+                126
+            ]
+        },
+        "car_3": {
+            "path": "car_3.png",
+            "size": [
+                70,
+                126
+            ]
+        },
+        "car_4": {
+            "path": "car_4.png",
+            "size": [
+                70,
+                126
+            ]
+        },
+        "background_left": {
+            "path": "Background_left.jpeg",
+            "size": [
+                200,
+                600
+            ],
+            "rotation": 0,
+            "position": [
+                0,
+                0
+            ]
+        },
+        "background_right": {
+            "path": "Background_right.jpeg",
+            "size": [
+                200,
+                600
+            ],
+            "rotation": 0,
+            "position": [
+                630,
+                0
+            ]
+        },
+        "car_player": {
+            "rotation": 0,
+            "position": [
+                400,
+                450
+            ],
+            "speed": 0
+        },
+        "car_enemy": {
+            "rotation": -180,
+            "position": [
+                [
+                    200,
+                    630
+                ],
+                -600
+            ],
+            "speed": 9
+        }
+    },
+    "display": {
+        "size": [
+            830,
+            600
+        ],
+        "window_name": "Racing game with 2 buttons",
+        "message_crash": "Game Over",
+        "font": {
+            "name": "freesansbold.ttf",
+            "size": 80,
+            "position": [
+                400,
+                300
+            ]
+        }
+    }
+}
