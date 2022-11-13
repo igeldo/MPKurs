@@ -1,6 +1,7 @@
 # imports
 import pygame
 import config
+import display
 
 
 class Car:
@@ -30,8 +31,8 @@ class Car:
 # create car function
 def car(window, x, y):
     # set position of the car
-    car_img = Car("car_1", "car_player").car_img
-    # window.blit(car_img, (x, y))
+    car_img = Car("car_1", "car_player").load_car()
+    window.blit(car_img, (x, y))
 
 
 # define car functions that are coming from the opposite side
