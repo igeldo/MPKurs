@@ -49,7 +49,7 @@ class PhotonPack:
         
         Returns
         -------
-            Touple(x,y,z) :
+            Tuple(x,y,z) :
                 Coordinates of the PhotonPack in the layer it resides in [mm]
             layer :
                 Index of the layer where the PhotonPack resides
