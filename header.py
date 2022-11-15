@@ -16,7 +16,7 @@ class PhotonPack:
         w :
             "weight", more like energy(?)
         dead :
-            1 if the photon is terminated (absorpted or reflected)
+            1 if the photon is terminated (absorbed or reflected)
         layer :
             current layer where the PhotonPack resides
         stepSize :
