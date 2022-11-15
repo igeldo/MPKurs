@@ -75,7 +75,7 @@ machine learning method should be selected.
 - Glucose: glucose level (Continuous)
 
 **Target variable to predict:**
-10 year risk of coronary heart disease (CHD) - (binary: “1”, means “Yes”, “0” means “No”)
+10 year risk of coronary heart disease (CHD) 
 
 ### **Sources:**
 [1] Robert-Koch-Institut (o. D.): Herz-Kreislauf-Erkrankungen, RKI - Themenschwerpunkt 
