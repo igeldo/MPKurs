@@ -1,9 +1,0 @@
-range index
-range (m)
-range profile
-noise profile
-detected objects
-
-frame number
-clock cycles
-timestamp (s)
