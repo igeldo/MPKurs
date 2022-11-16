@@ -1,10 +1,7 @@
 # Importing necessary libraries
-import time
-
-from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton
-from PyQt6.QtCore import QSize, Qt
 import sys
+import time
 
 
 class Window(QMainWindow):
@@ -16,44 +13,43 @@ class Window(QMainWindow):
         self.setGeometry(100, 100, 1024, 768)
 
         # Calling method:
-        self.UiComponents()
+        self.ui_components()
 
         # Showing all widgets:
         self.show()
 
-    def UiComponents(self):
+    def ui_components(self):
         # Creating connect button:
-        buttonConnect = QPushButton("Establish connection", self)
-        buttonConnect.setGeometry(200, 150, 150, 40)
-        buttonConnect.clicked.connect(self.clickmeConnect)
+        button_connect = QPushButton("Establish connection", self)
+        button_connect.setGeometry(200, 150, 150, 40)
+        button_connect.clicked.connect(self.clickme_connect)
 
         # Creating disconnect button:
-        buttonDisonnect = QPushButton("Disconnect", self)
-        buttonDisonnect.setGeometry(400, 150, 100, 40)
-        buttonDisonnect.clicked.connect(self.clickmeDisconnect)
+        button_disonnect = QPushButton("Disconnect", self)
+        button_disonnect.setGeometry(400, 150, 100, 40)
+        button_disonnect.clicked.connect(self.clickme_disconnect)
 
-        buttonClose = QPushButton("Close Application", self)
-        buttonClose.setGeometry(550, 150, 100, 40)
-        buttonClose.clicked.connect(self.clickClose)
+        button_close = QPushButton("Close Application", self)
+        button_close.setGeometry(550, 150, 100, 40)
+        button_close.clicked.connect(self.click_close)
 
-    def clickmeConnect(self):
+    def clickme_connect(self):
         print("Please wait, connection is being established...")
         time.sleep(0.5)
         print("Connection established.")
 
-    def clickmeDisconnect(self):
+    def clickme_disconnect(self):
         print("Please wait, disconnecting device...")
         time.sleep(1)
         print("Disconnection executed.")
 
-    def clickClose(self):
+    def click_close(self):
         print("User closed App by Button.")
         sys.exit(0)
 
     def closeEvent(self, event):
         print("User closed GUI by x on the main window.")
         event.accept()
-
 
 
 if __name__ == "__main__":
