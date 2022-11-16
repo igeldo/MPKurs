@@ -39,19 +39,19 @@ class Window(QMainWindow):
     def clickmeConnect(self):
         print("Please wait, connection is being established...")
         time.sleep(0.5)
-        print("Connection established!")
+        print("Connection established.")
 
     def clickmeDisconnect(self):
-        print("Please wait, disconnection is being executed")
+        print("Please wait, disconnecting device...")
         time.sleep(1)
-        print("Disconnection approved!")
+        print("Disconnection executed.")
 
     def clickClose(self):
-        print("User pushed close button")
+        print("User closed App by Button.")
         sys.exit(0)
 
     def closeEvent(self, event):
-        print("User has clicked the close button on the main window!")
+        print("User closed GUI by x on the main window.")
         event.accept()
 
 
@@ -59,9 +59,7 @@ class Window(QMainWindow):
 if __name__ == "__main__":
     # Create PyQt6 App:
     app = QApplication(sys.argv)
-
     # Create instance of the class Window:
     window = Window()
-
     # Starting the event loop / App:
     sys.exit(app.exec())
