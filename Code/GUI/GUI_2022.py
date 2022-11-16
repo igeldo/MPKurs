@@ -42,7 +42,7 @@ class Window(QMainWindow):
         self.label_connection.setGeometry(540, 0, 100, 40)
         self.label_connection.setStyleSheet("background-color: white; border: 1px solid black;")
 
-    # What happens, if you wan to connect the device?
+    # What happens, if you want to connect the device?
     def clickme_connect(self):
         print("Please wait, connection is being established...")
         time.sleep(0.5)
@@ -59,7 +59,8 @@ class Window(QMainWindow):
         self.label_connection.setStyleSheet("background-color: red; border: 1px solid black;")
 
     # What happens when the Close Button is being pushed?
-    def click_close(self):
+    @staticmethod
+    def click_close():
         print("User closed App by Button.")
         sys.exit(0)
 
