@@ -46,6 +46,7 @@ class FeatureSelection:
         # try converting feature_list into data_frame
         self.data_new = data[['sysBP', 'glucose', 'age', 'totChol', 'cigsPerDay', 'diaBP', 'prevalentHyp', 'diabetes', 'BPMeds', 'male',
              'TenYearCHD']]
+        return self.data_new
 
 
 # Code for testing
@@ -54,7 +55,7 @@ class FeatureSelection:
 # y  = Daten()
 # y = y.data.iloc[:, -1]
 # z = Daten()
-# z = z.data.iloc[:, 0:15]
+# z = z.data.iloc[:, 0:15   ]
 
 # s = FeatureSelection()
 # s.selection(X, y)
