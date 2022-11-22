@@ -1,5 +1,6 @@
 from daten import Daten
 from feature import FeatureSelection
+from Resampling import Resample
 
 from sklearn.model_selection import train_test_split
 
@@ -18,12 +19,12 @@ class TestTrain:
         self.y_test = None
 
     def define_target_features(self, data):
-        self.X = data['TenYearCHD']
-        self.y = data.drop(['TenYearCHD'], axis=1)
+        self.y = data['TenYearCHD']
+        self.X = data.drop(['TenYearCHD'], axis=1)
         return self.X, self.y
 
     def define_train_test(self, x, y):
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.2, random_state=29)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.2)
         return self.X_train, self.X_test, self.y_train, self. y_test
 
 # Check code
@@ -33,8 +34,11 @@ data = data.data
 new_data = FeatureSelection()
 new_data = new_data.new_data_frame(data)
 
+new_new_data = Resample()
+new_new_data = new_new_data.resample(new_data)
+
 k = TestTrain()
-[X, y] = k.define_target_features(new_data)
+[X, y] = k.define_target_features(new_new_data)
 
 [X_train, X_test, y_train, y_test] = k.define_train_test(X, y)
 
