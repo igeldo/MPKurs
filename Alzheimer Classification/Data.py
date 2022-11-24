@@ -2,6 +2,8 @@ class Data:
 
     def __init__(self, traindata, testdata):
 
+        # database superuser pw: yay_python
+
         # in init schon einlesen?
         self.traindata = traindata
         self.testdata = testdata

@@ -1,3 +1,8 @@
+import numpy as np
+from skimage import data, io
+from matplotlib import pyplot as plt
+import tensorflow as tf
+
 class Classification:
 
     def __init__(self, traindata, testdata):
