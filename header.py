@@ -29,7 +29,7 @@ class PhotonPack:
         get_coords() :
             Returns the x,y,z coordinates of the PhotonPackage in its current layer.
     """
-    def __init__(self, x, y, z, layer=1, stepSize=0, stepSizeL=0,
+    def __init__(self, x=0, y=0, z=0, layer=1, stepSize=0, stepSizeL=0,
                  ux=0, uy=0, uz=1, w=1, dead=0):
         self.x, self.y, self.z = x, y, z  # coordinates [mm]
         self.ux, self.uy, self.uz = ux, uy, uz  # directional cosines of photonpack
@@ -56,7 +56,10 @@ class PhotonPack:
         '''
         return (self.x, self.y, self.z), self.layer
 
-
+    def hop(self):
+        self.x += self.stepSize*self.ux
+        self.y += self.stepSize*self.uy
+        self.z += self.stepSize*self.uz
 
 class Layer:
     """
