@@ -84,28 +84,6 @@ class Database:
                                             dept_id varchar(30)) '''
                     cur.execute(create_script)
 
-
-                    # test to load image
-                    """
-                    cur.execute('DROP TABLE IF EXISTS images')
-
-                    create_script = ''' CREATE TABLE IF NOT EXISTS images (
-                                                                img     bytea,
-                                                                name    varchar(40) NOT NULL,
-                                                                dept_id varchar(30)) '''
-                    cur.execute(create_script)
-                    """
-                    image_url = 'C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg'
-
-
-                    # end test
-
-
-
-
-
-
-
                     insert_script = 'INSERT INTO employee (id, name, salary, dept_id) VALUES (%s, %s, %s, %s)'
                     insert_values = [(1, 'James', 12000, 'D1'), (2, 'Robin', 15000, 'D1'), (3, 'Xavier', 20000, 'D2')]
                     for record in insert_values:

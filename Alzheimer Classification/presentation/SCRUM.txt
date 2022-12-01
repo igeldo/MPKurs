@@ -1,0 +1,39 @@
+Thema: Programmierprojekt - Bildklassifizierung
+
+1. Sprint-Backlog:
+
+	Erweiterungen und Programme installieren
+	Recherche zur Funktionsweise
+		- Datenbankaufbau
+		- Zugriff
+		- Syntax
+	Programmstruktur überlegen
+		- Struktur der Klassen
+		- Funktionen der Klassen
+	Einrichtung des Datenbank
+		- Zugriffsmanagement
+		- inviduelle Struktur des Datenbank festlegen
+	Daten einpflegen
+		- Bilder mit jeweils 4 unterschiedlichen Klassifikationen
+		- Bilder unterscheiden in Trainingsdaten und Testdaten
+
+2. Sprint-Backlog:
+	
+	Datenzugriff
+		- Bilder lesen und nach Label aufteilen
+
+	Code für Klassifikation
+
+
+3. Sprint-Backlog:
+
+	Codetesting
+		- Testfehlerberechnung / Trefferrate
+
+
+Anforderungen (Akzeptanzkriterien)
+	- keine Fehlermeldungen
+	
+	
+	
+	
