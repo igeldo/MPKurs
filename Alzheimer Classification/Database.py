@@ -7,11 +7,25 @@ class Database:
     def __init__(self):
 
         self.hostname = 'localhost'
-        self.database = 'alz_classification'
+        self.database = 'alz'
         self.username = 'postgres'
         self.pwd = 'yay_python'
         self.port_id = 5432
         self.conn = None
+        self.cur = None
+
+
+    def connection(self):
+
+        self.conn = psycopg2.connect(
+            host=self.hostname,
+            dbname=self.database,
+            user=self.username,
+            password=self.pwd,
+            port=self.port_id)
+
+        self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
 
     def get_binary_array(self, path):
         with open(path, "rb") as image:
@@ -20,13 +34,14 @@ class Database:
             return b
 
     def send_files_to_postgresql(self, file_names):
+
         query = "INSERT INTO table(image) VALUES (decode(%s, 'hex'))"
         mylist = []
         for file_name in file_names:
             mylist.append(self.get_binary_array(file_name))
 
         try:
-            cur.executemany(query, mylist)
+            self.cur.executemany(query, mylist)
 
             self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
             count = self.cur.rowcount  # check that the images were all successfully added
@@ -117,10 +132,11 @@ if __name__ == '__main__':
 
     db = Database()
 
+    db.connection()
 
-    conn, cur = db.connect_db.get_connection_cursor_tuple()
+    #conn, cur = db.connect_db.get_connection_cursor_tuple()
     img_names = ['C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg', 'C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg']
-    db.send_files_to_postgresql(conn, cur, img_names)
+    db.send_files_to_postgresql(img_names)
 
     print("test")
 
