@@ -13,6 +13,7 @@ class Database:
         self.port_id = 5432
         self.conn = None
         self.cur = None
+        self.path = None
 
 
     def connection(self):
@@ -26,6 +27,14 @@ class Database:
 
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+    def get_image_path(self):
+        if (os.environ.get('USERNAME') == 'kubic'):
+            self.path = 'C:\\Users\\kubic\\Documents\\Alzheimer'
+        elif (os.environ.get('USERNAME') == 'ivono'):
+            if (os.path.exists('D:\FH\Master Dortmund\Programmierprojekt')):
+                self.path = 'D:\\FH\\Master Dortmund\\Programmierprojekt\\Alzheimer'
+            else:
+                self.path = 'C:\\Users\\ivono\\FH\\Programmierkurs\\Alzheimer'
 
     def get_binary_array(self, path):
         with open(path, "rb") as image:
@@ -84,6 +93,28 @@ class Database:
                                             dept_id varchar(30)) '''
                     cur.execute(create_script)
 
+
+                    # test to load image
+                    """
+                    cur.execute('DROP TABLE IF EXISTS images')
+
+                    create_script = ''' CREATE TABLE IF NOT EXISTS images (
+                                                                img     bytea,
+                                                                name    varchar(40) NOT NULL,
+                                                                dept_id varchar(30)) '''
+                    cur.execute(create_script)
+                    """
+                    image_url = self.path + '\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg'
+
+
+                    # end test
+
+
+
+
+
+
+
                     insert_script = 'INSERT INTO employee (id, name, salary, dept_id) VALUES (%s, %s, %s, %s)'
                     insert_values = [(1, 'James', 12000, 'D1'), (2, 'Robin', 15000, 'D1'), (3, 'Xavier', 20000, 'D2')]
                     for record in insert_values:
@@ -109,11 +140,11 @@ class Database:
 if __name__ == '__main__':
 
     db = Database()
-
+    db.get_image_path()
     db.connection()
 
     #conn, cur = db.connect_db.get_connection_cursor_tuple()
-    img_names = ['C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg', 'C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg']
+    img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
     db.send_files_to_postgresql(img_names)
 
     print("test")
