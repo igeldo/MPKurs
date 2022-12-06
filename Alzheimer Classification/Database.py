@@ -27,6 +27,17 @@ class Database:
 
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+    def create_table(self):
+
+        self.cur.execute('DROP TABLE IF EXISTS image')
+
+        # create table "img" typ is not final
+        create_script = ''' CREATE TABLE IF NOT EXISTS image (
+                                                    img      int PRIMARY KEY,
+                                                    label_class    varchar(40) NOT NULL,
+                                                    label_train_test  int) '''
+        self.cur.execute(create_script)
+
     def get_image_path(self):
         if (os.environ.get('USERNAME') == 'kubic'):
             self.path = 'C:\\Users\\kubic\\Documents\\Alzheimer'
@@ -58,6 +69,9 @@ class Database:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
+        for record in self.cur.fetchall():
+            print(record['img'], record['label_class'])
+
     def get_connection_cursor_tuple(self):
         self.conn = None
         try:
@@ -69,7 +83,6 @@ class Database:
             print(error)
 
         return self.conn, self.cur
-
 
 
     def test(self):
@@ -92,28 +105,6 @@ class Database:
                                             salary  int,
                                             dept_id varchar(30)) '''
                     cur.execute(create_script)
-
-
-                    # test to load image
-                    """
-                    cur.execute('DROP TABLE IF EXISTS images')
-
-                    create_script = ''' CREATE TABLE IF NOT EXISTS images (
-                                                                img     bytea,
-                                                                name    varchar(40) NOT NULL,
-                                                                dept_id varchar(30)) '''
-                    cur.execute(create_script)
-                    """
-                    image_url = self.path + '\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg'
-
-
-                    # end test
-
-
-
-
-
-
 
                     insert_script = 'INSERT INTO employee (id, name, salary, dept_id) VALUES (%s, %s, %s, %s)'
                     insert_values = [(1, 'James', 12000, 'D1'), (2, 'Robin', 15000, 'D1'), (3, 'Xavier', 20000, 'D2')]
@@ -143,15 +134,12 @@ if __name__ == '__main__':
     db.get_image_path()
     db.connection()
 
+    db.create_table()
+
     #conn, cur = db.connect_db.get_connection_cursor_tuple()
     img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
     db.send_files_to_postgresql(img_names)
 
-    print("test")
-
-    # before run -> create database called "alzheimer"
-
-    # path = 'C:\\Users\\kubic\\Documents\\Alzheimer\\OriginalDataset\\MildDemented\\26 (19).jpg'
-
-    #db = Database()
+    print("finished")
+    # before run -> create database called "alz"
     #db.test()
