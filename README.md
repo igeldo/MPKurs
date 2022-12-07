@@ -17,16 +17,16 @@ To achieve the aim, following requirements have to be met:
 2. The GUI has to work together with pymmw.
 
 Following utilities are used:
-- Pycharm 2022.2.3 Professional Edition
+- Pycharm 2022.3 Professional Edition
 - Python 3.10
-- PyQt5 (5.15.7)
+- PyQt6 (6.4.1)
 - matplotlib (3.6.2)
-- numpy (1.23.4)
+- numpy (1.23.5)
 - packaging (21.3)
 - pip (22.3.1)
 - pyftdi (0.54.0)
 - pyserial (3.5)
 - pyusb (1.2.1)
 - scipy (1.9.3)
-- setuptools (65.5.1)
+- setuptools (65.6.3)
 - tiflash (1.3.0)
