@@ -1,0 +1,33 @@
+Scrum Sprints Zellerkennung
+
+
+Akzeptanzkriterien
+	keine falschen Klassifizierungen
+	keine Fehlermeldungen
+
+
+1.1 Sprint: Projekt möglich
+    Daten erhalten und sichten
+    Anforderungskriterien genauer definieren im Hinblick auf Klassifikationen
+    Algorithmus für das maschinelle supervised learning bestimmen
+    Recherche zu benötigten Programmen zur Dateneinbindung
+	Programme installieren und funktionsweise nachvollziehen
+		Zugriff auf die Daten
+		Einbindung neuer Daten erleichtert gestalten
+	Strucktur erarbeiten
+	    Klassen und ihre Funktionen
+    Erste Klassen programmeiren und auf Funktion testen
+
+
+1.2 Sprint: Projekt nicht möglich
+    Neues Projekt definieren und Parameter ausarbeiten
+    Scrum Sprints erarbeiten
+
+2.1 Sprint:
+	Klassifizierung mit bekannten Daten erlernen
+
+
+3.1 Sprint:
+    Code testen
+        neue Daten anfragen & einlesen
+        testen ob die Klassifizierung an den neuen Daten funktioniert
