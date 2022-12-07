@@ -40,6 +40,7 @@ class Window(QMainWindow):
         # Creating Label that should change color, when clicking button:
         self.label_connection = QLabel('Not connected', self)
         self.label_connection.setGeometry(540, 0, 100, 40)
+        # TODO: Try observer pattern!
         self.label_connection.setStyleSheet("background-color: white; border: 1px solid black;")
 
     # What happens, if you want to connect the device?
@@ -48,6 +49,7 @@ class Window(QMainWindow):
         time.sleep(0.5)
         print("Connection established.")
         self.label_connection.setText("Connected")
+        # TODO: Try observer pattern!
         self.label_connection.setStyleSheet("background-color: green; border: 1px solid black;")
 
     # What happens, if you want to disconnect the device?
