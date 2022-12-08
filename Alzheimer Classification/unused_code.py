@@ -64,3 +64,9 @@ def get_connection_cursor_tuple(self):
         print(error)
 
     return self.conn, self.cur
+
+def get_binary_array(self, path):
+    with open(path, "rb") as image:
+        f = image.read()
+        b = bytes(f).hex()
+        return b
