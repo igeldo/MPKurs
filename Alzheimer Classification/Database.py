@@ -1,6 +1,8 @@
 import psycopg2
 import psycopg2.extras
 import os
+from os.path import isfile, join
+import numpy as np
 
 class Database:
 
@@ -27,16 +29,25 @@ class Database:
 
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    # def create_table(self):
-    #
-    #     self.cur.execute('DROP TABLE IF EXISTS image')
-    #
-    #     # create table "img" typ is not final
-    #     create_script = ''' CREATE TABLE IF NOT EXISTS image (
-    #                                                 image      bytea,
-    #                                                 label_class    int,
-    #                                                 label_train_test  text) '''
-    #     self.cur.execute(create_script)
+    def create_table(self):
+
+        self.cur.execute('DROP TABLE IF EXISTS test.test_table')
+
+        # create table "img" typ is not final
+        create_script = ''' CREATE TABLE IF NOT EXISTS test.test_table (
+                                                    image      bytea,
+                                                    label_class    int,
+                                                    label_train_test  text) '''
+
+        try:
+            self.cur.execute(create_script)
+
+            self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
+            print("Created table")
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
 
     def get_image_path(self):
         if (os.environ.get('USERNAME') == 'kubic'):
@@ -50,7 +61,8 @@ class Database:
 
     def send_files_to_postgresql(self, file_names):
 
-        img = open(file_names[1], 'rb').read()
+        img = np.empty(len(file_names), dtype=object)
+        # img = open(file_names, 'rb').read()
 
         # label_class: 0 - 3 (Klassifikation dement)
         # label_train_test: train oder test
@@ -61,7 +73,9 @@ class Database:
         try:
             # self.cur.executemany(query, mylist)
 
-            self.cur.execute(query, (psycopg2.Binary(img), 0, "train"))
+            for n in range(0, len(img)):
+                img[n] = open(db.path + "\\AugmentedAlzheimerDataset\\MildDemented\\" + file_names[n], 'rb').read()
+                self.cur.execute(query, (psycopg2.Binary(img[n]), 0, "train"))
 
             self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
             count = self.cur.rowcount  # check that the images were all successfully added
@@ -79,10 +93,15 @@ if __name__ == '__main__':
     db.get_image_path()
     db.connection()
 
-    # db.create_table()
+    db.create_table()
+
+    # "train" + 0
+    mypath = db.path + "\\AugmentedAlzheimerDataset\\MildDemented"
+    train_data_0 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
     img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
-    db.send_files_to_postgresql(img_names)
+
+    db.send_files_to_postgresql(train_data_0)
 
     print("finished")
     # before run -> create database called "alz"
