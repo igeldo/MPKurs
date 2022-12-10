@@ -1,22 +1,42 @@
 # Importing necessary libraries
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QTabWidget, QGridLayout, QWidget
 import sys
 import time
+import serial
 
 
 class Window(QMainWindow):
-    def __init__(self, *args, **kwargs):
-        super(Window, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super(Window, self).__init__()
 
         # Setting up Window properties:
         self.setWindowTitle("GUI for TI Radar Systems")
         self.setGeometry(100, 100, 640, 480)
 
         # Calling method:
+        self.tabs()
         self.components()
 
         # Showing all widgets:
         self.show()
+
+    # Introducing tabs:
+    def tabs(self):
+        # Initialize tab screen
+        tab = QTabWidget()
+        tab1 = QWidget()
+        tab2 = QWidget()
+        tab3 = QWidget()
+        tab.resize(640, 480)
+
+        # Add tabs
+        tab.addTab(tab1, "I. Properties")
+        tab.addTab(tab2, "II. Options")
+        tab.addTab(tab3, "III. Plots")
+
+        # Create first tab
+        tab1.layout = QGridLayout()
+        self.components()
 
     def components(self):
         # Creating connect button:
@@ -61,8 +81,7 @@ class Window(QMainWindow):
         self.label_connection.setStyleSheet("background-color: red; border: 1px solid black;")
 
     # What happens when the Close Button is being pushed?
-    @staticmethod
-    def click_close():
+    def click_close(self):
         print("User closed App by Button.")
         sys.exit(0)
 
@@ -72,10 +91,29 @@ class Window(QMainWindow):
         event.accept()
 
 
+# Scan all possible serial ports.
+# Copied from: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+def serial_ports():
+    if sys.platform.startswith('win'):
+        ports = ['COM%s' % (i + 1) for i in range(2256)]
+    else:
+        raise EnvironmentError('Unsupported platform')
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
+
+
 if __name__ == "__main__":
     # Create PyQt6 App:
     app = QApplication(sys.argv)
     # Create instance of the class Window:
     window = Window()
+    print("Following ports are available:", serial_ports())
     # Starting the event loop / App:
     sys.exit(app.exec())
