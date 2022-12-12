@@ -16,6 +16,18 @@ class Database:
         self.conn = None
         self.cur = None
         self.path = None
+        self.train_folders = {
+            "non": "\\AugmentedAlzheimerDataset\\NonDemented\\",
+            "verymild": "\\AugmentedAlzheimerDataset\\VeryMildDemented\\",
+            "mild": "\\AugmentedAlzheimerDataset\\MildDemented\\",
+            "moderate": "\\AugmentedAlzheimerDataset\\ModerateDemented\\"
+        }
+        self.test_folders = {
+            "non": "\\OriginalDataset\\NonDemented\\",
+            "verymild": "\\OriginalDataset\\VeryMildDemented\\",
+            "mild": "\\OriginalDataset\\MildDemented\\",
+            "moderate": "\\OriginalDataset\\ModerateDemented\\"
+        }
 
 
     def connection(self):
@@ -74,7 +86,7 @@ class Database:
             # self.cur.executemany(query, mylist)
 
             for n in range(0, len(img)):
-                img[n] = open(db.path + "\\AugmentedAlzheimerDataset\\MildDemented\\" + file_names[n], 'rb').read()
+                img[n] = open(db.path + db.train_folders["mild"] + file_names[n], 'rb').read()
                 self.cur.execute(query, (psycopg2.Binary(img[n]), 0, "train"))
 
             self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
@@ -96,10 +108,10 @@ if __name__ == '__main__':
     db.create_table()
 
     # "train" + 0
-    mypath = db.path + "\\AugmentedAlzheimerDataset\\MildDemented"
+    mypath = db.path + db.train_folders["mild"] # "\\AugmentedAlzheimerDataset\\MildDemented"
     train_data_0 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
-    img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
+    # img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
 
     db.send_files_to_postgresql(train_data_0)
 
