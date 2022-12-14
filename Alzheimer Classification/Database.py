@@ -117,3 +117,4 @@ if __name__ == '__main__':
 
     print("finished")
     # before run -> create database called "alz"
+    # Datenbanken sind geil
