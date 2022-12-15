@@ -43,10 +43,10 @@ class Database:
 
     def create_table(self):
 
-        self.cur.execute('DROP TABLE IF EXISTS test.test_table')
+        self.cur.execute('DROP TABLE IF EXISTS alz_schema.img_table')
 
         # create table "img" typ is not final
-        create_script = ''' CREATE TABLE IF NOT EXISTS test.test_table (
+        create_script = ''' CREATE TABLE IF NOT EXISTS alz_schema.img_table (
                                                     image      bytea,
                                                     label_class    int,
                                                     label_train_test  text) '''
@@ -78,7 +78,7 @@ class Database:
 
         # label_class: 0 - 3 (Klassifikation dement)
         # label_train_test: train oder test
-        query = "INSERT INTO test.test_table(image, label_class, label_train_test) " + "VALUES(%s, %s, %s)"
+        query = "INSERT INTO alz_schema.img_table(image, label_class, label_train_test) " + "VALUES(%s, %s, %s)"
 
         # als Schleife programmieren -> alle Bilder werden auf einmal eingepflegt
 
