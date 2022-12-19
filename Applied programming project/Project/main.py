@@ -13,12 +13,15 @@ data = data.data
 new_data = FeatureSelection()
 new_data = new_data.new_data_frame(data)
 
+r = Resample()
+new_data = r.resample(new_data)
+
 k = TestTrain()
 [X, y] = k.define_target_features(new_data)
 [X_train, X_test, y_train, y_test] = k.define_train_test(X, y)
 
 rf = RandomForest()
-model = rf.random_forest(X_train, y_train)
+rf_model = rf.random_forest(X_train, y_train)
 
 
 def question():
@@ -53,13 +56,14 @@ def question():
     patient_data_frame = pd.DataFrame(patient_data, index=[0])
     print(patient_data_frame)
 
-    CHD_prediction = model.predict(patient_data_frame)
+    chd_prediction = rf_model.predict(patient_data_frame)
 
-    print('Result of the CHD-prediction:')
-    if CHD_prediction == 1:
-        print('The patient has a CHD-risk.')
-    if CHD_prediction == 0:
-        print('The patient has no CHD-risk.')
+    print("Result of the CHD-prediction:")
+    if chd_prediction == 1:
+        print("The patient has a CHD-risk.")
+    if chd_prediction == 0:
+        print("The patient has no CHD-risk.")
+
 
 
 question()

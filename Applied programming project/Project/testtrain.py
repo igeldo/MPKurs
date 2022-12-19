@@ -1,8 +1,5 @@
-from daten import Daten
-from feature import FeatureSelection
-from Resampling import Resample
-
 from sklearn.model_selection import train_test_split
+# Klasse teilt den Datensatz in einen Trainingsdatensatz und einen Testdatensatz auf.
 
 
 class TestTrain:
@@ -19,28 +16,14 @@ class TestTrain:
         self.y_test = None
 
     def define_target_features(self, data):
+        # Funktion definiert die x und die y Komponente für den Random Forest
         self.y = data['TenYearCHD']
         self.X = data.drop(['TenYearCHD'], axis=1)
         return self.X, self.y
 
     def define_train_test(self, x, y):
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.2)
-        return self.X_train, self.X_test, self.y_train, self. y_test
-
-# Check code
-data = Daten()
-data = data.data
-
-new_data = FeatureSelection()
-new_data = new_data.new_data_frame(data)
-
-new_new_data = Resample()
-new_new_data = new_new_data.resample(new_data)
-
-k = TestTrain()
-[X, y] = k.define_target_features(new_new_data)
-
-[X_train, X_test, y_train, y_test] = k.define_train_test(X, y)
-
-
-
+        # Funktion splittet die x und y Komponente in einen Trainingssatz und einen Testsatz.
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3, random_state=29)
+        # test size: % 30Testdatensatz, 70% Trainingsdatensatz
+        # random_state = Steuert das Shuffling, das auf die Daten vor der Aufteilung angewendet wird.
+        return self.X_train, self.X_test, self.y_train, self.y_test

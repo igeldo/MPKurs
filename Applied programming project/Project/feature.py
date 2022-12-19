@@ -1,8 +1,9 @@
 import pandas as pd
-
-from daten import Daten
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
+
+
+# Klasse wählt die besten Feature für das supervised learning mittels des Random Forest aus.
 
 
 class FeatureSelection:
@@ -24,44 +25,26 @@ class FeatureSelection:
         # select the n_features features with the highest values for the test chi-squared statistic from X
         self.best_features = SelectKBest(score_func=chi2, k=10)
 
-        # fit the SelektKBest accordingt to the feature X and the target variable
+        # Anpassung der SelektKBest-Funktion an das Merkmal X und die Zielvariable
         self.fit = self.best_features.fit(X, y)
 
         self.scores = pd.DataFrame(self.fit.scores_)
         self.columns = pd.DataFrame(X.columns)
 
-        # Build vector with the Score. Shows that sysB ist the best feature
-        # Followed by glucose, age, totChol...
+        # Erstellung eines Vektors mit dem Ergebnis. Zeigt, dass sysB das beste Merkmal ist
+        # gefolgt von Glukose, Alter, totChol...
         self.Scores = pd.concat([self.columns, self.scores], axis=1)
         self.Scores.columns = ['Specs', 'Score']
 
-        # Sorting the score after value
+        # Sortieren der Einträge nach ihrem Ergebnis
         self.Scores = self.Scores.sort_values(by='Score', ascending=False)
 
-        # Choose top 10 features
+        # Auswahl der 10 besten Merkmale
         self.features_list = self.Scores["Specs"].tolist()[:10]
 
     def new_data_frame(self, data):
-        # new data frame with the best 10 features
-        # try converting feature_list into data_frame
-        self.data_new = data[['sysBP', 'glucose', 'age', 'totChol', 'cigsPerDay', 'diaBP', 'prevalentHyp', 'diabetes', 'BPMeds', 'male',
+        # Erstellung eines neuen Datensatzes mit den 10 besten Merkmalen
+        self.data_new = data[
+            ['sysBP', 'glucose', 'age', 'totChol', 'cigsPerDay', 'diaBP', 'prevalentHyp', 'diabetes', 'BPMeds', 'male',
              'TenYearCHD']]
         return self.data_new
-
-
-# Code for testing
-# X = Daten()
-# X = X.data.iloc[:, 0:14]
-# y  = Daten()
-# y = y.data.iloc[:, -1]
-# z = Daten()
-# z = z.data.iloc[:, 0:15   ]
-
-# s = FeatureSelection()
-# s.selection(X, y)
-# s.new_data_frame(z)
-
-# scores = s.Scores
-# list = s.features_list
-# data = s.daten
-
