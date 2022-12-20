@@ -3,6 +3,7 @@ import psycopg2.extras
 import os
 from os.path import isfile, join
 import numpy as np
+import tempfile
 
 class Database:
 
@@ -48,7 +49,7 @@ class Database:
         # create table "img" typ is not final
         create_script = ''' CREATE TABLE IF NOT EXISTS alz_schema.img_table (
                                                     image      bytea,
-                                                    label_class    int,
+                                                    label_class    text,
                                                     label_train_test  text) '''
 
         try:
@@ -71,23 +72,21 @@ class Database:
                 self.path = 'C:\\Users\\ivono\\FH\\Programmierkurs\\Alzheimer'
 
 
-    def send_files_to_postgresql(self, file_names):
+    def send_files_to_postgresql(self, file_names, label_class, label_train_test):
 
         img = np.empty(len(file_names), dtype=object)
         # img = open(file_names, 'rb').read()
 
-        # label_class: 0 - 3 (Klassifikation dement)
+        # label_class: non, verymild, mild, moderate
         # label_train_test: train oder test
         query = "INSERT INTO alz_schema.img_table(image, label_class, label_train_test) " + "VALUES(%s, %s, %s)"
-
-        # als Schleife programmieren -> alle Bilder werden auf einmal eingepflegt
 
         try:
             # self.cur.executemany(query, mylist)
 
             for n in range(0, len(img)):
-                img[n] = open(db.path + db.train_folders["mild"] + file_names[n], 'rb').read()
-                self.cur.execute(query, (psycopg2.Binary(img[n]), 0, "train"))
+                img[n] = open(db.path + db.train_folders[label_class] + file_names[n], 'rb').read()
+                self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, label_train_test))
 
             self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
             count = self.cur.rowcount  # check that the images were all successfully added
@@ -95,18 +94,22 @@ class Database:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-        # for record in self.cur.fetchall():
-        #     print(record['image'], record['label_class'])
+    def get_files_from_postgresql(self, label_class, label_train_test):
 
-    def get_files_from_postgresql(self):
-
+        img = np.empty(2, dtype=object)
         select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
 
         try:
             # self.cur.executemany(query, mylist)
-            self.cur.execute(select_script, [0, "train"])
+            self.cur.execute(select_script, [label_class, label_train_test])
 
-            img = self.cur.fetchall()
+            for n in range(0, 2):
+
+                mypic = self.cur.fetchone()
+                img[n] = open(db.path + db.train_folders[label_class], 'rb').write(str(mypic[0]))
+                self.cur.execute(select_script, label_class, label_train_test)
+
+            # img = self.cur.fetchall()
 
             print(img)
 
@@ -116,7 +119,7 @@ class Database:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-        return files
+        return img
 
 if __name__ == '__main__':
 
@@ -124,18 +127,29 @@ if __name__ == '__main__':
     db.get_image_path()
     db.connection()
 
-    # db.create_table()
 
-    # "train" + 0
-    mypath = db.path + db.train_folders["mild"] # "\\AugmentedAlzheimerDataset\\MildDemented"
+    db.create_table()
+
+    # load data to database
+    mypath = db.path + db.train_folders["non"]
     train_data_0 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
+    db.send_files_to_postgresql(train_data_0, "non", "train")
 
-    # img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
+    mypath = db.path + db.train_folders["verymild"]
+    train_data_1 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
+    db.send_files_to_postgresql(train_data_1, "verymild", "train")
 
-    # db.send_files_to_postgresql(train_data_0)
+    mypath = db.path + db.train_folders["mild"]
+    train_data_2 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
+    db.send_files_to_postgresql(train_data_2, "mild", "train")
 
-    files = db.get_files_from_postgresql()
-    print(files)
+    mypath = db.path + db.train_folders["moderate"]
+    train_data_3 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
+    db.send_files_to_postgresql(train_data_3, "moderate", "train")
+
+
+    # files = db.get_files_from_postgresql("verymild", "train")
+    # print(files)
 
     print("finished")
     # before run -> create database called "alz"
