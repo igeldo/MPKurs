@@ -98,6 +98,25 @@ class Database:
         # for record in self.cur.fetchall():
         #     print(record['image'], record['label_class'])
 
+    def get_files_from_postgresql(self):
+
+        select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
+
+        try:
+            # self.cur.executemany(query, mylist)
+            self.cur.execute(select_script, [0, "train"])
+
+            img = self.cur.fetchall()
+
+            print(img)
+
+            self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
+            print("in try")
+
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+
+        return files
 
 if __name__ == '__main__':
 
@@ -105,7 +124,7 @@ if __name__ == '__main__':
     db.get_image_path()
     db.connection()
 
-    db.create_table()
+    # db.create_table()
 
     # "train" + 0
     mypath = db.path + db.train_folders["mild"] # "\\AugmentedAlzheimerDataset\\MildDemented"
@@ -113,7 +132,10 @@ if __name__ == '__main__':
 
     # img_names = [db.path + '\\OriginalDataset\\MildDemented\\26 (19).jpg', db.path + '\\OriginalDataset\\MildDemented\\26 (20).jpg']
 
-    db.send_files_to_postgresql(train_data_0)
+    # db.send_files_to_postgresql(train_data_0)
+
+    files = db.get_files_from_postgresql()
+    print(files)
 
     print("finished")
     # before run -> create database called "alz"
