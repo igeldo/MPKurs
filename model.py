@@ -3,7 +3,7 @@ import numpy as np
 from vector import Vec3d
 
 
-class PhotonPack:
+class PhotonPack(Vec3d):
     """
     Basic class to simulate photon packages.
 
