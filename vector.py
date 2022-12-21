@@ -3,9 +3,9 @@ import math
 
 class Vec3d:
     def __init__(self, x=0, y=0, z=0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.__x = x
+        self.__y = y
+        self.__z = z
 
     def __add__(self, other):
         if isinstance(other, Vec3d):
@@ -26,3 +26,11 @@ class Vec3d:
     def __repr__(self):
         return "({},{},{})".format(self.x, self.y, self.z)
 
+    def x(self):
+        return self.__x
+
+    def y(self):
+        return self.__y
+
+    def z(self):
+        return self.__z
