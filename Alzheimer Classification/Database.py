@@ -5,6 +5,7 @@ from os.path import isfile, join
 import numpy as np
 import tempfile
 
+
 class Database:
 
     def __init__(self):
@@ -39,12 +40,11 @@ class Database:
                            "\\AugmentedAlzheimerDataset\\MildDemented\\",
                            "\\AugmentedAlzheimerDataset\\ModerateDemented\\"],
             "path_test": ["\\OriginalDataset\\NonDemented\\",
-                           "\\OriginalDataset\\VeryMildDemented\\",
-                           "\\OriginalDataset\\MildDemented\\",
-                           "\\OriginalDataset\\ModerateDemented\\"],
-            "label": [0,1,2,3]
+                          "\\OriginalDataset\\VeryMildDemented\\",
+                          "\\OriginalDataset\\MildDemented\\",
+                          "\\OriginalDataset\\ModerateDemented\\"],
+            "label": [0, 1, 2, 3]
         }
-
 
     def connection(self):
 
@@ -61,21 +61,18 @@ class Database:
 
         self.cur.execute('DROP TABLE IF EXISTS alz_schema.img_table')
 
-        # create table "img" typ is not final
         create_script = ''' CREATE TABLE IF NOT EXISTS alz_schema.img_table (
                                                     image      bytea,
-                                                    label_class    text,
+                                                    label_class    int,
                                                     label_train_test  text) '''
 
         try:
             self.cur.execute(create_script)
-
-            self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
+            self.conn.commit()  # commit the changes to the database
             print("Created table")
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
-
 
     def get_image_path(self):
         if (os.environ.get('USERNAME') == 'kubic'):
@@ -86,24 +83,54 @@ class Database:
             else:
                 self.path = 'C:\\Users\\ivono\\FH\\Programmierkurs\\Alzheimer'
 
-
-    def send_files_to_postgresql(self, file_names, label_class, label_train_test):
-
-        img = np.empty(len(file_names), dtype=object)
-        # img = open(file_names, 'rb').read()
+    def send_files_to_postgresql(self):
 
         # label_class: non, verymild, mild, moderate
         # label_train_test: train oder test
         query = "INSERT INTO alz_schema.img_table(image, label_class, label_train_test) " + "VALUES(%s, %s, %s)"
 
         try:
-            # self.cur.executemany(query, mylist)
+            for i in db.im_attributes["path_train"]:
 
-            for n in range(0, len(img)):
-                img[n] = open(db.path + db.train_folders[label_class] + file_names[n], 'rb').read()
-                self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, label_train_test))
+                mypath = db.path + i
+                data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
-            self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
+                img = np.empty(len(data), dtype=object)
+
+                if "non" in mypath:
+                    label_class = self.im_attributes["label"][0]
+                elif "verymild" in mypath:
+                    label_class = self.im_attributes["label"][1]
+                elif "mild" in mypath:
+                    label_class = self.im_attributes["label"][2]
+                elif "moderate" in mypath:
+                    label_class = self.im_attributes["label"][3]
+
+                for n in range(0, len(img)):
+                    img[n] = open(mypath + data[n], 'rb').read()
+                    self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "train"))
+
+            for i in db.im_attributes["path_test"]:
+
+                mypath = db.path + i
+                data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
+
+                img = np.empty(len(data), dtype=object)
+
+                if "non" in mypath:
+                    label_class = self.im_attributes["label"][0]
+                elif "verymild" in mypath:
+                    label_class = self.im_attributes["label"][1]
+                elif "mild" in mypath:
+                    label_class = self.im_attributes["label"][2]
+                elif "moderate" in mypath:
+                    label_class = self.im_attributes["label"][3]
+
+                for n in range(0, len(img)):
+                    img[n] = open(mypath + data[n], 'rb').read()
+                    self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "test"))
+
+            self.conn.commit()  # commit the changes to the database
             count = self.cur.rowcount  # check that the images were all successfully added
             print(count, "Records inserted successfully into table")
         except (Exception, psycopg2.DatabaseError) as error:
@@ -119,7 +146,6 @@ class Database:
             self.cur.execute(select_script, [label_class, label_train_test])
 
             for n in range(0, 2):
-
                 mypic = self.cur.fetchone()
                 img[n] = open(db.path + db.train_folders[label_class], 'rb').write(str(mypic[0]))
                 self.cur.execute(select_script, label_class, label_train_test)
@@ -136,15 +162,17 @@ class Database:
 
         return img
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     db = Database()
     db.get_image_path()
     db.connection()
 
-
     db.create_table()
 
+    # db.send_files_to_postgresql()
+
+    """
     # load data to database
     mypath = db.path + db.train_folders["non"]
     train_data_0 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
@@ -161,7 +189,7 @@ if __name__ == '__main__':
     mypath = db.path + db.train_folders["moderate"]
     train_data_3 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
     db.send_files_to_postgresql(train_data_3, "moderate", "train")
-
+    """
 
     # files = db.get_files_from_postgresql("verymild", "train")
     # print(files)
