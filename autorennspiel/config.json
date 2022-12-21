@@ -1,40 +1,50 @@
 {
     "images": {
         "general_img_path": "C:\\Users\\tvogt\\OneDrive\\Dokumente\\FH_Dortmund\\Programmierprojekt\\Auto-Rennspiel\\",
-
-        "car_1": {
-            "path": "car_1.png",
-            "size": [
-                70,
-                126
-            ]
-        },
-        "car_2": {
-            "path": "car_2.png",
-            "size": [
-                70,
-                126
-            ]
-        },
-        "car_3": {
-            "path": "car_3.png",
-            "size": [
-                70,
-                126
-            ]
-        },
-        "car_4": {
-            "path": "car_4.png",
-            "size": [
-                70,
-                126
-            ]
+        "cars": {
+            "general": {
+                "size": [
+                    70,
+                    126
+                    ]
+            },
+            "car_1": {
+                "path": "car_1.png"
+            },
+            "car_2": {
+                "path": "car_2.png"
+            },
+            "car_3": {
+                "path": "car_3.png"
+            },
+            "car_4": {
+                "path": "car_4.png"
+            },
+            "car_player": {
+                "rotation": 0,
+                "position": [
+                    465,
+                    550
+                ],
+                "speed": 0
+            },
+            "car_enemy": {
+                "rotation": -180,
+                "position": [
+                    [
+                        200,
+                        630
+                    ],
+                    -200
+                ],
+                "speed": 9
+            }
         },
         "background_left": {
             "path": "Background_left.jpeg",
             "size": [
-                200,
-                600
+                210,
+                700
             ],
             "rotation": 0,
             "position": [
@@ -45,39 +55,20 @@
         "background_right": {
             "path": "Background_right.jpeg",
             "size": [
-                200,
-                600
+                210,
+                700
             ],
             "rotation": 0,
             "position": [
-                630,
+                720,
                 0
             ]
-        },
-        "car_player": {
-            "rotation": 0,
-            "position": [
-                400,
-                450
-            ],
-            "speed": 0
-        },
-        "car_enemy": {
-            "rotation": -180,
-            "position": [
-                [
-                    200,
-                    630
-                ],
-                -600
-            ],
-            "speed": 9
         }
     },
     "display": {
         "size": [
-            830,
-            600
+            930,
+            700
         ],
         "window_name": "Racing game with 2 buttons",
         "message_crash": "Game Over",

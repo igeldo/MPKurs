@@ -1,58 +1,62 @@
 # imports
 import pygame
 import config
-import display
+import random
 
 
 class Car:
-    def __init__(self, name, player):
-        self.car_name = name
-        name_attributes = config.Json("config.json").get_attribute("images", name)
-        self.car_size = name_attributes["size"]
+    def __init__(self):
+        self.json = config.Json("config.json")
+        self.car_size = self.json.get_attribute("images", "cars", "general", "size")
         self.car_width = self.car_size[0]
         self.car_height = self.car_size[1]
-        self.img_path = config.Json("config.json").get_attribute("images", "general_img_path")
-        self.car_img = name_attributes["path"]
-        player_attributes = config.Json("config.json").get_attribute("images", player)
-        self.car_rotation = player_attributes["rotation"]
-        self.car_position = player_attributes["position"]
-        self.car_speed = player_attributes["speed"]
-        # print(self.car_name, self.car_width, self.car_height, self.car_img, self.car_rotation, self.car_position,
-        # self.car_speed)
+        self.car_imgs = config.get_car_img_paths(4)
+        # print(self.car_size, self.car_width, self.car_height, self.car_imgs)
 
-    def load_car(self):
-        car_img = pygame.image.load(self.img_path + self.car_img)
-        car_img = pygame.transform.scale(car_img, self.car_size)
-        car_img = pygame.transform.rotate(car_img, self.car_rotation)
-        return car_img
+    def player_car_info(self, enemyorplayer):
+        player_attributes = self.json.get_attribute("images", "cars", enemyorplayer)
+        rotation = player_attributes["rotation"]
+        position = player_attributes["position"]
+        speed = player_attributes["speed"]
+        return [rotation, position, speed]
+
+    def car_info_for_loading(self, enemyorplayer, which_car=None):
+        if which_car is None:
+            if enemyorplayer == "car_player":
+                which_car = 1
+            else:
+                which_car = random.randint(1, 4)
+        img_path = self.car_imgs[which_car]
+        [car_rotation, car_position, car_speed] = self.player_car_info(enemyorplayer)
+        return[img_path, self.car_size, car_rotation]
+
+
+def load_car(carclass, enemyorplayer, which_car=None):
+    [img_path, car_size, car_rotation] = carclass.car_info_for_loading(enemyorplayer, which_car)
+    car_img = pygame.image.load(img_path)
+    car_img = pygame.transform.scale(car_img, car_size)
+    car_img = pygame.transform.rotate(car_img, car_rotation)
+    return car_img
 
 
 # Kabinenposition einstellen
 # create car function
-def car(window, x, y):
+def player_car(carclass, window, x, y):
     # set position of the car
-    car_img = Car("car_1", "car_player").load_car()
+    car_img = load_car(carclass, "car_player")
     window.blit(car_img, (x, y))
 
 
 # define car functions that are coming from the opposite side
-def enemy_car(window, enemy_startx, enemy_starty, enemy):
-    if enemy == 0:
-        # for enemy car no. 2
-        enemy_there = Car("car_2", "car_enemy").load_car()
-    if enemy == 1:
-        enemy_there = Car("car_2", "car_enemy").load_car()
-    if enemy == 2:
-        enemy_there = Car("car_1", "car_enemy").load_car()
-
+def enemy_car(carclass, window, enemy_startx, enemy_starty, enemy):
+    enemy_there = load_car(carclass, "car_enemy", enemy)
     # display the enemies car
     window.blit(enemy_there, (enemy_startx, enemy_starty))
     return enemy_there
 
 
 # for testing
-"""
-car_1 = Car("car_1", "car_player")
-print(car_1.car_width)
-"""
+'''
+Car()
+'''
 
