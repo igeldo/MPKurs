@@ -29,6 +29,21 @@ class Database:
             "mild": "\\OriginalDataset\\MildDemented\\",
             "moderate": "\\OriginalDataset\\ModerateDemented\\"
         }
+        self.im_attributes = {
+            "class": ["NonDemented",
+                      "VeryMildDemented",
+                      "MildDemented",
+                      "ModerateDemented"],
+            "path_train": ["\\AugmentedAlzheimerDataset\\NonDemented\\",
+                           "\\AugmentedAlzheimerDataset\\VeryMildDemented\\",
+                           "\\AugmentedAlzheimerDataset\\MildDemented\\",
+                           "\\AugmentedAlzheimerDataset\\ModerateDemented\\"],
+            "path_test": ["\\OriginalDataset\\NonDemented\\",
+                           "\\OriginalDataset\\VeryMildDemented\\",
+                           "\\OriginalDataset\\MildDemented\\",
+                           "\\OriginalDataset\\ModerateDemented\\"],
+            "label": [0,1,2,3]
+        }
 
 
     def connection(self):
