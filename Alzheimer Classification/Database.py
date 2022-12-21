@@ -97,13 +97,13 @@ class Database:
 
                 img = np.empty(len(data), dtype=object)
 
-                if "non" in mypath:
+                if "NonDemented" in mypath:
                     label_class = self.im_attributes["label"][0]
-                elif "verymild" in mypath:
+                elif "VeryMildDemented" in mypath:
                     label_class = self.im_attributes["label"][1]
-                elif "mild" in mypath:
+                elif "MildDemented" in mypath:
                     label_class = self.im_attributes["label"][2]
-                elif "moderate" in mypath:
+                elif "ModerateDemented" in mypath:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
@@ -117,13 +117,13 @@ class Database:
 
                 img = np.empty(len(data), dtype=object)
 
-                if "non" in mypath:
+                if "NonDemented" in mypath:
                     label_class = self.im_attributes["label"][0]
-                elif "verymild" in mypath:
+                elif "VeryMildDemented" in mypath:
                     label_class = self.im_attributes["label"][1]
-                elif "mild" in mypath:
+                elif "MildDemented" in mypath:
                     label_class = self.im_attributes["label"][2]
-                elif "moderate" in mypath:
+                elif "ModerateDemented" in mypath:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     db.create_table()
 
-    # db.send_files_to_postgresql()
+    db.send_files_to_postgresql()
 
     """
     # load data to database
