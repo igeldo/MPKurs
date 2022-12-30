@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import (QFont, QIcon, QAction)
 
 
-def get_ports():
+def s_ports():
     # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
     ports = ['COM%s' % (i + 1) for i in range(256)]
     result = []
@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("GUI for PymmWave")
         self.setWindowIcon(QIcon("images/pyqt_logo.png"))
 
-        get_ports()
         self.setUpMainWindow()
         self.createActions()
         self.createMenu()
@@ -53,17 +52,19 @@ class MainWindow(QMainWindow):
         """Create and arrange widgets in the main window."""
         # Headline
         header_label = QLabel("Properties")
-        header_label.setFont(QFont("Gothic", 14))
+        header_label.setFont(QFont("Helvetica", 14))
         header_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Select Ports
         tx_com_port_label = QLabel("TX COM Port:")
         tx_com_port_label.setFont(QFont("Helvetica", 12))
         self.tx_com_port = QComboBox()
+        self.tx_com_port.addItems(s_ports())
 
         rx_com_port_label = QLabel("RX COM Port:")
         rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
+        self.rx_com_port.addItems(s_ports())
 
         # ROS check box
         ros_enable_label = QLabel("Enable ROS?")
@@ -154,6 +155,8 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    print(s_ports())
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
+
