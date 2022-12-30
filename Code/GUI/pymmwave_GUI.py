@@ -24,6 +24,7 @@ def s_ports():
             pass
     return result
 
+# TODO: Add tabs, establish connection with pymmWave-functionality.
 
 class MainWindow(QMainWindow):
 
@@ -111,7 +112,6 @@ class MainWindow(QMainWindow):
         # Create actions for Help menu
         self.about_act = QAction("About")
         self.about_act.triggered.connect(self.aboutDialog)
-
     def createMenu(self):
         """Create the application's menu bar."""
         # For Mac
