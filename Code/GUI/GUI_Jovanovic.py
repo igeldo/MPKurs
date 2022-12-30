@@ -4,6 +4,7 @@
 Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
 
 # Import necessary modules
+import serial
 import sys
 from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QComboBox,
                              QCheckBox, QPushButton, QGridLayout)
@@ -12,8 +13,13 @@ from PyQt6.QtGui import QFont
 
 
 class MainWindow(QWidget):
+
     def __init__(self):
         super().__init__()
+        self.main_grid = None
+        self.ros_enable = None
+        self.rx_com_port = None
+        self.tx_com_port = None
         self.initializeUI()
 
     def initializeUI(self):
@@ -22,6 +28,7 @@ class MainWindow(QWidget):
         self.setMaximumSize(640, 480)
         self.setWindowTitle("GUI for PymmWave")
 
+        self.get_ports()
         self.setUpMainWindow()
         self.show()
 
@@ -67,6 +74,19 @@ class MainWindow(QWidget):
 
         # Set the layout for the main window
         self.setLayout(self.main_grid)
+
+    def get_ports(self):
+        # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except serial.SerialException:
+                pass
+        return result
 
 
 if __name__ == '__main__':
