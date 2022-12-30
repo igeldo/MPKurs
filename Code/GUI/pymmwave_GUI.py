@@ -25,7 +25,7 @@ class MainWindow(QWidget):
     def initializeUI(self):
         """Set up the application's GUI."""
         self.setMinimumSize(300, 150)
-        self.setMaximumSize(640, 480)
+        self.setMaximumSize(640, 150)
         self.setWindowTitle("GUI for PymmWave")
 
         self.get_ports()
@@ -41,23 +41,23 @@ class MainWindow(QWidget):
 
         # Select Ports
         tx_com_port_label = QLabel("TX COM Port:")
-        tx_com_port_label.setFont(QFont("Helvetica", 14))
+        tx_com_port_label.setFont(QFont("Helvetica", 12))
         self.tx_com_port = QComboBox()
 
         rx_com_port_label = QLabel("RX COM Port:")
-        rx_com_port_label.setFont(QFont("Helvetica", 14))
+        rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
 
         # ROS check box
         ros_enable_label = QLabel("Enable ROS?")
-        ros_enable_label.setFont(QFont("Helvetica", 14))
+        ros_enable_label.setFont(QFont("Helvetica", 12))
         self.ros_enable = QCheckBox()
 
         # Connect and Disconnect Buttons
-        connect_button = QPushButton("Connect device")
+        connect_button = QPushButton("Connect Radar")
         connect_button.setFont(QFont("Helvetica", 12))
 
-        disconnect_button = QPushButton("Disconnect device")
+        disconnect_button = QPushButton("Disconnect Radar")
         disconnect_button.setFont(QFont("Helvetica", 12))
 
         # Organize the left side widgets into column 0 of the QGridLayout
