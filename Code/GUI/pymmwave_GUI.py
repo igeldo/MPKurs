@@ -26,6 +26,7 @@ def s_ports():
 
 # TODO: Add tabs, establish connection with pymmWave-functionality.
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow):
         # Create actions for Help menu
         self.about_act = QAction("About")
         self.about_act.triggered.connect(self.aboutDialog)
+
     def createMenu(self):
         """Create the application's menu bar."""
         # For Mac
@@ -155,7 +157,7 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
-    print(s_ports())
+    # print(s_ports()) # For testing purposes.
     app = QApplication(sys.argv)
     window = MainWindow()
     sys.exit(app.exec())
