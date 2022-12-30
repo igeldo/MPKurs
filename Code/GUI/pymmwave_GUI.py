@@ -7,26 +7,48 @@ Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M W
 import serial
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
-                             QComboBox, QCheckBox, QPushButton, QGridLayout)
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import (QFont, QIcon)
+                             QComboBox, QCheckBox, QPushButton, QGridLayout,
+                             QToolBar, QMessageBox)
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import (QFont, QIcon, QAction)
+
+
+def get_ports():
+    # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+    ports = ['COM%s' % (i + 1) for i in range(256)]
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except serial.SerialException:
+            pass
+    return result
 
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.about_act = None
+        self.full_screen_act = None
+        self.ros_enable = None
+        self.quit_act = None
+        self.rx_com_port = None
+        self.tx_com_port = None
         self.initializeUI()
 
     def initializeUI(self):
         """Set up the application's GUI."""
         self.setMinimumSize(300, 150)
-        self.setMaximumSize(640, 150)
         self.setWindowTitle("GUI for PymmWave")
         self.setWindowIcon(QIcon("images/pyqt_logo.png"))
 
-        self.get_ports()
+        get_ports()
         self.setUpMainWindow()
+        self.createActions()
+        self.createMenu()
         self.show()
 
     def setUpMainWindow(self):
@@ -74,18 +96,63 @@ class MainWindow(QMainWindow):
         container.setLayout(main_grid)
         self.setCentralWidget(container)
 
-    def get_ports(self):
-        # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-        ports = ['COM%s' % (i + 1) for i in range(256)]
-        result = []
-        for port in ports:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                result.append(port)
-            except serial.SerialException:
-                pass
-        return result
+    def createActions(self):
+        """Create the application's menu actions."""
+        # Create the actions for File menu
+        self.quit_act = QAction(QIcon("images/exit.png"), "Quit")
+        self.quit_act.setShortcut("Ctrl+Q")
+        self.quit_act.setStatusTip("Quit program")
+        self.quit_act.triggered.connect(self.close)
+
+        # Create the actions for View menu
+        self.full_screen_act = QAction("Full Screen", checkable=True)
+        self.full_screen_act.setStatusTip("Switch to full screen mode.")
+        self.full_screen_act.triggered.connect(self.switchToFullScreen)
+
+        # Create actions for Help menu
+        self.about_act = QAction("About")
+        self.about_act.triggered.connect(self.aboutDialog)
+
+    def createMenu(self):
+        """Create the application's menu bar."""
+        # For Mac
+        self.menuBar().setNativeMenuBar(False)
+
+        # Create File menu and add actions
+        file_menu = self.menuBar().addMenu("File")
+        file_menu.addAction(self.quit_act)
+
+        # Create View menu, Appearance submenu and add actions
+        view_menu = self.menuBar().addMenu("View")
+        appearance_submenu = view_menu.addMenu("Appearance")
+        appearance_submenu.addAction(self.full_screen_act)
+
+        # Create Help menu and add actions
+        help_menu = self.menuBar().addMenu("Help")
+        help_menu.addAction(self.about_act)
+
+    def createToolbar(self):
+        """Create the application's toolbar."""
+        toolbar = QToolBar("Main Toolbar")
+        toolbar.setIconSize(QSize(16, 16))
+        self.addToolBar(toolbar)
+
+        # Add actions to the toolbar
+        toolbar.addAction(self.quit_act)
+
+    def switchToFullScreen(self, state):
+        """If state is True, then display the main window in full screen.
+        Otherwise, return the window to normal."""
+        if state:
+            self.showFullScreen()
+        else:
+            self.showNormal()
+
+    def aboutDialog(self):
+        """Display the About dialog"""
+        QMessageBox.about(self, "About pymmWave GUI",
+                          """<p>This GUI should help you control TI Radars</p>
+                          <p>Created by Oliver Jovanović</p>""")
 
 
 if __name__ == '__main__':
