@@ -1,6 +1,6 @@
-# Improved GUI
+# TODO: add tabs.
 
-"""""This GUI has been created with the help of the following book:
+"""This GUI has been created with the help of the following book:
 Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
 
 # Import necessary modules
