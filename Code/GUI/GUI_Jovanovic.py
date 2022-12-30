@@ -1,11 +1,12 @@
 # Improved GUI
 
-# This GUI has been created with the help of the following book:
-# Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann
+"""""This GUI has been created with the help of the following book:
+Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
 
 # Import necessary modules
 import sys
-from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QComboBox, QGridLayout, QCheckBox, QPushButton)
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QComboBox,
+                             QCheckBox, QPushButton, QGridLayout)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
