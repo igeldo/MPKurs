@@ -5,7 +5,7 @@
 
 # Import necessary modules
 import sys
-from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QComboBox, QGridLayout, QRadioButton, QPushButton)
+from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QComboBox, QGridLayout, QCheckBox, QPushButton)
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
@@ -40,9 +40,10 @@ class MainWindow(QWidget):
         rx_com_port_label.setFont(QFont("Helvetica", 14))
         self.rx_com_port = QComboBox()
 
-        ROS_enable_label = QLabel("Enable ROS?")
-        ROS_enable_label.setFont(QFont("Helvetica", 14))
-        self.ROS_enable = QRadioButton()
+        # ROS check box
+        ros_enable_label = QLabel("Enable ROS?")
+        ros_enable_label.setFont(QFont("Helvetica", 14))
+        self.ros_enable = QCheckBox()
 
         # Connect and Disconnect Buttons
         connect_button = QPushButton("Connect device")
@@ -58,8 +59,8 @@ class MainWindow(QWidget):
         self.main_grid.addWidget(self.tx_com_port, 1, 1)
         self.main_grid.addWidget(rx_com_port_label, 2, 0)
         self.main_grid.addWidget(self.rx_com_port, 2, 1)
-        self.main_grid.addWidget(ROS_enable_label, 3, 0)
-        self.main_grid.addWidget(self.ROS_enable, 3, 1)
+        self.main_grid.addWidget(ros_enable_label, 3, 0)
+        self.main_grid.addWidget(self.ros_enable, 3, 1)
         self.main_grid.addWidget(connect_button, 4, 0)
         self.main_grid.addWidget(disconnect_button, 4, 1)
 
