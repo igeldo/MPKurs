@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
 
         # Connect and Disconnect Button in one
         self.times_pressed = 0
-        self.button = QPushButton("Connect Radar", self)
+        self.button = QPushButton("Connect Radar")
         self.button.setFont(QFont("Helvetica", 12))
         self.button.clicked.connect(self.buttonClicked)
 
