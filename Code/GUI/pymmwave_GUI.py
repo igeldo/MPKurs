@@ -6,8 +6,8 @@ import serial
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QCheckBox, QPushButton, QGridLayout,
-                             QToolBar, QMessageBox)
-from PyQt6.QtCore import Qt, QSize
+                             QMessageBox)
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import (QFont, QIcon, QAction)
 
 
@@ -58,39 +58,45 @@ class MainWindow(QMainWindow):
         header_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Select Ports
-        tx_com_port_label = QLabel("TX COM Port:")
-        tx_com_port_label.setFont(QFont("Helvetica", 12))
+        self.tx_com_port_label = QLabel("TX COM Port:", self)
+        self.tx_com_port_label.setFont(QFont("Helvetica", 12))
         self.tx_com_port = QComboBox()
         self.tx_com_port.addItems(s_ports())
+        self.tx_com_port.activated.connect(self.portsChoose)
 
-        rx_com_port_label = QLabel("RX COM Port:")
-        rx_com_port_label.setFont(QFont("Helvetica", 12))
+        self.rx_com_port_label = QLabel("RX COM Port:", self)
+        self.rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
         self.rx_com_port.addItems(s_ports())
 
         # ROS check box
-        ros_enable_label = QLabel("Enable ROS?")
-        ros_enable_label.setFont(QFont("Helvetica", 12))
-        self.ros_enable = QCheckBox()
+        self.ros_enable_label = QLabel("Enable ROS?")
+        self.ros_enable_label.setFont(QFont("Helvetica", 12))
+        self.ros_enable = QCheckBox(self)
+        self.ros_enable.toggled.connect(self.ROSenabled)
 
-        # Connect and Disconnect Buttons
-        connect_button = QPushButton("Connect Radar")
-        connect_button.setFont(QFont("Helvetica", 12))
+        # Connect and Disconnect Button in one
+        self.times_pressed = 0
+        self.button = QPushButton("Connect Radar", self)
+        self.button.setFont(QFont("Helvetica", 12))
+        self.button.clicked.connect(self.buttonClicked)
 
-        disconnect_button = QPushButton("Disconnect Radar")
-        disconnect_button.setFont(QFont("Helvetica", 12))
+        # Close GUI button
+        self.button_close = QPushButton("Close GUI")
+        self.button_close.setFont(QFont("Helvetica", 12))
+        self.button_close.clicked.connect(self.close)
 
         # Organize the left side widgets into column 0 of the QGridLayout
         main_grid = QGridLayout()
         main_grid.addWidget(header_label, 0, 0)
-        main_grid.addWidget(tx_com_port_label, 1, 0)
+        main_grid.addWidget(self.tx_com_port_label, 1, 0)
         main_grid.addWidget(self.tx_com_port, 1, 1)
-        main_grid.addWidget(rx_com_port_label, 2, 0)
+        main_grid.addWidget(self.rx_com_port_label, 2, 0)
         main_grid.addWidget(self.rx_com_port, 2, 1)
-        main_grid.addWidget(ros_enable_label, 3, 0)
+        main_grid.addWidget(self.ros_enable_label, 3, 0)
         main_grid.addWidget(self.ros_enable, 3, 1)
-        main_grid.addWidget(connect_button, 4, 0)
-        main_grid.addWidget(disconnect_button, 4, 1)
+        main_grid.addWidget(self.button, 4, 0)
+        main_grid.addWidget(self.button_close, 4, 1)
 
         # Set the layout for the main window
         container = QWidget()
@@ -132,14 +138,28 @@ class MainWindow(QMainWindow):
         help_menu = self.menuBar().addMenu("Help")
         help_menu.addAction(self.about_act)
 
-    def createToolbar(self):
-        """Create the application's toolbar."""
-        toolbar = QToolBar("Main Toolbar")
-        toolbar.setIconSize(QSize(16, 16))
-        self.addToolBar(toolbar)
+    def buttonClicked(self):
+        """If button_clicked is uneven, then show 'Connect Radar',
+        otherwise 'Disconnect Radar'"""
+        self.times_pressed += 1
+        if self.times_pressed % 2 == 0:
+            self.button.setText("Connect Radar")
+        else:
+            self.button.setText("Disconnect Radar")
 
-        # Add actions to the toolbar
-        toolbar.addAction(self.quit_act)
+    def portsChoose(self):
+        if self.rx_com_port == 0 and self.tx_com_port == 0:
+            print("Please connect Radar System to your PC.")
+        if self.rx_com_port == self.tx_com_port:
+            print("Please choose different COM Ports for the RX and TX Port.")
+        else:
+            pass
+
+    def ROSenabled(self):
+        if self.sender().isChecked() == True:
+            print("ROS enabled")
+        else:
+            print("ROS is not enabled")
 
     def switchToFullScreen(self, state):
         """If state is True, then display the main window in full screen.
