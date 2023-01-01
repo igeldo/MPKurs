@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
             pass
 
     def ROSenabled(self):
-        if self.sender().isChecked() == True:
+        if self.sender().isChecked():
             print("ROS enabled")
         else:
             print("ROS is not enabled")
