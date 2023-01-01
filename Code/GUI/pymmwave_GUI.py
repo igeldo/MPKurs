@@ -58,20 +58,21 @@ class MainWindow(QMainWindow):
         header_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Select Ports
-        self.tx_com_port_label = QLabel("TX COM Port:", self)
-        self.tx_com_port_label.setFont(QFont("Helvetica", 12))
+        tx_com_port_label = QLabel("TX COM Port:", self)
+        tx_com_port_label.setFont(QFont("Helvetica", 12))
         self.tx_com_port = QComboBox()
         self.tx_com_port.addItems(s_ports())
-        self.tx_com_port.activated.connect(self.portsChoose)
+        self.tx_com_port.activated.connect(self.txPortsChoose)
 
-        self.rx_com_port_label = QLabel("RX COM Port:", self)
-        self.rx_com_port_label.setFont(QFont("Helvetica", 12))
+        rx_com_port_label = QLabel("RX COM Port:", self)
+        rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
         self.rx_com_port.addItems(s_ports())
+        self.rx_com_port.activated.connect(self.rxPortsChoose)
 
         # ROS check box
-        self.ros_enable_label = QLabel("Enable ROS?")
-        self.ros_enable_label.setFont(QFont("Helvetica", 12))
+        ros_enable_label = QLabel("Enable ROS?")
+        ros_enable_label.setFont(QFont("Helvetica", 12))
         self.ros_enable = QCheckBox(self)
         self.ros_enable.toggled.connect(self.ROSenabled)
 
@@ -89,11 +90,11 @@ class MainWindow(QMainWindow):
         # Organize the left side widgets into column 0 of the QGridLayout
         main_grid = QGridLayout()
         main_grid.addWidget(header_label, 0, 0)
-        main_grid.addWidget(self.tx_com_port_label, 1, 0)
+        main_grid.addWidget(tx_com_port_label, 1, 0)
         main_grid.addWidget(self.tx_com_port, 1, 1)
-        main_grid.addWidget(self.rx_com_port_label, 2, 0)
+        main_grid.addWidget(rx_com_port_label, 2, 0)
         main_grid.addWidget(self.rx_com_port, 2, 1)
-        main_grid.addWidget(self.ros_enable_label, 3, 0)
+        main_grid.addWidget(ros_enable_label, 3, 0)
         main_grid.addWidget(self.ros_enable, 3, 1)
         main_grid.addWidget(self.button, 4, 0)
         main_grid.addWidget(self.button_close, 4, 1)
@@ -139,6 +140,7 @@ class MainWindow(QMainWindow):
         help_menu.addAction(self.about_act)
 
     def buttonClicked(self):
+        # TODO: Implement starting pymmWave functionality by clicking it.
         """If button_clicked is uneven, then show 'Connect Radar',
         otherwise 'Disconnect Radar'"""
         self.times_pressed += 1
@@ -147,15 +149,32 @@ class MainWindow(QMainWindow):
         else:
             self.button.setText("Disconnect Radar")
 
-    def portsChoose(self):
-        if self.rx_com_port == 0 and self.tx_com_port == 0:
-            print("Please connect Radar System to your PC.")
-        if self.rx_com_port == self.tx_com_port:
-            print("Please choose different COM Ports for the RX and TX Port.")
+    def rxPortsChoose(self, rx_idx):
+        """Handle the RX COM port choices"""
+        if rx_idx == None:
+            print("No RX COM port available.")
         else:
-            pass
+            print("RX: ", self.rx_com_port, "ID: ", rx_idx)
+        return rx_idx
+
+    def txPortsChoose(self, tx_idx):
+        """Handle the TX COM port choices"""
+        if tx_idx == None:
+            print("No TX COM port available.")
+        else:
+            print("TX: ", self.tx_com_port, "ID: ", tx_idx)
+        return tx_idx
+
+    def comparePorts(self, tx_idx, rx_idx):
+        if tx_idx == rx_idx:
+            print("Please consider two different ports for each signal.")
+        else:
+            print("Everything is fine!")
 
     def ROSenabled(self):
+        # TODO: Implement ROS functionality.
+        """If the CheckBox is enabled, then show that ROS is enabled,
+        otherwise it is not enabled."""
         if self.sender().isChecked():
             print("ROS enabled")
         else:
