@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         if self.sender().isChecked():
             print("ROS enabled")
         else:
-            print("ROS is not enabled")
+            print("ROS disabled")
 
     def switchToFullScreen(self, state):
         """If state is True, then display the main window in full screen.
