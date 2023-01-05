@@ -13,16 +13,18 @@ from PyQt6.QtGui import (QFont, QIcon, QAction)
 
 def s_ports():
     # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-    ports = ['COM%s' % (i + 1) for i in range(256)]
+    ports = ['COM%s' % (i + 1) for i in range(1)]
     result = []
     for port in ports:
         try:
             s = serial.Serial(port)
             s.close()
             result.append(port)
+
         except serial.SerialException:
-            pass
+            result.append('No COM port utilizable.')
     return result
+
 
 # TODO: Add tabs, establish connection with pymmWave-functionality.
 
