@@ -3,7 +3,9 @@ import psycopg2.extras
 import os
 from os.path import isfile, join
 import numpy as np
+import tensorflow as tf
 import tempfile
+import tensorflow_io as tfio
 
 
 class Database:
@@ -144,6 +146,7 @@ class Database:
         try:
             # self.cur.executemany(query, mylist)
             self.cur.execute(select_script, [label_class, label_train_test])
+            print("in try")
 
             for n in range(0, 2):
                 mypic = self.cur.fetchone()
@@ -163,14 +166,33 @@ class Database:
         return img
 
 
+
 if __name__ == '__main__':
+
     db = Database()
     db.get_image_path()
     db.connection()
 
-    db.create_table()
+    # db.create_table()
 
-    db.send_files_to_postgresql()
+    # db.send_files_to_postgresql()
+
+    # error
+    endpoint="postgresql://{}:{}@{}?port={}&dbname={}".format(
+        os.environ['postgres'],
+        os.environ['yay_python'],
+        os.environ['localhost'],
+        os.environ['5432'],
+        os.environ['alz'],
+    )
+
+    print(endpoint)
+
+    dataset = tfio.experimental.IODataset.from_sql(
+        query="SELECT * FROM alz_schema.img_table;", endpoint=endpoint)
+
+    print(dataset.element_spec)
+
 
     """
     # load data to database
@@ -191,7 +213,7 @@ if __name__ == '__main__':
     db.send_files_to_postgresql(train_data_3, "moderate", "train")
     """
 
-    # files = db.get_files_from_postgresql("verymild", "train")
+    # files = db.get_files_from_postgresql(0, "train")
     # print(files)
 
     print("finished")
