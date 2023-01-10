@@ -146,6 +146,10 @@ class MainWindow(QMainWindow):
         otherwise 'Disconnect Radar'"""
         self.times_pressed += 1
         if self.times_pressed % 2 == 0:
+            if serial.is_open(s_ports()):
+                serial.close(s_ports())
+            else:
+                serial.open(s_ports())
             self.button.setText("Connect Radar")
         else:
             # Changing the current working directory
@@ -155,6 +159,7 @@ class MainWindow(QMainWindow):
                 os.system('python pymmw.py -c', self.rx_com_port, '-d', self.tx_com_port)
                 self.button.setText("Disconnect Radar")
             except:
+                self.times_pressed -= 1
                 print("No COM ports available.")
 
 
