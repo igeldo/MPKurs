@@ -2,6 +2,7 @@
 Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
 
 # Import necessary modules
+import os
 import serial
 import sys
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
@@ -20,13 +21,10 @@ def s_ports():
             s = serial.Serial(port)
             s.close()
             result.append(port)
-
         except serial.SerialException:
             result.append('No COM port utilizable.')
+            # TODO: Unable connect button.
     return result
-
-
-# TODO: Add tabs, establish connection with pymmWave-functionality.
 
 
 class MainWindow(QMainWindow):
@@ -142,15 +140,25 @@ class MainWindow(QMainWindow):
         help_menu.addAction(self.about_act)
 
     def buttonClicked(self):
-        # TODO: Implement starting pymmWave functionality by clicking it.
+        # Done: Implement starting pymmWave functionality by clicking it.
+        # TODO: The com_ports have to be choosable!
         """If button_clicked is uneven, then show 'Connect Radar',
         otherwise 'Disconnect Radar'"""
         self.times_pressed += 1
         if self.times_pressed % 2 == 0:
             self.button.setText("Connect Radar")
         else:
-            self.button.setText("Disconnect Radar")
+            # Changing the current working directory
+            try:
+                os.chdir(r'C:\Users\Olive\PycharmProjects\MPKurs\Code\pymmw-master\source')
+                #TODO: COM port has to be a "real" COM port.
+                os.system('python pymmw.py -c', self.rx_com_port, '-d', self.tx_com_port)
+                self.button.setText("Disconnect Radar")
+            except:
+                print("No COM ports available.")
 
+
+#TODO: TX and RX ports have to be choosable and mapped to the COM port.
     def rxPortsChoose(self, rx_idx):
         """Handle the RX COM port choices"""
         if rx_idx == None:
