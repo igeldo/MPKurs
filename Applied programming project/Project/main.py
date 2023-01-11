@@ -13,15 +13,16 @@ data = data.data
 new_data = FeatureSelection()
 new_data = new_data.new_data_frame(data)
 
-r = Resample()
-new_data = r.resample(new_data)
-
 k = TestTrain()
 [X, y] = k.define_target_features(new_data)
 [X_train, X_test, y_train, y_test] = k.define_train_test(X, y)
 
+r = Resample()
+[X_over, y_over] = r.upsampling_smote(X, y)
+[over_X_train, over_X_test, over_y_train, over_y_test] = k.upsampling_Smote_over(X_over, y_over)
+
 rf = RandomForest()
-rf_model = rf.random_forest(X_train, y_train)
+rf_model = rf.random_forest(over_X_train, over_y_train)
 
 
 def question():
@@ -63,7 +64,6 @@ def question():
         print("The patient has a CHD-risk.")
     if chd_prediction == 0:
         print("The patient has no CHD-risk.")
-
 
 
 question()

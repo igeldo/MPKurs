@@ -3,7 +3,7 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
 
-# Klasse wählt die besten Feature für das supervised learning mittels des Random Forest aus.
+# Klasse wählt die besten Features für das supervised learning mittels des Random Forest aus.
 
 
 class FeatureSelection:
