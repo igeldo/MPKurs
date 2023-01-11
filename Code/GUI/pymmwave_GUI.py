@@ -102,6 +102,11 @@ class MainWindow(QMainWindow):
         self.quit_act.setStatusTip("Quit program")
         self.quit_act.triggered.connect(self.close)
 
+        self.read_act = QAction("Read")
+        self.read_act.setShortcut("Ctrl+R")
+        self.read_act.setStatusTip("Read COM Ports in.")
+        self.read_act.triggered.connect(self.read_ports)
+
         # Create actions for Help menu
         self.about_act = QAction("About")
         self.about_act.triggered.connect(self.aboutDialog)
@@ -114,6 +119,7 @@ class MainWindow(QMainWindow):
         # Create File menu and add actions
         file_menu = self.menuBar().addMenu("File")
         file_menu.addAction(self.quit_act)
+        file_menu.addAction(self.read_act)
 
         # Create Help menu and add actions
         help_menu = self.menuBar().addMenu("Help")
@@ -174,6 +180,18 @@ class MainWindow(QMainWindow):
                           """<p>This GUI should help you control TI Radars</p>
                           <p>Created by Oliver Jovanović</p>""")
 
+    def read_ports(self):
+        # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+        result = []
+        for port in ports:
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+            except serial.SerialException:
+                result.append('No COM port utilizable.')
+        return result
 
 if __name__ == '__main__':
     # print(s_ports()) # For testing purposes.
