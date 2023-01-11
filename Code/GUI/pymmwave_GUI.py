@@ -105,7 +105,8 @@ class MainWindow(QMainWindow):
         self.read_act = QAction("Read")
         self.read_act.setShortcut("Ctrl+R")
         self.read_act.setStatusTip("Read COM Ports in.")
-        self.read_act.triggered.connect(self.read_ports)
+        self.read_act.triggered.connect(self.update_ports)
+        self.numbers_clicked = 0
 
         # Create actions for Help menu
         self.about_act = QAction("About")
@@ -180,9 +181,10 @@ class MainWindow(QMainWindow):
                           """<p>This GUI should help you control TI Radars</p>
                           <p>Created by Oliver Jovanović</p>""")
 
-    def read_ports(self):
+    # Has no impact!
+    def update_ports(self):
         # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-        ports = ['COM%s' % (i + 1) for i in range(256)]
+        ports = ['COM%s' % (i + 1) for i in range(2)]
         result = []
         for port in ports:
             try:
@@ -190,7 +192,7 @@ class MainWindow(QMainWindow):
                 s.close()
                 result.append(port)
             except serial.SerialException:
-                result.append('No COM port utilizable.')
+                result.append('Still no COM port utilizable.')
         return result
 
 if __name__ == '__main__':
