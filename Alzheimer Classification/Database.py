@@ -179,62 +179,25 @@ if __name__ == '__main__':
 
     # error
     try:
-        %env TFIO_DEMO_DATABASE_NAME = alz
-        %env TFIO_DEMO_DATABASE_HOST = localhost
-        %env TFIO_DEMO_DATABASE_PORT = 5432
-        %env TFIO_DEMO_DATABASE_USER = postgres
-        %env TFIO_DEMO_DATABASE_PASS = yay_python
-
-        env: TFIO_DEMO_DATABASE_NAME = alz
-        env: TFIO_DEMO_DATABASE_HOST = localhost
-        env: TFIO_DEMO_DATABASE_PORT = 5432
-        env: TFIO_DEMO_DATABASE_USER = postgres
-        env: TFIO_DEMO_DATABASE_PASS = yay_python
 
         print("I was here")
-        # endpoint = "postgresql://{}:{}@{}?port={}&dbname={}".format(
-        #     os.environ['postgres'],
-        #     os.environ['yay_python'],
-        #     os.environ['localhost'],
-        #     os.environ['5432'],
-        #     os.environ['alz'],
-        # )
-        endpoint = "postgresql://{}:{}@{}?port={}&dbname={}".format(
-            os.environ['TFIO_DEMO_DATABASE_USER'],
-            os.environ['TFIO_DEMO_DATABASE_PASS'],
-            os.environ['TFIO_DEMO_DATABASE_HOST'],
-            os.environ['TFIO_DEMO_DATABASE_PORT'],
-            os.environ['TFIO_DEMO_DATABASE_NAME'],
-        )
+
         #endpoint = "jdbc:postgresql://localhost:5432/postgres"
-        #endpoint = "postgresql://{postgresql}:{yay_python}@{localhost}?port={5432}&dbname={alz}"
+        endpoint = "postgresql://postgres:yay_python@localhost?port=5432&dbname=alz"
         print(endpoint)
 
+        query = """SELECT * FROM alz_schema.img_table"""
+        # query = """SELECT * from alz_schema.img_table where label_class = 1 and label_train_test = train"""
+
         dataset = tfio.experimental.IODataset.from_sql(
-            query="SELECT * FROM alz_schema.img_table;", endpoint=endpoint)
+            query=query, endpoint=endpoint)
+
+        print("dataset exists")
 
         print(dataset.element_spec)
     except KeyError as err:
         print("Key Error\nError message:\t",err)
 
-    """
-    # load data to database
-    mypath = db.path + db.train_folders["non"]
-    train_data_0 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
-    db.send_files_to_postgresql(train_data_0, "non", "train")
-
-    mypath = db.path + db.train_folders["verymild"]
-    train_data_1 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
-    db.send_files_to_postgresql(train_data_1, "verymild", "train")
-
-    mypath = db.path + db.train_folders["mild"]
-    train_data_2 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
-    db.send_files_to_postgresql(train_data_2, "mild", "train")
-
-    mypath = db.path + db.train_folders["moderate"]
-    train_data_3 = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
-    db.send_files_to_postgresql(train_data_3, "moderate", "train")
-    """
 
     # files = db.get_files_from_postgresql(0, "train")
     # print(files)
