@@ -178,21 +178,44 @@ if __name__ == '__main__':
     # db.send_files_to_postgresql()
 
     # error
-    endpoint="postgresql://{}:{}@{}?port={}&dbname={}".format(
-        os.environ['postgres'],
-        os.environ['yay_python'],
-        os.environ['localhost'],
-        os.environ['5432'],
-        os.environ['alz'],
-    )
+    try:
+        %env TFIO_DEMO_DATABASE_NAME = alz
+        %env TFIO_DEMO_DATABASE_HOST = localhost
+        %env TFIO_DEMO_DATABASE_PORT = 5432
+        %env TFIO_DEMO_DATABASE_USER = postgres
+        %env TFIO_DEMO_DATABASE_PASS = yay_python
 
-    print(endpoint)
+        env: TFIO_DEMO_DATABASE_NAME = alz
+        env: TFIO_DEMO_DATABASE_HOST = localhost
+        env: TFIO_DEMO_DATABASE_PORT = 5432
+        env: TFIO_DEMO_DATABASE_USER = postgres
+        env: TFIO_DEMO_DATABASE_PASS = yay_python
 
-    dataset = tfio.experimental.IODataset.from_sql(
-        query="SELECT * FROM alz_schema.img_table;", endpoint=endpoint)
+        print("I was here")
+        # endpoint = "postgresql://{}:{}@{}?port={}&dbname={}".format(
+        #     os.environ['postgres'],
+        #     os.environ['yay_python'],
+        #     os.environ['localhost'],
+        #     os.environ['5432'],
+        #     os.environ['alz'],
+        # )
+        endpoint = "postgresql://{}:{}@{}?port={}&dbname={}".format(
+            os.environ['TFIO_DEMO_DATABASE_USER'],
+            os.environ['TFIO_DEMO_DATABASE_PASS'],
+            os.environ['TFIO_DEMO_DATABASE_HOST'],
+            os.environ['TFIO_DEMO_DATABASE_PORT'],
+            os.environ['TFIO_DEMO_DATABASE_NAME'],
+        )
+        #endpoint = "jdbc:postgresql://localhost:5432/postgres"
+        #endpoint = "postgresql://{postgresql}:{yay_python}@{localhost}?port={5432}&dbname={alz}"
+        print(endpoint)
 
-    print(dataset.element_spec)
+        dataset = tfio.experimental.IODataset.from_sql(
+            query="SELECT * FROM alz_schema.img_table;", endpoint=endpoint)
 
+        print(dataset.element_spec)
+    except KeyError as err:
+        print("Key Error\nError message:\t",err)
 
     """
     # load data to database
