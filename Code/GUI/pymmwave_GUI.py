@@ -187,7 +187,7 @@ class MainWindow(QMainWindow):
             print("Everything is fine!")
 
     def ROSenabled(self):
-        # TODO: Implement ROS functionality.
+        # ROS functionality not necessary for applied coding project 1 anymore.
         """If the CheckBox is enabled, then show that ROS is enabled,
         otherwise it is not enabled."""
         if self.sender().isChecked():
