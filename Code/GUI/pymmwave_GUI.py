@@ -1,6 +1,6 @@
 """This GUI has been created with the help of the following book:
 Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
-
+# TODO: Refactor in MVC-pattern!
 # Import necessary modules
 import os
 import serial
