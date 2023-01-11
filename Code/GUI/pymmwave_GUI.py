@@ -22,7 +22,6 @@ def s_ports():
             result.append(port)
         except serial.SerialException:
             result.append('No COM port utilizable.')
-            # TODO: Unable connect button.
     return result
 
 
@@ -87,8 +86,6 @@ class MainWindow(QMainWindow):
         main_grid.addWidget(self.tx_com_port, 1, 1)
         main_grid.addWidget(rx_com_port_label, 2, 0)
         main_grid.addWidget(self.rx_com_port, 2, 1)
-        #main_grid.addWidget(ros_enable_label, 3, 0)
-        #main_grid.addWidget(self.ros_enable, 3, 1)
         main_grid.addWidget(self.button, 4, 0)
         main_grid.addWidget(self.button_close, 4, 1)
 
@@ -143,7 +140,9 @@ class MainWindow(QMainWindow):
                 self.button.setText("Disconnect Radar")
             except:
                 self.times_pressed -= 1
+                self.button.setDisabled(True)
                 print("No COM ports available.")
+
 
 
 #TODO: TX and RX ports have to be choosable and mapped to the COM port.
