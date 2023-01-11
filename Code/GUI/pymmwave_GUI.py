@@ -70,11 +70,12 @@ class MainWindow(QMainWindow):
         self.rx_com_port.addItems(s_ports())
         self.rx_com_port.activated.connect(self.rxPortsChoose)
 
+        # Not necessary anymore.
         # ROS check box
-        ros_enable_label = QLabel("Enable ROS?")
-        ros_enable_label.setFont(QFont("Helvetica", 12))
-        self.ros_enable = QCheckBox(self)
-        self.ros_enable.toggled.connect(self.ROSenabled)
+        #ros_enable_label = QLabel("Enable ROS?")
+        #ros_enable_label.setFont(QFont("Helvetica", 12))
+        #self.ros_enable = QCheckBox(self)
+        #self.ros_enable.toggled.connect(self.ROSenabled)
 
         # Connect and Disconnect Button in one
         self.times_pressed = 0
@@ -94,8 +95,8 @@ class MainWindow(QMainWindow):
         main_grid.addWidget(self.tx_com_port, 1, 1)
         main_grid.addWidget(rx_com_port_label, 2, 0)
         main_grid.addWidget(self.rx_com_port, 2, 1)
-        main_grid.addWidget(ros_enable_label, 3, 0)
-        main_grid.addWidget(self.ros_enable, 3, 1)
+        #main_grid.addWidget(ros_enable_label, 3, 0)
+        #main_grid.addWidget(self.ros_enable, 3, 1)
         main_grid.addWidget(self.button, 4, 0)
         main_grid.addWidget(self.button_close, 4, 1)
 
@@ -112,10 +113,11 @@ class MainWindow(QMainWindow):
         self.quit_act.setStatusTip("Quit program")
         self.quit_act.triggered.connect(self.close)
 
+        # Not necessary
         # Create the actions for View menu
-        self.full_screen_act = QAction("Full Screen", checkable=True)
-        self.full_screen_act.setStatusTip("Switch to full screen mode.")
-        self.full_screen_act.triggered.connect(self.switchToFullScreen)
+        #self.full_screen_act = QAction("Full Screen", checkable=True)
+        #self.full_screen_act.setStatusTip("Switch to full screen mode.")
+        #self.full_screen_act.triggered.connect(self.switchToFullScreen)
 
         # Create actions for Help menu
         self.about_act = QAction("About")
@@ -130,10 +132,11 @@ class MainWindow(QMainWindow):
         file_menu = self.menuBar().addMenu("File")
         file_menu.addAction(self.quit_act)
 
+        # Not necessary
         # Create View menu, Appearance submenu and add actions
-        view_menu = self.menuBar().addMenu("View")
-        appearance_submenu = view_menu.addMenu("Appearance")
-        appearance_submenu.addAction(self.full_screen_act)
+        #view_menu = self.menuBar().addMenu("View")
+        #appearance_submenu = view_menu.addMenu("Appearance")
+        #appearance_submenu.addAction(self.full_screen_act)
 
         # Create Help menu and add actions
         help_menu = self.menuBar().addMenu("Help")
@@ -141,7 +144,7 @@ class MainWindow(QMainWindow):
 
     def buttonClicked(self):
         # Done: Implement starting pymmWave functionality by clicking it.
-        # TODO: The com_ports have to be choosable!
+        # TODO: The COM ports have to be choosable!
         """If button_clicked is uneven, then show 'Connect Radar',
         otherwise 'Disconnect Radar'"""
         self.times_pressed += 1
@@ -186,22 +189,24 @@ class MainWindow(QMainWindow):
         else:
             print("Everything is fine!")
 
-    def ROSenabled(self):
-        # ROS functionality not necessary for applied coding project 1 anymore.
-        """If the CheckBox is enabled, then show that ROS is enabled,
-        otherwise it is not enabled."""
-        if self.sender().isChecked():
-            print("ROS enabled")
-        else:
-            print("ROS disabled")
+    # Not necessary anymore.
+    #def ROSenabled(self):
+    #    # ROS functionality not necessary for applied coding project 1 anymore.
+    #    """If the CheckBox is enabled, then show that ROS is enabled,
+    #    otherwise it is not enabled."""
+    #    if self.sender().isChecked():
+    #        print("ROS enabled")
+    #    else:
+    #        print("ROS disabled")
 
-    def switchToFullScreen(self, state):
-        """If state is True, then display the main window in full screen.
-        Otherwise, return the window to normal."""
-        if state:
-            self.showFullScreen()
-        else:
-            self.showNormal()
+    # Not necessary anymore.
+    #def switchToFullScreen(self, state):
+    #    """If state is True, then display the main window in full screen.
+    #    Otherwise, return the window to normal."""
+    #    if state:
+    #        self.showFullScreen()
+    #    else:
+    #        self.showNormal()
 
     def aboutDialog(self):
         """Display the About dialog"""
