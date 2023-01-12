@@ -9,22 +9,22 @@ class Vec3d:
 
     def __add__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.x + other.x, self.y + other.y, self.z + other.z)
+            return Vec3d(self.__x + other.__x, self.__y + other.__y, self.__z + other.__z)
 
     def __sub__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.x - other.x, self.y - other.y, self.z - other.z)
+            return Vec3d(self.__x - other.__x, self.__y - other.__y, self.__z - other.__z)
 
     def __mul__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.x * other.x + self.y * other.y + self.z * other.z)
+            return Vec3d(self.__x * other.__x + self.__y * other.__y + self.__z * other.__z)
         elif isinstance(other, (float, int)):
-            return Vec3d(self.x * other, self.y * other, self.z * other)
+            return Vec3d(self.__x * other, self.__y * other, self.__z * other)
     def __abs__(self):
-        return math.sqrt(self.x**2+self.y**2+self.z**2)
+        return math.sqrt(self.__x**2+self.__y**2+self.__z**2)
 
     def __repr__(self):
-        return "({},{},{})".format(self.x, self.y, self.z)
+        return "({},{},{})".format(self.__x, self.__y, self.__z)
 
     def x(self):
         return self.__x
