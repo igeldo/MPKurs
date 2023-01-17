@@ -2,6 +2,7 @@ import os
 import numpy as np
 from vector import Vec3d
 
+COSZERO = (1-1E-12)
 
 class PhotonPack(Vec3d):
     """
@@ -109,19 +110,17 @@ class Medium:
 
 class Glas(Medium):
 
-
-    #def hop(self):
+    #def _hop(self, photonPack):
         # """
-        # def inGlass(self, photonPack):
-        #     if (photonPack.__dvec.z == 0):  # 3rd dimension is uz
-        #         photonPack.__dead = 1
-        #     else:
-        #         StepSize.inGlass()
-        #         self.hop(photonPack)
+    #     if (photonPack.__dvec.z == 0):  # 3rd dimension is uz
+    #         photonPack.__dead = 1
+    #     else:
+    #         StepSize.inGlass()
+    #         self.hop(photonPack)
         # """
 
     def stepSize(self, photonPack, layer):
-        if(photonPack._dvec.z > 0.0): # TODO z falsch?
+        if(photonPack._dvec.z() > 0.0): # TODO z falsch?
             stepsToBoundry = (layer.z1)
 
 
@@ -145,6 +144,40 @@ absorption coefficient µa and the scattering coefficient µs"
     def _absorption(self, photonPack):
         dw = photonPack._w * self.mua / (self.mua + self.mus)
         photonPack._w = dw
+
+    def _scatter(self, photonPack):
+        # calculate random direction for polar angle theta
+        if (self.g==0):
+            cos_t = 2*np.random.uniform() - 1
+            # 2*rand-1 because value should be between [-1,1]
+        else:
+            temp = (1-self.g*self.g) / (1-self.g+2*np.random.uniform())
+            cos_t = (1+self.g*self.g - temp*temp) / (2*self.g)
+            if (cos_t < -1):
+                cos_t = -1
+            elif (cos_t > 1):
+                cos_t = 1
+        sin_t = np.sqrt(1 - cos_t*cos_t)
+
+        # calculate random direction of azimuthal angle phi
+        phi = 2*np.pi*np.random.uniform()
+        cos_p = np.cos(phi)
+        sin_p = np.sin(phi)
+
+        # calculate new direction vector
+        ux = photonPack._dvec.x()
+        uy = photonPack._dvec.y()
+        uz = photonPack._dvec.z()
+
+        if (np.abs(uz) > COSZERO): # todo: z evtl ohne klammern
+            photonPack._dvec.__x = sin_t*cos_p
+            photonPack._dvec.__y = sin_t*sin_p
+            photonPack._dvec.__z = cos_t*np.sign(uz)
+        else:
+            temp = np.sqrt(1 - uz*uz)
+            photonPack._dvec.__x = (sin_t*(ux*uz*cos_p - uy*sin_p) / temp) + ux*cos_t
+            photonPack._dvec.__y = (sin_t*(uy*uz*cos_p + ux*sin_p) / temp) + uy*cos_t
+            photonPack._dvec.__z = -sin_t*cos_p*temp + uz*cos_t
 
 
 # class Luft(Medium):

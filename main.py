@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     # define params
     photon1 = PhotonPack(stepSize=1, w=100)
-    layer1 = Tissue(z0=0, z1=1000, mua=1, mus=1, g=0, cos_crit0=0,cos_crit1=0)
+    layer1 = Tissue(z0=0, z1=1000, mua=1, mus=100, g=0.9, cos_crit0=0,cos_crit1=0)
 
     # create output
     if not os.path.exists(os.path.join(OUTPATH)):
@@ -24,6 +24,7 @@ if __name__ == '__main__':
     for i in range(0, 100):
         layer1._hop(photon1)
         layer1._absorption(photon1)
+        layer1._scatter(photon1)
         writer.writerow(photon1.__repr__())
         #print(photon1)
 
