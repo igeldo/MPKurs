@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
 
+# TODO: Import following functionality from pymmwave_GUI.py: aboutDialog(), update_ports(), conncect_radar()
 
 class MainWindow(QMainWindow):
 
@@ -127,7 +128,8 @@ class Controller:
     def buttonClicked(self):
         """Handle the button clicked event."""
         self.times_pressed += 1
-        if self.times_pressed % 2 == 0:
+        if self.times_pressed % 2 != 0:
+
             self.view.button.setText("Disconnect Radar")
             # Perform connect logic here
         else:
