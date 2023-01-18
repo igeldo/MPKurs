@@ -143,7 +143,7 @@ absorption coefficient µa and the scattering coefficient µs"
 
     def absorption(self, photonPack):
         dw = photonPack._w * self.mua / (self.mua + self.mus)
-        photonPack._w = dw
+        photonPack._w -= dw
 
     def scatter(self, photonPack):
         # calculate random direction for polar angle theta
