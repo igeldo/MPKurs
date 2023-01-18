@@ -3,14 +3,14 @@ Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M W
 # TODO: Refactor in MVC-pattern!
 # Import necessary modules
 
-from serial.tools import list_ports
 import os
-import serial
 import sys
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
-                             QComboBox, QPushButton, QGridLayout, QMessageBox)
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import (QFont, QIcon, QAction)
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
+                             QComboBox, QPushButton, QGridLayout, QMessageBox, QAction)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import (QFont, QIcon)
+from serial.tools import list_ports
+import serial
 
 
 def s_ports():
@@ -21,10 +21,6 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.about_act = None
-        self.full_screen_act = None
-        self.ros_enable = None
-        self.quit_act = None
         self.rx_com_port = None
         self.tx_com_port = None
         self.initializeUI()
@@ -59,7 +55,7 @@ class MainWindow(QMainWindow):
         rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
         self.rx_com_port.addItems(s_ports())
-        self.rx_com_port.activated.connect(self.rxPortsChoose)
+        self.rx_com_port.activated.connect(self.txPortsChoose)
 
         # Connect and Disconnect Button in one
         self.times_pressed = 0
@@ -183,8 +179,9 @@ class MainWindow(QMainWindow):
         self.rx_com_port.clear()
         self.rx_com_port.addItems(s_ports())
 
+
 if __name__ == '__main__':
     # print(s_ports()) # For testing purposes.
     app = QApplication(sys.argv)
     window = MainWindow()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
