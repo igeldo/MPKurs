@@ -1,3 +1,4 @@
+# Import necessary modules
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QPushButton, QGridLayout, QMessageBox, QAction)
@@ -6,6 +7,7 @@ from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
 
 # TODO: Import following functionality from pymmwave_GUI.py: aboutDialog(), update_ports(), conncect_radar()
+
 
 class MainWindow(QMainWindow):
 
