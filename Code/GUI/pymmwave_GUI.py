@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         self.rx_com_port = None
         self.tx_com_port = None
         self.initializeUI()
+        # Check if ports are the same
         self.check_ports()
 
     def initializeUI(self):
@@ -138,6 +139,7 @@ class MainWindow(QMainWindow):
                 print("No COM ports available.")
 
     def check_ports(self):
+        """Check if ports are not empty, if they are empty make them not choosable."""
         available_ports = s_ports()
         if not available_ports:
             self.button.setEnabled(False)
@@ -148,18 +150,22 @@ class MainWindow(QMainWindow):
         self.rx_com_port.setEnabled(True)
         tx_port = self.tx_com_port.currentText()
         rx_port = self.rx_com_port.currentText()
+        """Check if ports are the same, if true, then disable the connect button!"""
         if tx_port == rx_port:
             self.button.setEnabled(False)
         else:
             self.button.setEnabled(True)
 
     def rxPortsChoose(self):
+        """Check if rx port is the same as tx port"""
         self.check_ports()
 
     def txPortsChoose(self):
+        """Check if tx port is the same as rx port"""
         self.check_ports()
 
     def connect_radar(self, tx_port, rx_port):
+        """Set connection parameters for tx and rx."""
         try:
             self.ser_tx = serial.Serial(tx_port, 115200)
             self.ser_rx = serial.Serial(rx_port, 921600)
@@ -174,10 +180,12 @@ class MainWindow(QMainWindow):
 
     # Has no impact!
     def update_ports(self):
+        """Update the tx and rx port while clicking on the update-button"""
         self.tx_com_port.clear()
         self.tx_com_port.addItems(s_ports())
         self.rx_com_port.clear()
         self.rx_com_port.addItems(s_ports())
+        self.check_ports()
 
 
 if __name__ == '__main__':
