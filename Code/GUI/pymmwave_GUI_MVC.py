@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
 
-# TODO: Import following functionality from pymmwave_GUI.py: aboutDialog(), update_ports(), conncect_radar()
+# TODO: Import following functionality from pymmwave_GUI.py: aboutDialog(), update_ports(), connect_radar()
 
 
 class MainWindow(QMainWindow):
@@ -56,7 +56,8 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Prompt the user to confirm that they want to close the application."""
-        result = QMessageBox.question(self, "Confirm Exit", "Are you sure you want to exit?", QMessageBox.Yes | QMessageBox.No)
+        result = QMessageBox.question(self, "Confirm Exit", "Are you sure you want to exit?", QMessageBox.Yes |
+                                      QMessageBox.No)
         event.accept() if result == QMessageBox.Yes else event.ignore()
 
 
