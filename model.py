@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from vector import Vec3d
 
@@ -12,7 +11,7 @@ class PhotonPack:
 
     Attributes
     ----------
-        __x,__y,__z :
+        _x,_y,_z :
             coordinates in [mm]
         __ux,__uy,__uz :
             directional cosines of the PhotonPack
@@ -170,14 +169,14 @@ absorption coefficient µa and the scattering coefficient µs"
         uz = photonPack._dvec.z()
 
         if (np.abs(uz) > COSZERO): # todo: z evtl ohne klammern
-            photonPack._dvec.__x = sin_t*cos_p
-            photonPack._dvec.__y = sin_t*sin_p
-            photonPack._dvec.__z = cos_t*np.sign(uz)
+            photonPack._dvec._x = sin_t * cos_p
+            photonPack._dvec._y = sin_t * sin_p
+            photonPack._dvec._z = cos_t * np.sign(uz)
         else:
             temp = np.sqrt(1 - uz*uz)
-            photonPack._dvec.__x = (sin_t*(ux*uz*cos_p - uy*sin_p) / temp) + ux*cos_t
-            photonPack._dvec.__y = (sin_t*(uy*uz*cos_p + ux*sin_p) / temp) + uy*cos_t
-            photonPack._dvec.__z = -sin_t*cos_p*temp + uz*cos_t
+            photonPack._dvec._x = (sin_t * (ux * uz * cos_p - uy * sin_p) / temp) + ux * cos_t
+            photonPack._dvec._y = (sin_t * (uy * uz * cos_p + ux * sin_p) / temp) + uy * cos_t
+            photonPack._dvec._z = -sin_t * cos_p * temp + uz * cos_t
 
 
 # class Luft(Medium):

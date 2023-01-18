@@ -22,9 +22,9 @@ if __name__ == '__main__':
     # start sim
     print(photon1.__repr__()) # TODO: check repr
     for i in range(0, 100):
-        layer1._hop(photon1)
-        layer1._absorption(photon1)
-        layer1._scatter(photon1)
+        layer1.hop(photon1)
+        layer1.absorption(photon1)
+        layer1.scatter(photon1)
         writer.writerow(photon1.__repr__())
         #print(photon1)
 

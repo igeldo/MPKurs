@@ -3,34 +3,34 @@ import math
 
 class Vec3d:
     def __init__(self, x=0, y=0, z=0):
-        self.__x = x
-        self.__y = y
-        self.__z = z
+        self._x = x
+        self._y = y
+        self._z = z
 
     def __add__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.__x + other.__x, self.__y + other.__y, self.__z + other.__z)
+            return Vec3d(self._x + other._x, self._y + other._y, self._z + other._z)
 
     def __sub__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.__x - other.__x, self.__y - other.__y, self.__z - other.__z)
+            return Vec3d(self._x - other._x, self._y - other._y, self._z - other._z)
 
     def __mul__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self.__x * other.__x + self.__y * other.__y + self.__z * other.__z)
+            return Vec3d(self._x * other._x + self._y * other._y + self._z * other._z)
         elif isinstance(other, (float, int)):
-            return Vec3d(self.__x * other, self.__y * other, self.__z * other)
+            return Vec3d(self._x * other, self._y * other, self._z * other)
     def __abs__(self):
-        return math.sqrt(self.__x**2+self.__y**2+self.__z**2)
+        return math.sqrt(self._x ** 2 + self._y ** 2 + self._z ** 2)
 
     def __repr__(self):
-        return "({},{},{})".format(self.__x, self.__y, self.__z)
+        return "({},{},{})".format(self._x, self._y, self._z)
 
     def x(self):
-        return self.__x
+        return self._x
 
     def y(self):
-        return self.__y
+        return self._y
 
     def z(self):
-        return self.__z
+        return self._z
