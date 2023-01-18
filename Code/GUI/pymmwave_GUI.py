@@ -2,6 +2,8 @@
 Beginning PyQt - A Hands-on Approach to GUI Programming with PyQt6 by Joshua M Willmann"""
 # TODO: Refactor in MVC-pattern!
 # Import necessary modules
+
+from serial.tools import list_ports
 import os
 import serial
 import sys
@@ -12,17 +14,7 @@ from PyQt6.QtGui import (QFont, QIcon, QAction)
 
 
 def s_ports():
-    # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-    ports = ['COM%s' % (i + 1) for i in range(1)]
-    result = []
-    for port in ports:
-        try:
-            s = serial.Serial(port)
-            s.close()
-            result.append(port)
-        except serial.SerialException:
-            result.append('No COM port utilizable.')
-    return result
+    return [port.device for port in list_ports.comports()]
 
 
 class MainWindow(QMainWindow):
@@ -36,6 +28,7 @@ class MainWindow(QMainWindow):
         self.rx_com_port = None
         self.tx_com_port = None
         self.initializeUI()
+        self.check_ports()
 
     def initializeUI(self):
         """Set up the application's GUI."""
@@ -128,52 +121,54 @@ class MainWindow(QMainWindow):
 
     def buttonClicked(self):
         # Done: Implement starting pymmWave functionality by clicking it.
-        # TODO: The COM ports have to be choosable!
         """If button_clicked is uneven, then show 'Connect Radar',
         otherwise 'Disconnect Radar'"""
         self.times_pressed += 1
-        if self.times_pressed % 2 == 0:
-            if serial.is_open(s_ports()):
-                serial.close(s_ports())
-            else:
-                serial.open(s_ports())
-            self.button.setText("Connect Radar")
+        if self.times_pressed % 2 != 0:
+            self.update_ports()
+            self.button.setText("Disconnect")
         else:
             # Changing the current working directory
             try:
+                tx_port = self.tx_com_port.currentText()
+                rx_port = self.rx_com_port.currentText()
+                self.connect_radar(tx_port, rx_port)
                 os.chdir(r'C:\Users\Olive\PycharmProjects\MPKurs\Code\pymmw-master\source')
-                #TODO: COM port has to be a "real" COM port.
-                os.system('python pymmw.py -c', self.rx_com_port, '-d', self.tx_com_port)
+                os.system('python pymmw.py -c', rx_port, '-d', tx_port)
                 self.button.setText("Disconnect Radar")
             except:
                 self.times_pressed -= 1
                 self.button.setDisabled(True)
                 print("No COM ports available.")
 
-
-
-#TODO: TX and RX ports have to be choosable and mapped to the COM port.
-    def rxPortsChoose(self, rx_idx):
-        """Handle the RX COM port choices"""
-        if rx_idx == None:
-            print("No RX COM port available.")
+    def check_ports(self):
+        available_ports = s_ports()
+        if not available_ports:
+            self.button.setEnabled(False)
+            self.tx_com_port.setEnabled(False)
+            self.rx_com_port.setEnabled(False)
+            return
+        self.tx_com_port.setEnabled(True)
+        self.rx_com_port.setEnabled(True)
+        tx_port = self.tx_com_port.currentText()
+        rx_port = self.rx_com_port.currentText()
+        if tx_port == rx_port:
+            self.button.setEnabled(False)
         else:
-            print("RX: ", self.rx_com_port, "ID: ", rx_idx)
-        return rx_idx
+            self.button.setEnabled(True)
 
-    def txPortsChoose(self, tx_idx):
-        """Handle the TX COM port choices"""
-        if tx_idx == None:
-            print("No TX COM port available.")
-        else:
-            print("TX: ", self.tx_com_port, "ID: ", tx_idx)
-        return tx_idx
+    def rxPortsChoose(self):
+        self.check_ports()
 
-    def comparePorts(self, tx_idx, rx_idx):
-        if tx_idx == rx_idx:
-            print("Please consider two different ports for each signal.")
-        else:
-            print("Everything is fine!")
+    def txPortsChoose(self):
+        self.check_ports()
+
+    def connect_radar(self, tx_port, rx_port):
+        try:
+            self.ser_tx = serial.Serial(tx_port, 115200)
+            self.ser_rx = serial.Serial(rx_port, 921600)
+        except serial.SerialException as e:
+            QMessageBox.critical(self, "Error", f"failed to connect: {e}")
 
     def aboutDialog(self):
         """Display the About dialog"""
@@ -183,17 +178,10 @@ class MainWindow(QMainWindow):
 
     # Has no impact!
     def update_ports(self):
-        # From: https://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
-        ports = ['COM%s' % (i + 1) for i in range(2)]
-        result = []
-        for port in ports:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                result.append(port)
-            except serial.SerialException:
-                result.append('Still no COM port utilizable.')
-        return result
+        self.tx_com_port.clear()
+        self.tx_com_port.addItems(s_ports())
+        self.rx_com_port.clear()
+        self.rx_com_port.addItems(s_ports())
 
 if __name__ == '__main__':
     # print(s_ports()) # For testing purposes.
