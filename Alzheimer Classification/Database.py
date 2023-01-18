@@ -6,6 +6,8 @@ import numpy as np
 import tensorflow as tf
 import tempfile
 import tensorflow_io as tfio
+import pickle
+from matplotlib import pyplot as plt
 
 
 class Database:
@@ -140,30 +142,27 @@ class Database:
 
     def get_files_from_postgresql(self, label_class, label_train_test):
 
-        img = np.empty(2, dtype=object)
-        select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
+        #img = np.empty(2, dtype=object)
+        #select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
 
-        try:
-            # self.cur.executemany(query, mylist)
-            self.cur.execute(select_script, [label_class, label_train_test])
-            print("in try")
+        # Initialize the numpy arrays
+        train_images = np.empty((60000, 180, 180), dtype='uint8')
+        train_labels = np.empty((60000), dtype='uint8')
 
-            for n in range(0, 2):
-                mypic = self.cur.fetchone()
-                img[n] = open(db.path + db.train_folders[label_class], 'rb').write(str(mypic[0]))
-                self.cur.execute(select_script, label_class, label_train_test)
+        # Retrieve the training images from the database
+        sql = "SELECT image \
+                    FROM alz_schema.img_table \
+                    WHERE label_train_test = 'train'"
+        self.cur.execute(sql)
+        result = self.cur.fetchall()
 
-            # img = self.cur.fetchall()
+        # Populate the numpy arrays. row[2] contains the image index
+        for row in result:
+            nparray = pickle.loads(row[1])
+        train_images[row[2]] = nparray
+        train_labels[row[2]] = row[0]
 
-            print(img)
-
-            self.conn.commit()  # commit the changes to the database is advised for big files, see documentation
-            print("in try")
-
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-
-        return img
+        return train_images, train_labels
 
 
 
@@ -177,29 +176,14 @@ if __name__ == '__main__':
 
     # db.send_files_to_postgresql()
 
-    # error
-    try:
+    train_images, train_labels = db.get_files_from_postgresql(0, "train")
 
-        print("I was here")
-
-        #endpoint = "jdbc:postgresql://localhost:5432/postgres"
-        endpoint = "postgresql://postgres:yay_python@localhost?port=5432&dbname=alz"
-        print(endpoint)
-
-        query = """SELECT * FROM alz_schema.img_table"""
-        # query = """SELECT * from alz_schema.img_table where label_class = 1 and label_train_test = train"""
-
-        dataset = tfio.experimental.IODataset.from_sql(
-            query=query, endpoint=endpoint)
-
-        print("dataset exists")
-
-        print(dataset.element_spec)
-    except KeyError as err:
-        print("Key Error\nError message:\t",err)
-
-
-    # files = db.get_files_from_postgresql(0, "train")
+    plt.figure()
+    plt.imshow(train_images[0])
+    print(np.mean(train_images[0]))
+    plt.colorbar()
+    plt.grid(False)
+    plt.show()
     # print(files)
 
     print("finished")

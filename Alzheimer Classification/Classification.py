@@ -1,6 +1,7 @@
-import numpy as np
 from skimage import data, io
 from matplotlib import pyplot as plt
+import pickle
+import numpy as np
 import tensorflow as tf
 
 class Classification:
