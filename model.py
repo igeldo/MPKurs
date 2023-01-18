@@ -4,7 +4,7 @@ from vector import Vec3d
 
 COSZERO = (1-1E-12)
 
-class PhotonPack(Vec3d):
+class PhotonPack:
     """
     Basic class to simulate photon packages.
 
@@ -103,7 +103,7 @@ class Medium:
         self.g = g  # anisotropy of the layer material
         self.cos_crit0, self.cos_crit1 = cos_crit0, cos_crit1  # critical angles under which total reflection occurs(?) so there is nothing to compute in this layer
 
-    def _hop(self, photonPack):
+    def hop(self, photonPack):
         s = -np.log(np.random.uniform())/(self.mua+self.mus)
         #print(s)
         photonPack._pos += photonPack._dvec * s
@@ -129,8 +129,8 @@ class Tissue(Medium):
     def __int__(self):
         super().__init__() #TODO: siehe TODO hop
 
-    def _hop(self, photonPack):
-        super()._hop(photonPack) # TODO: Warum hier mit Argument, aber nicht bei __init()__? @vincent @alex
+    def hop(self, photonPack):
+        super().hop(photonPack)  # TODO: Warum hier mit Argument, aber nicht bei __init()__? @vincent @alex
 
     #def stepSize(self):
         """
@@ -141,11 +141,11 @@ absorption coefficient µa and the scattering coefficient µs"
 
         """
 
-    def _absorption(self, photonPack):
+    def absorption(self, photonPack):
         dw = photonPack._w * self.mua / (self.mua + self.mus)
         photonPack._w = dw
 
-    def _scatter(self, photonPack):
+    def scatter(self, photonPack):
         # calculate random direction for polar angle theta
         if (self.g==0):
             cos_t = 2*np.random.uniform() - 1
