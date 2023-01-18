@@ -7,53 +7,95 @@ from serial.tools import list_ports
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
+        self.initializeUI()
+        self.check_ports()
+
+    def initializeUI(self):
+        """Set up the application's GUI."""
+        self.setMinimumSize(300, 150)
+        self.setWindowTitle("GUI for PymmWave")
+        self.setWindowIcon(QIcon("images/pyqt_logo.png"))
+
+        # Create model
         self.model = Model()
-        self.view = View(self)
-        self.controller = Controller(self.model, self.view)
+
+        # Create view
+        self.view = View(self.model)
         self.setCentralWidget(self.view)
+
+        # Create controller
+        self.controller = Controller(self.model, self.view)
+
+        self.createActions()
+        self.createMenu()
         self.show()
+
+    def createActions(self):
+        """Create the application's menu actions."""
+        # Create the actions for File menu
+        self.quit_act = QAction(QIcon("images/exit.png"), "Quit")
+        self.quit_act.setShortcut("Ctrl+Q")
+        self.quit_act.triggered.connect(self.close)
+
+    def createMenu(self):
+        """Create the application's menu bar."""
+        self.file_menu = self.menuBar().addMenu("File")
+        self.file_menu.addAction(self.quit_act)
+
+    def check_ports(self):
+        """Check if the selected ports are the same."""
+        if self.model.tx_com_port == self.model.rx_com_port:
+            QMessageBox.warning(self, "Warning", "TX and RX ports cannot be the same.")
+            self.controller.disable_connect_button()
+
+    def closeEvent(self, event):
+        """Prompt the user to confirm that they want to close the application."""
+        result = QMessageBox.question(self, "Confirm Exit", "Are you sure you want to exit?", QMessageBox.Yes | QMessageBox.No)
+        event.accept() if result == QMessageBox.Yes else event.ignore()
 
 
 class Model:
     def __init__(self):
+        self.ports = [port.device for port in list_ports.comports()]
         self.tx_com_port = None
         self.rx_com_port = None
-        self.s_ports = [port.device for port in list_ports.comports()]
-
-    def connect_radar(self):
-        pass
-
-    def disconnect_radar(self):
-        pass
 
 
 class View(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+        self.initializeUI()
 
+    def initializeUI(self):
+        """Create and arrange widgets in the main window."""
         # Headline
         header_label = QLabel("Properties")
         header_label.setFont(QFont("Helvetica", 14))
         header_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Select Ports
-        # TX COM Port
-        tx_com_port_label = QLabel("TX COM POrt:", self)
+        tx_com_port_label = QLabel("TX COM Port:", self)
         tx_com_port_label.setFont(QFont("Helvetica", 12))
         self.tx_com_port = QComboBox()
-        self.tx_com_port.addItems(parent.model.s_ports)
+        self.tx_com_port.addItems(self.model.ports)
+        self.tx_com_port.activated.connect(self.txPortsChoose)
 
-        # RX COM Port
-        rx_com_port_label = QLabel("RX COM POrt:", self)
+        rx_com_port_label = QLabel("RX COM Port:", self)
         rx_com_port_label.setFont(QFont("Helvetica", 12))
         self.rx_com_port = QComboBox()
-        self.rx_com_port.addItems(parent.model.s_ports)
+        self.rx_com_port.addItems(self.model.ports)
+        self.rx_com_port.activated.connect(self.txPortsChoose)
 
         # Connect and Disconnect Button in one
+        self.times_pressed = 0
         self.button = QPushButton("Connect Radar")
-        self.button_close = QPushButton("Close GUI")
+        self.button.setFont(QFont("Helvetica", 12))
+
+        # Organize the left side widgets into column 0 of the QGridLayout
         main_grid = QGridLayout()
         main_grid.addWidget(header_label, 0, 0)
         main_grid.addWidget(tx_com_port_label, 1, 0)
@@ -61,48 +103,52 @@ class View(QWidget):
         main_grid.addWidget(rx_com_port_label, 2, 0)
         main_grid.addWidget(self.rx_com_port, 2, 1)
         main_grid.addWidget(self.button, 4, 0)
-        main_grid.addWidget(self.button_close, 4, 1)
+
+        # Set the layout for the main window
         self.setLayout(main_grid)
 
-    def createMenu(self):
-        # For Apple Systems (MacOS):
-        self.menuBar().setNativeMenuBar(False)
+    def txPortsChoose(self):
+        """Save the selected TX COM port."""
+        self.model.tx_com_port = self.tx_com_port.currentText()
 
-        # Create File menu and add actions
-        file_menu = self.menuBar().addMenu("&File")
-        file_menu.addAction(self.exit_action)
-        file_menu.addAction(self.read_action)
-
-        # Create Help menu and add actions
-        help_menu = self.menuBar().addMenu("&Help")
-        help_menu.addAction(self.about_action)
+    def rxPortsChoose(self):
+        """Save the selected RX COM port."""
+        self.model.rx_com_port = self.rx_com_port.currentText()
 
 
 class Controller:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.view.button.clicked.connect(self.handle_connect)
-        self.view.button_close.clicked.connect(self.handle_close)
+        self.view.button.clicked.connect(self.buttonClicked)
+        self.view.tx_com_port.activated.connect(self.txPortsChoose)
+        self.view.rx_com_port.activated.connect(self.rxPortsChoose)
 
-    def handle_connect(self):
-        if self.model.tx_com_port is None or self.model.rx_com_port is None:
-            pass
-        else:
-            self.model.connect_radar()
+    def buttonClicked(self):
+        """Handle the button clicked event."""
+        self.times_pressed += 1
+        if self.times_pressed % 2 == 0:
             self.view.button.setText("Disconnect Radar")
+            # Perform connect logic here
+        else:
+            self.view.button.setText("Connect Radar")
+            # Perform disconnect logic here
 
-    def createActions(self):
-        self.exit_action = QAction("&Exit", self, shortcut="Ctrl+Q", triggered=self.close)
-        self.read_action = QAction("&Read", self, shortcut="Ctrl+R", triggered=self.read)
-        self.about_action = QAction("&About", self, shortcut="Ctrl+A", triggered=self.about)
+    def disable_connect_button(self):
+        """Disable the connect button."""
+        self.view.button.setEnabled(False)
 
+    def txPortsChoose(self):
+        """Save the selected TX COM port."""
+        self.model.tx_com_port = self.view.tx_com_port.currentText()
 
-    def handle_close(self):
-        self.model.disconnect_radar()
-        self.view.button.setText("Connect Radar")
+    def rxPortsChoose(self):
+        """Save the selected RX COM port."""
+        self.model.rx_com_port = self.view.rx_com_port.currentText()
+
+    def close(self):
+        """Close the application"""
         self.view.close()
-        self.parent().close()
 
 
 if __name__ == '__main__':
