@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
-import serial
 
 
 def s_ports():
