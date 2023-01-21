@@ -85,6 +85,9 @@ class View(QMainWindow):
         help_menu.addSeparator()
         help_menu.addAction("Documentation")
 
+        self.tx_port.currentTextChanged.connect(controller.check_ports)
+        self.rx_port.currentTextChanged.connect(controller.check_ports)
+
 
 class Controller:
     """How should the GUI behave?"""
@@ -110,19 +113,20 @@ class Controller:
     def check_ports(self):
         """Check if ports are not empty, if they are empty make them not choosable."""
         if not self._model.ports:
-            self._view.button.setEnabled(False)
             self._view.tx_port.setEnabled(False)
             self._view.rx_port.setEnabled(False)
-            return
-        self._view.tx_port.setEnabled(True)
-        self._view.rx_port.setEnabled(True)
-        tx_port = self._view.tx_port.currentText()
-        rx_port = self._view.rx_port.currentText()
-        """Check if ports are the same, if true, then disable the connect button!"""
-        if tx_port == rx_port:
             self._view.button.setEnabled(False)
         else:
+            self._view.tx_port.setEnabled(True)
+            self._view.rx_port.setEnabled(True)
             self._view.button.setEnabled(True)
+            tx_port = self._view.tx_port.currentText()
+            rx_port = self._view.rx_port.currentText()
+            """Check if ports are the same, if true, then disable the connect button!"""
+            if tx_port == rx_port:
+                self._view.button.setEnabled(False)
+            else:
+                self._view.button.setEnabled(True)
 
     def update_ports(self):
         """Updates the list of available ports in the Model class and updates the options in the
