@@ -22,11 +22,10 @@ class View(QMainWindow):
         self._model = model
         self.tx_port = None
         self.rx_port = None
-        self.initUI()
+        self.initUI(controller)
         self.quit_button.clicked.connect(controller.close)
-        self.button.clicked.connect(self.buttonClicked)
 
-    def initUI(self):
+    def initUI(self, controller):
         layout = QVBoxLayout()
         self.setMinimumSize(300, 150)
         self.setWindowTitle("PymmWave Execution GUI")
@@ -45,13 +44,13 @@ class View(QMainWindow):
         tx_port_label = QLabel("Select te TX port:", self)
         tx_port_label.setFont(QFont("Helvetica", 12))
         self.tx_port = QComboBox()
-        self.tx_port.addItems(self._model.ports)
+        self.tx_port.addItems(controller._model.ports)
 
         # rx port
         rx_port_label = QLabel("Select the RX port:", self)
         rx_port_label.setFont(QFont("Helvetica", 12))
         self.rx_port = QComboBox()
-        self.rx_port.addItems(self._model.ports)
+        self.rx_port.addItems(controller._model.ports)
 
         # Connect and Disconnect Button in one
         self.times_pressed = 0
@@ -71,13 +70,32 @@ class View(QMainWindow):
         layout.addWidget(self.button)
         layout.addWidget(self.quit_button)
 
+        # Create menu bar
+        menu_bar = self.menuBar()
+
+        # Create File menu
+        file_menu = menu_bar.addMenu("File")
+        file_menu.addAction("Refresh", controller.update_ports)
+        file_menu.addSeparator()
+        file_menu.addAction("Exit", controller.close)
+
+        # Create Help menu
+        help_menu = menu_bar.addMenu("Help")
+        help_menu.addAction("About")
+        help_menu.addSeparator()
+        help_menu.addAction("Documentation")
+
+
 
 class Controller:
     """How should the GUI behave?"""
     def __init__(self):
         self._app = QApplication(sys.argv)
         self._model = Model()
-        self._view = View(self)
+        self._view = View(self._model, self)
+        self._view.button.clicked.connect(self.buttonClicked)
+        self.check_ports()
+
 
     def close(self):
         """Prompt the user to confirm that they want to close the application."""
@@ -91,35 +109,47 @@ class Controller:
         os.chdir(r'C:\Users\Olive\PycharmProjects\MPKurs\Code\pymmw-master\source')
         os.system('python pymmw.py -r ' + rx_port + ' -t ' + tx_port)
 
+    def check_ports(self):
+        """Check if ports are not empty, if they are empty make them not choosable."""
+        if not self._model.ports:
+            self._view.button.setEnabled(False)
+            self._view.tx_port.setEnabled(False)
+            self._view.rx_port.setEnabled(False)
+            return
+        self._view.tx_port.setEnabled(True)
+        self._view.rx_port.setEnabled(True)
+        tx_port = self._view.tx_port.currentText()
+        rx_port = self._view.rx_port.currentText()
+        """Check if ports are the same, if true, then disable the connect button!"""
+        if tx_port == rx_port:
+            self._view.button.setEnabled(False)
+        else:
+            self._view.button.setEnabled(True)
+
     def update_ports(self):
         """Updates the list of available ports in the Model class and updates the options in the
         QComboBox widgets of the View class accordingly."""
         self._model.ports = [port.device for port in list_ports.comports()]
         self._view.tx_port.clear()
-        self._view.rx_port.clear()
         self._view.tx_port.addItems(self._model.ports)
+        self._view.rx_port.clear()
         self._view.rx_port.addItems(self._model.ports)
 
     def buttonClicked(self):
-        # Done: Implement starting pymmWave functionality by clicking it.
-        """If button_clicked is uneven, then show 'Connect Radar',
-        otherwise 'Disconnect Radar'"""
+        """If button_clicked is uneven, then show "Connect", otherwise disconnect"""
         if self.times_pressed % 2 != 0:
             self.update_ports()
             self.button.setText("Disconnect")
         else:
-            # Changing the current working directory
             try:
                 tx_port = self.tx_port.currentText()
                 rx_port = self.rx_port.currentText()
                 self.connect_radar(rx_port, tx_port)
-                self.times_pressed += 1
-                self.button.setText("Connect")
             except:
                 self.button.times_pressed -= 1
                 self.button.setText("Connect")
                 self.button.setDisabled(True)
-                print("No COM ports available.")
+                print("No COM ports available!")
 
     def run(self):
         self._view.show()
