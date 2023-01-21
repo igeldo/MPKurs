@@ -151,7 +151,7 @@ class Controller:
                 print("No COM ports available!")
 
     def about(self):
-        """Show an about dialog."""
+        """Show an about-dialog."""
         QMessageBox.about(self._view, "About", """<p>This GUI should help you control TI Radars</p>
         <p>Created by Oliver Jovanović</p>""")
 
