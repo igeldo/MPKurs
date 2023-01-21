@@ -81,7 +81,7 @@ class View(QMainWindow):
 
         # Create Help menu
         help_menu = menu_bar.addMenu("Help")
-        help_menu.addAction("About")
+        help_menu.addAction("About", controller.about)
         help_menu.addSeparator()
         help_menu.addAction("Documentation")
 
@@ -149,6 +149,11 @@ class Controller:
                 self.button.setText("Connect")
                 self.button.setDisabled(True)
                 print("No COM ports available!")
+
+    def about(self):
+        """Show an about dialog."""
+        QMessageBox.about(self._view, "About", """<p>This GUI should help you control TI Radars</p>
+        <p>Created by Oliver Jovanović</p>""")
 
     def run(self):
         self._view.show()
