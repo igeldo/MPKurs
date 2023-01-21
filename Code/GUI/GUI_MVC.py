@@ -86,7 +86,6 @@ class View(QMainWindow):
         help_menu.addAction("Documentation")
 
 
-
 class Controller:
     """How should the GUI behave?"""
     def __init__(self):
@@ -95,7 +94,6 @@ class Controller:
         self._view = View(self._model, self)
         self._view.button.clicked.connect(self.buttonClicked)
         self.check_ports()
-
 
     def close(self):
         """Prompt the user to confirm that they want to close the application."""
@@ -134,6 +132,7 @@ class Controller:
         self._view.tx_port.addItems(self._model.ports)
         self._view.rx_port.clear()
         self._view.rx_port.addItems(self._model.ports)
+        self.check_ports()
 
     def buttonClicked(self):
         """If button_clicked is uneven, then show "Connect", otherwise disconnect"""
