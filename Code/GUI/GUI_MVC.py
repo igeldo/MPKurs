@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QPushButton, QVBoxLayout, QMessageBox)
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
+from PyQt5.QtCore import QTimer
 
 
 class Model:
@@ -82,8 +83,6 @@ class View(QMainWindow):
         # Create Help menu
         help_menu = menu_bar.addMenu("Help")
         help_menu.addAction("About", controller.about)
-        help_menu.addSeparator()
-        help_menu.addAction("Documentation")
 
         self.tx_port.currentTextChanged.connect(controller.check_ports)
         self.rx_port.currentTextChanged.connect(controller.check_ports)
@@ -97,6 +96,10 @@ class Controller:
         self._view = View(self._model, self)
         self._view.button.clicked.connect(self.buttonClicked)
         self.check_ports()
+
+        self.timer = QTimer(self._app)
+        self.timer.timeout.connect(self.check_ports)
+        self.timer.start(1000)
 
     def close(self):
         """Prompt the user to confirm that they want to close the application."""
