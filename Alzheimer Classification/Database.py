@@ -1,3 +1,5 @@
+import io
+
 import psycopg2
 import psycopg2.extras
 import os
@@ -6,8 +8,8 @@ import numpy as np
 import tensorflow as tf
 import tempfile
 import tensorflow_io as tfio
-import pickle
 from matplotlib import pyplot as plt
+import PIL.Image as Image
 
 
 class Database:
@@ -51,6 +53,9 @@ class Database:
         }
 
     def connection(self):
+        """
+        extend connection with the database
+        """
 
         self.conn = psycopg2.connect(
             host=self.hostname,
@@ -62,6 +67,9 @@ class Database:
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def create_table(self):
+        """
+        create table in database with the columns: image, label_class and label_train_test
+        """
 
         self.cur.execute('DROP TABLE IF EXISTS alz_schema.img_table')
 
@@ -79,6 +87,10 @@ class Database:
             print(error)
 
     def get_image_path(self):
+        """
+        get local image path
+        """
+
         if (os.environ.get('USERNAME') == 'kubic'):
             self.path = 'C:\\Users\\kubic\\Documents\\Alzheimer'
         elif (os.environ.get('USERNAME') == 'ivono' or os.environ.get('USERNAME') == None):
@@ -88,6 +100,9 @@ class Database:
                 self.path = 'C:\\Users\\ivono\\FH\\Programmierkurs\\Alzheimer'
 
     def send_files_to_postgresql(self):
+        """
+        send files to database from the local directory
+        """
 
         # label_class: non, verymild, mild, moderate
         # label_train_test: train oder test
@@ -140,29 +155,63 @@ class Database:
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
-    def get_files_from_postgresql(self, label_class, label_train_test):
+    def get_train_files_from_postgresql(self):
+        """
+        get train files from database
+        """
 
-        #img = np.empty(2, dtype=object)
         #select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
 
         # Initialize the numpy arrays
-        train_images = np.empty((60000, 180, 180), dtype='uint8')
-        train_labels = np.empty((60000), dtype='uint8')
+        train_images = []
+        train_labels = []
 
         # Retrieve the training images from the database
-        sql = "SELECT image \
+        sql = "SELECT image, label_class \
                     FROM alz_schema.img_table \
                     WHERE label_train_test = 'train'"
         self.cur.execute(sql)
         result = self.cur.fetchall()
 
-        # Populate the numpy arrays. row[2] contains the image index
+        # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
         for row in result:
-            nparray = pickle.loads(row[1])
-        train_images[row[2]] = nparray
-        train_labels[row[2]] = row[0]
+
+            # IMAGE:
+            binary_img = row[0] # result[0][0]  # or row[0] <- wenn in Schleife
+            img = Image.open(io.BytesIO(binary_img))
+
+            train_images.append(np.array(img))
+            train_labels.append(row[1])
 
         return train_images, train_labels
+
+
+    def get_test_files_from_postgresql(self):
+        """
+        get test files from database
+        """
+
+        # Initialize the numpy arrays
+        test_images = []
+        test_labels = []
+
+        # Retrieve the training images from the database
+        sql = "SELECT image, label_class \
+                    FROM alz_schema.img_table \
+                    WHERE label_train_test = 'test'"
+        self.cur.execute(sql)
+        result = self.cur.fetchall()
+
+        # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
+        for row in result:
+
+            binary_img = row[0]
+            img = Image.open(io.BytesIO(binary_img))
+
+            test_images.append(np.array(img))
+            test_labels.append(row[1])
+
+        return test_images, test_labels
 
 
 
@@ -173,19 +222,35 @@ if __name__ == '__main__':
     db.connection()
 
     # db.create_table()
-
     # db.send_files_to_postgresql()
 
-    train_images, train_labels = db.get_files_from_postgresql(0, "train")
+    train_images, train_labels = db.get_train_files_from_postgresql()
+    test_images, test_labels = db.get_test_files_from_postgresql()
 
+    # show third train image
+    pic = 2
     plt.figure()
-    plt.imshow(train_images[0])
-    print(np.mean(train_images[0]))
+    plt.imshow(train_images[pic])
+    print(np.mean(train_images[pic]))
+    print("Label: ", train_labels[pic])
     plt.colorbar()
     plt.grid(False)
     plt.show()
-    # print(files)
+
+    # show 2001 train image
+    pic_test = 2000
+    plt.figure()
+    plt.imshow(train_images[pic_test])
+    print(np.mean(train_images[pic_test]))
+    print("Label: ", train_labels[pic_test])
+    plt.colorbar()
+    plt.grid(False)
+    plt.show()
 
     print("finished")
     # before run -> create database called "alz"
-    # Datenbanken sind geil
+
+    # Notizen:
+    # print Ausgabe implementieren -> als Backlog 18.01
+    # Blockgrafik erstellen für den Datenfluss -> als Backlog 18.01
+    # vielleicht auch Unittests?
