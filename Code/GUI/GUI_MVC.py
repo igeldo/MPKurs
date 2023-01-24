@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QPushButton, QVBoxLayout, QMessageBox)
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
-from functools import partial
 
 
 class Model:
