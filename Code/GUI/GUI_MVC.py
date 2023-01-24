@@ -76,13 +76,19 @@ class View(QMainWindow):
 
         # Create File menu
         file_menu = menu_bar.addMenu("File")
-        file_menu.addAction("Refresh", controller.update_ports)
+        refresh_action = file_menu.addAction("Refresh", controller.update_ports)
+        icon_refresh = QIcon("images/refresh.png")
+        refresh_action.setIcon(icon_refresh)
         file_menu.addSeparator()
-        file_menu.addAction("Exit", controller.close)
+        exit_action = file_menu.addAction("Exit", controller.close)
+        icon_exit = QIcon("images/exit.png")
+        exit_action.setIcon(icon_exit)
 
         # Create Help menu
         help_menu = menu_bar.addMenu("Help")
-        help_menu.addAction("About", controller.about)
+        about_action = help_menu.addAction("About", controller.about)
+        icon_about = QIcon("images/about.svg")
+        about_action.setIcon(icon_about)
 
         self.tx_port.currentTextChanged.connect(controller.check_ports)
         self.rx_port.currentTextChanged.connect(controller.check_ports)
