@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QPushButton, QVBoxLayout, QMessageBox)
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
-from PyQt5.QtCore import QTimer
+from functools import partial
 
 
 class Model:
@@ -25,6 +25,7 @@ class View(QMainWindow):
         self.rx_port = None
         self.initUI(controller)
         self.quit_button.clicked.connect(controller.close)
+        self.button.clicked.connect(controller.buttonClicked)
 
     def initUI(self, controller):
         layout = QVBoxLayout()
@@ -103,10 +104,6 @@ class Controller:
         self._view.button.clicked.connect(self.buttonClicked)
         self.check_ports()
 
-        self.timer = QTimer(self._app)
-        self.timer.timeout.connect(self.check_ports)
-        self.timer.start(1000)
-
     def close(self):
         """Prompt the user to confirm that they want to close the application."""
         result = QMessageBox.question(self._view, "Confirm Exit", "Are you sure you want to exit?", QMessageBox.Yes |
@@ -114,10 +111,20 @@ class Controller:
         if result == QMessageBox.Yes:
             self._app.quit()
 
-    def connect_radar(self, rx_port, tx_port):
+    def connect(self):
         """Connect the radar"""
+        tx_port = self._view.tx_port.currentText()
+        rx_port = self._view.rx_port.currentText()
+        self._model.tx_port = tx_port # Should be COM3
+        self._model.rx_port = rx_port # Should be COM4
+        print(f'Connected to {tx_port} and {rx_port}')
         os.chdir(r'C:\Users\Olive\PycharmProjects\MPKurs\Code\pymmw-master\source')
-        os.system('python pymmw.py -r ' + rx_port + ' -t ' + tx_port)
+        os.system('python pymmw.py -c ' + rx_port + ' -d ' + tx_port)
+        print("pymmwave started.")
+        print("python pymmw.py -c {tx_port} -d {rx_port}")
+
+    def disconnect(self):
+        print("Disconnected.")
 
     def check_ports(self):
         """Check if ports are not empty, if they are empty make them not choosable."""
@@ -125,17 +132,21 @@ class Controller:
             self._view.tx_port.setEnabled(False)
             self._view.rx_port.setEnabled(False)
             self._view.button.setEnabled(False)
+            print("No ports available.")
         else:
             self._view.tx_port.setEnabled(True)
             self._view.rx_port.setEnabled(True)
             self._view.button.setEnabled(True)
+            print("Ports available.")
             tx_port = self._view.tx_port.currentText()
             rx_port = self._view.rx_port.currentText()
             """Check if ports are the same, if true, then disable the connect button!"""
             if tx_port == rx_port:
                 self._view.button.setEnabled(False)
+                print("Ports are the same.")
             else:
                 self._view.button.setEnabled(True)
+                print("Ports are not the same.")
 
     def update_ports(self):
         """Updates the list of available ports in the Model class and updates the options in the
@@ -146,22 +157,17 @@ class Controller:
         self._view.rx_port.clear()
         self._view.rx_port.addItems(self._model.ports)
         self.check_ports()
+        print("Ports updated!")
 
     def buttonClicked(self):
         """If button_clicked is uneven, then show "Connect", otherwise disconnect"""
-        if self.times_pressed % 2 != 0:
-            self.update_ports()
-            self.button.setText("Disconnect")
+        if self._view.times_pressed % 2 != 0:
+            self.disconnect()
+            self.button.setText("Connect")
         else:
-            try:
-                tx_port = self.tx_port.currentText()
-                rx_port = self.rx_port.currentText()
-                self.connect_radar(rx_port, tx_port)
-            except:
-                self.button.times_pressed -= 1
-                self.button.setText("Connect")
-                self.button.setDisabled(True)
-                print("No COM ports available!")
+            self.connect()
+            self._view.button.setText("Disconnect")
+            self._view.times_pressed += 1
 
     def about(self):
         """Show an about-dialog."""
