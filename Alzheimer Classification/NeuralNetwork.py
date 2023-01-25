@@ -17,6 +17,10 @@ from tensorflow.keras import optimizers, losses
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+# Metrics
+from sklearn.metrics import classification_report, confusion_matrix
+import itertools
+
 class NeuralNetwork:
 
     def __init__(self, traindata, testdata):
@@ -35,21 +39,36 @@ class NeuralNetwork:
         self.testdata_label = test_labels
 
 
-    def load_images(self, images):
+    def define_model_CNN(self):
 
-        return images
+        model = tf.keras.models.Sequential([
+            Conv2D(16, (3, 3), activation='relu', input_shape=(224, 224, 3)),
+            MaxPooling2D(2, 2),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(2, 2),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(2, 2),
+            Conv2D(32, (3, 3), activation='relu'),
+            MaxPooling2D(2, 2),
+            Flatten(),
+            Dense(512, activation='relu'),
+            Dropout(0.2),
+            Dense(4, activation='softmax')
+        ])
 
-    def load_images_to_database(self, database_access):
+    def compile_fit_CNN(self, model, train_images, test_images):
 
-        # algorithm to upload data
-
-        return database_access
-
-    def get_images_from_database(self, database_access, layer):
-
-        # algorithm to
-        t = database_access
-
-        return t, layer
+        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
+        history = model.fit(train_images,
+                            steps_per_epoch=len(train_images),
+                            validation_data=test_images,
+                            validation_steps=len(test_images),
+                            epochs=10)
 
 
+if __name__ == '__main__':
+
+        network = NeuralNetwork()
+
+        model = network.define_model_CNN()
+        network.compile_fit_CNN(model)
