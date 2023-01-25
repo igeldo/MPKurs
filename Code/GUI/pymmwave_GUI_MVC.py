@@ -2,7 +2,7 @@
 import os
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
-                             QComboBox, QPushButton, QVBoxLayout, QMessageBox)
+                             QComboBox, QPushButton, QGridLayout, QMessageBox)
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
 
@@ -23,12 +23,10 @@ class View(QMainWindow):
         self.tx_port = None
         self.rx_port = None
         self.initUI(controller)
-        self.quit_button.clicked.connect(controller.close)
-        self.button.clicked.connect(controller.buttonClicked)
 
     def initUI(self, controller):
-        layout = QVBoxLayout()
-        self.setMinimumSize(300, 150)
+        layout = QGridLayout()
+        self.setMinimumSize(320, 150)
         self.setWindowTitle("PymmWave Execution GUI")
         self.setWindowIcon(QIcon("images/pyqt_logo.png"))
 
@@ -46,30 +44,34 @@ class View(QMainWindow):
         tx_port_label.setFont(QFont("Helvetica", 12))
         self.tx_port = QComboBox()
         self.tx_port.addItems(controller._model.ports)
+        self.tx_port.currentTextChanged.connect(controller.check_ports)
 
         # rx port
         rx_port_label = QLabel("Select the RX port:", self)
         rx_port_label.setFont(QFont("Helvetica", 12))
         self.rx_port = QComboBox()
         self.rx_port.addItems(controller._model.ports)
+        self.rx_port.currentTextChanged.connect(controller.check_ports)
 
         # Connect and Disconnect Button in one
         self.times_pressed = 0
         self.button = QPushButton("Connect")
         self.button.setFont(QFont("Helvetica", 12))
+        self.button.clicked.connect(controller.buttonClicked)
 
         # Quit Button
         self.quit_button = QPushButton("Quit")
         self.quit_button.setFont(QFont("Helvetica", 12))
+        self.quit_button.clicked.connect(controller.close)
 
         # Add widgets to layout
-        layout.addWidget(header_label)
-        layout.addWidget(tx_port_label)
-        layout.addWidget(self.tx_port)
-        layout.addWidget(rx_port_label)
-        layout.addWidget(self.rx_port)
-        layout.addWidget(self.button)
-        layout.addWidget(self.quit_button)
+        layout.addWidget(header_label, 0, 0)
+        layout.addWidget(tx_port_label, 1, 0)
+        layout.addWidget(self.tx_port, 1, 1)
+        layout.addWidget(rx_port_label, 2, 0)
+        layout.addWidget(self.rx_port, 2, 1)
+        layout.addWidget(self.button, 4, 0)
+        layout.addWidget(self.quit_button, 4, 1)
 
         # Create menu bar
         menu_bar = self.menuBar()
@@ -89,9 +91,6 @@ class View(QMainWindow):
         about_action = help_menu.addAction("About", controller.about)
         icon_about = QIcon("images/about.svg")
         about_action.setIcon(icon_about)
-
-        self.tx_port.currentTextChanged.connect(controller.check_ports)
-        self.rx_port.currentTextChanged.connect(controller.check_ports)
 
 
 class Controller:
