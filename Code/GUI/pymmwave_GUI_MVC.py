@@ -140,21 +140,17 @@ class Controller:
             self._view.tx_port.setEnabled(False)
             self._view.rx_port.setEnabled(False)
             self._view.button.setEnabled(False)
-            print("No ports available.")
         else:
             self._view.tx_port.setEnabled(True)
             self._view.rx_port.setEnabled(True)
             self._view.button.setEnabled(True)
-            print("Ports available.")
             tx_port = self._view.tx_port.currentText()
             rx_port = self._view.rx_port.currentText()
             """Check if ports are the same, if true, then disable the connect button!"""
             if tx_port == rx_port:
                 self._view.button.setEnabled(False)
-                print("Ports are the same.")
             else:
                 self._view.button.setEnabled(True)
-                print("Ports are not the same.")
 
     def update_ports(self):
         logging.debug("Refreshing serial ports.")
@@ -166,7 +162,6 @@ class Controller:
         self._view.rx_port.clear()
         self._view.rx_port.addItems(self._model.ports)
         self.check_ports()
-        print("Ports updated!")
 
     def buttonClicked(self):
         """If button_clicked is uneven, then show "Connect", otherwise disconnect"""
