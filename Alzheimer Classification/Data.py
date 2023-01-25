@@ -1,16 +1,22 @@
+import Database
 class Data:
 
-    def __init__(self, traindata, testdata):
+    def __init__(self):
 
         # database superuser pw: yay_python
 
-        # in init schon einlesen?
-        self.traindata = traindata
-        self.testdata = testdata
+        db = Database()
+        db.connection()
 
-        self.images = []
-        self.database_access = []
-        self.layer = []
+        train_images, train_labels = db.get_train_files_from_postgresql()
+        test_images, test_labels = db.get_test_files_from_postgresql()
+
+        # in init schon einlesen?
+        self.traindata = train_images
+        self.traindata_label = train_labels
+
+        self.testdata = test_images
+        self.testdata_label = test_labels
 
 
     def load_images(self, images):
@@ -29,5 +35,11 @@ class Data:
         t = database_access
 
         return t, layer
+
+if __name__ == '__main__':
+
+        data = Data()
+        print(data.traindata)
+        print(data.traindata_label)
 
 
