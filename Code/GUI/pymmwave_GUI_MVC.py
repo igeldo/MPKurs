@@ -7,6 +7,7 @@ from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
 import logging
 
+# Set up logging
 logging.basicConfig(level=logging.DEBUG, filename="application.log")
 
 
@@ -92,6 +93,10 @@ class View(QMainWindow):
 
         # Create Help menu
         help_menu = menu_bar.addMenu("Help")
+        help_action = help_menu.addAction("Help", controller.help)
+        icon_help = QIcon("images/help.svg")
+        help_action.setIcon(icon_help)
+        help_menu.addSeparator()
         about_action = help_menu.addAction("About", controller.about)
         icon_about = QIcon("images/about.svg")
         about_action.setIcon(icon_about)
@@ -175,10 +180,17 @@ class Controller:
             self._view.times_pressed += 1
 
     def about(self):
+        """Show an about-dialog."""
         logging.debug("About button clicked.")
         """Show an about-dialog."""
         QMessageBox.about(self._view, "About", """<p>This GUI should help you control TI Radars</p>
         <p>Created by Oliver Jovanović</p>""")
+
+    def help(self):
+        """Show a help-dialog."""
+        QMessageBox.about(self._view, "Help", "Select the tx and rx ports and click 'connect' "
+                                              "to establish a connection.<p> The creator of the GUI recommends: "
+                                              "TX = COM3 and RX = COM4.</p>")
 
     def run(self):
         self._view.show()
