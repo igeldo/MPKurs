@@ -5,6 +5,9 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QLabel,
                              QComboBox, QPushButton, QGridLayout, QMessageBox)
 from PyQt5.QtGui import (QFont, QIcon)
 from serial.tools import list_ports
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename="application.log")
 
 
 class Model:
@@ -25,6 +28,7 @@ class View(QMainWindow):
         self.initUI(controller)
 
     def initUI(self, controller):
+        logging.debug("Initializing GUI. Available serial ports: %s", self._model.ports)
         layout = QGridLayout()
         self.setMinimumSize(320, 150)
         self.setWindowTitle("PymmWave Execution GUI")
@@ -103,6 +107,7 @@ class Controller:
         self.check_ports()
 
     def close(self):
+        logging.debug("Closing the Application.")
         """Prompt the user to confirm that they want to close the application."""
         result = QMessageBox.question(self._view, "Confirm Exit", "Are you sure you want to exit?", QMessageBox.Yes |
                                       QMessageBox.No, QMessageBox.No)
@@ -147,6 +152,7 @@ class Controller:
                 print("Ports are not the same.")
 
     def update_ports(self):
+        logging.debug("Refreshing serial ports.")
         """Updates the list of available ports in the Model class and updates the options in the
         QComboBox widgets of the View class accordingly."""
         self._model.ports = [port.device for port in list_ports.comports()]
@@ -159,6 +165,7 @@ class Controller:
 
     def buttonClicked(self):
         """If button_clicked is uneven, then show "Connect", otherwise disconnect"""
+        logging.debug("Connect button clicked. TX port: %s, RX port: %s", self._model.tx_port, self._model.rx_port)
         if self._view.times_pressed % 2 != 0:
             self.disconnect()
             self.button.setText("Connect")
@@ -168,6 +175,7 @@ class Controller:
             self._view.times_pressed += 1
 
     def about(self):
+        logging.debug("About button clicked.")
         """Show an about-dialog."""
         QMessageBox.about(self._view, "About", """<p>This GUI should help you control TI Radars</p>
         <p>Created by Oliver Jovanović</p>""")
