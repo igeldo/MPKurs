@@ -1,7 +1,12 @@
 import numpy as np
+import numpy.random
+
 from vector import Vec3d
 
 COSZERO = (1-1E-12)
+COS90D = (1E-6)
+
+# TODO: for testing -> set random seed for uniform variable, calculate the algorithm "by hand" for that variable, then test for algorithm
 
 class PhotonPack:
     """
@@ -41,7 +46,7 @@ class PhotonPack:
         self._layer = layer  # layer in with the PhotonPack currently is
         # stepSize is handled and calculated in each layer based on its properties and the photon energy/weight
         self._stepSize = stepSize  # current step size [mm]
-        #self.__stepSizeL = stepSizeL  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
+        self._stepSizeL = stepSizeL  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
 
     def __repr__(self):
         """
@@ -71,6 +76,9 @@ class PhotonPack:
             str(self._w),
             str(self._dead)
         ]
+
+    def alive(self):
+        return self._dead
 
 class Medium:
     """
@@ -103,13 +111,86 @@ class Medium:
         self.cos_crit0, self.cos_crit1 = cos_crit0, cos_crit1  # critical angles under which total reflection occurs(?) so there is nothing to compute in this layer
 
     def hop(self, photonPack):
-        s = -np.log(np.random.uniform())/(self.mua+self.mus)
+        photonPack._stepSize = -np.log(np.random.uniform()) / (self.mua+self.mus)
         #print(s)
-        photonPack._pos += photonPack._dvec * s
+        photonPack._pos += photonPack._dvec * photonPack._stepSize
+        # TODO: hier war mal ein s, s -> photonPack._stepSize geändert
+
+    def hitBoundry(self, photonPack):
+        dl_b = 0
+        hit = 0
+        if photonPack._dvec.z() > 0.0:
+            dl_b = (self.z1 - photonPack._pos.z()) / photonPack._dvec.z()
+        elif photonPack._dvec.z() < 0.0:
+            dl_b = (self.z0 - photonPack._pos.z()) / photonPack._dvec.z()
+
+        if photonPack._dvec.z() != 0.0 and photonPack._stepSize > dl_b:
+            mut = self.mua + self.mus
+
+            photonPack._stepSizeL = (photonPack._stepSize - dl_b) * mut
+            photonPack._stepSize = dl_b
+            hit = 1
+        else:
+            hit = 0
+
+        return hit
+
+    def crossOrNot(self, photonPack, layers):
+        if photonPack._dvec.z() < 0.0:
+            self._crossUp(photonPack, layers)
+        else:
+            self._crossDown(photonPack, layers)
+
+    def _crossDown(self, photonPack, layers):
+        if photonPack._dvec.z() <= self.cos_crit1:
+            r = 1 # total reflection!
+        else:
+            r, out_uz = RFresnel() # TODO: do the fresnel
+
+        # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
+
+        if np.random.uniform() > r:
+            if photonPack._layer == len(layers): # letzter Layer
+                photonPack._dvec._z = out_uz
+                # TODO: save data on "leaving" photons
+                photonPack._dead = 1 # RIP
+            else:
+                photonPack._dvec *= Vec3d(
+                    self.n/layers[photonPack._layer+1],
+                    self.n/layers[photonPack._layer+1],
+                    out_uz
+                )
+                photonPack._layer += 1
+        else:
+            photonPack._dvec._z = -photonPack._dvec._z
+
+
+    def _crossUp(self, photonPack, layers):
+        if -photonPack._dvec.z() <= self.cos_crit0:
+            r = 1
+        else:
+            r, out_uz = RFresnel()  # TODO: do the fresnel
+
+        # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
+
+        if np.random.uniform() > r:
+            if photonPack._layer == 0:  # letzter Layer
+                photonPack._dvec._z = -out_uz
+                # TODO: save data on "leaving" photons
+                photonPack._dead = 1  # RIP
+            else:
+                photonPack._dvec *= Vec3d(
+                    self.n / layers[photonPack._layer + 1],
+                    self.n / layers[photonPack._layer + 1],
+                    -out_uz
+                )
+                photonPack._layer -= 1
+        else:
+            photonPack._dvec._z = -photonPack._dvec._z
 
 class Glas(Medium):
 
-    #def _hop(self, photonPack):
+    #def hop(self, photonPack):
         # """
     #     if (photonPack.__dvec.z == 0):  # 3rd dimension is uz
     #         photonPack.__dead = 1
@@ -131,14 +212,8 @@ class Tissue(Medium):
     def hop(self, photonPack):
         super().hop(photonPack)  # TODO: Warum hier mit Argument, aber nicht bei __init()__? @vincent @alex
 
-    #def stepSize(self):
-        """
-        p.14 & p.19 eq. 2.7 "total interaction coefficient µt, which is the sum of the
-absorption coefficient µa and the scattering coefficient µs"
-        Returns
-        -------
-
-        """
+    def hitBoundry(self, photonPack):
+        super().hitBoundry(photonPack)
 
     def absorption(self, photonPack):
         dw = photonPack._w * self.mua / (self.mua + self.mus)
@@ -168,15 +243,25 @@ absorption coefficient µa and the scattering coefficient µs"
         uy = photonPack._dvec.y()
         uz = photonPack._dvec.z()
 
-        if (np.abs(uz) > COSZERO): # todo: z evtl ohne klammern
-            photonPack._dvec._x = sin_t * cos_p
-            photonPack._dvec._y = sin_t * sin_p
-            photonPack._dvec._z = cos_t * np.sign(uz)
+        if (np.abs(uz) > COSZERO):
+            photonPack._dvec = Vec3d(
+                sin_t * cos_p,
+                sin_t * sin_p,
+                cos_t * np.sign(uz)
+            )
+            # photonPack._dvec._x = sin_t * cos_p
+            # photonPack._dvec._y = sin_t * sin_p
+            # photonPack._dvec._z = cos_t * np.sign(uz)
         else:
             temp = np.sqrt(1 - uz*uz)
-            photonPack._dvec._x = (sin_t * (ux * uz * cos_p - uy * sin_p) / temp) + ux * cos_t
-            photonPack._dvec._y = (sin_t * (uy * uz * cos_p + ux * sin_p) / temp) + uy * cos_t
-            photonPack._dvec._z = -sin_t * cos_p * temp + uz * cos_t
+            photonPack._dvec = Vec3d(
+                (sin_t * (ux * uz * cos_p - uy * sin_p) / temp) + ux * cos_t,
+                (sin_t * (uy * uz * cos_p + ux * sin_p) / temp) + uy * cos_t,
+                -sin_t * cos_p * temp + uz * cos_t
+            )
+            # photonPack._dvec._x = (sin_t * (ux * uz * cos_p - uy * sin_p) / temp) + ux * cos_t
+            # photonPack._dvec._y = (sin_t * (uy * uz * cos_p + ux * sin_p) / temp) + uy * cos_t
+            # photonPack._dvec._z = -sin_t * cos_p * temp + uz * cos_t
 
 
 # class Luft(Medium):
