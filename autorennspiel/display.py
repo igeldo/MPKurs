@@ -7,8 +7,9 @@ import time
 class Display:
     def __init__(self, name, background=None):
         # define colors in RGB form
-        self.gray = (60, 60, 60)
-        self.black = (255, 0, 0)
+        # self.gray = (60, 60, 60)
+        self.red = (255, 0, 0)
+        self.black = (255, 255, 255)
         if name == "display" or "message":
             display_attributes = config.Json("config.json").get_attribute("display")
         if name == "display":
@@ -30,6 +31,11 @@ class Display:
         else:
             raise ValueError('Class Display is missing parameters')
 
+    def return_display_size(self):
+        display_size = self.size
+        # print(display_size)
+        return display_size
+
     def load_window(self):
         # set width and height of the display
         window = pygame.display.set_mode(self.size)
@@ -42,20 +48,44 @@ class Display:
         background_1side = pygame.transform.scale(background_1side, self.bg_size)
         background_1side = pygame.transform.rotate(background_1side, self.bg_rotation)
         bg_position = self.bg_position
-        return [background_1side, bg_position]
+        bg_size = self.bg_size
+        return [background_1side, bg_position, bg_size]
 
-    def message_display(self, window, text):
-        if text == "crash":
-            text = self.message_crash
-        # set font size and style of the message
-        large_text = pygame.font.Font(self.font_name, self.font_size)
-        # set function to edit the message
-        text_surface = large_text.render(text, True, self.black)
-        text_rect = text_surface.get_rect()
-        # set the position of the text on the screen
-        text_rect.center = self.font_position
-        # display the message
-        window.blit(text_surface, text_rect)
+    def font(self, text, style):
+        if style == "strong":
+            # set font size and style of the message
+            large_text = pygame.font.Font(self.font_name, self.font_size)
+            # set function to edit the message
+            text_surface = large_text.render(text, True, self.red)
+            text_rect = text_surface.get_rect()
+            # set the position of the text on the screen
+            text_rect.center = self.font_position
+        if style == "soft":
+            # set font size and style of the message
+            large_text = pygame.font.Font(self.font_name, self.font_size - 30)
+            # set function to edit the message
+            text_surface = large_text.render(text, True, self.black)
+            text_rect = text_surface.get_rect()
+            # set the position of the text on the screen
+            [x, y] = self.font_position
+            text_rect.center = [x, y + 100]
+        return text_surface, text_rect
+
+    def message_display(self, window, texts, score=None):
+        for text in texts:
+            if text == "crash":
+                text = self.message_crash
+                style = "strong"
+                text_surface, text_rect = Display.font(self, text, style)
+                # display the message
+                window.blit(text_surface, text_rect)
+            if text == "score":
+                score = str(score)
+                text = "Score: " + score
+                style = "soft"
+                text_surface, text_rect = Display.font(self, text, style)
+                # display the message
+                window.blit(text_surface, text_rect)
         pygame.display.update()
         # after the car crashed wait 3s
         time.sleep(3)
@@ -70,7 +100,11 @@ def load_background_window():
     return [window, loaded_backgrounds[0], loaded_backgrounds[1]]
 
 
-def position_background(window, background_left, bg_left_pos, background_right, bg_right_pos):
+def disp_background(window, background_left, bg_left_pos, background_right, bg_right_pos):
+    # define the gray color of the street
+    gray = (60, 60, 60)
+    # fill in the gray color for the street
+    window.fill(gray)
     # defining the position of background image for left and right side in x axis and y axis
     window.blit(background_left, bg_left_pos)
     window.blit(background_right, bg_right_pos)

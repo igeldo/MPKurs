@@ -1,117 +1,118 @@
 # author: Tessa Vogt
-# date: 12.11.2022
+# date: 30.01.2023
 
-# Importieren der erforderlichen Bibliotheken
+# Import libraries
 import pygame
-import random
 import car
 import display
+import time
 
 
-pygame.init()
-# define colors
-gray = (60, 60, 60)
-black = (255, 0, 0)
-# DEFINE CAR AND BACKGROUND IMAGES
-# load window and background image for the left and right side
-[window, [bg_left, bg_left_pos], [bg_right, bg_right_pos]] = display.load_background_window()
-# load car image
-carclass = car.Car()
-car_size = carclass.car_size
-car_width = carclass.car_width
-# set enemies car height and width
-[enemy_width, enemy_height] = car_size
-enemyCar = carclass.player_car_info("car_enemy")
-playerCar = carclass.player_car_info("car_player")
-# load player car
-car_img = car.load_car(carclass, "car_player")
+def loop(player_start_pos, player_pos, move_car_player, enemies_pos, which_car, enemies_new_pos, start_timer):
+    # display the background in the window
+    display.disp_background(window, bg_left, bg_left_pos, bg_right, bg_right_pos)
+    # define the user's keyboard inputs and move and display the players car
+    player_pos, move_car_player = user_input(move_car_player, player_pos, player_start_pos)
+    # update the timer
+    timer = time.time() - start_timer
+    # check if the car is still on the road
+    crash_barrier(player_pos, timer)
+    enemies_new_pos, which_car \
+        = car.move_enemies_car(enemies_pos, display_size, size_enemy, which_car, enemies_new_pos)
+    # display the enemies car
+    car.disp_car(carclass, window, enemies_new_pos[0], enemies_new_pos[1], None, which_car)
+    # check if the cars crashed into each other
+    crash_cars(player_start_pos, player_pos, enemies_new_pos, timer)
+    # update the display with the declared elements
+    pygame.display.update()
+    return player_pos, move_car_player, which_car, enemies_new_pos
 
 
-# all the function are called using this function
-def loop():
-    # set car position for x and y axis
-    player_position = playerCar[1]
-    [x, y] = player_position
-    # set changing position of the car
-    x_change = 0
-    y_change = 0
-    # set enemies car speed
-    enemy_car_speed = enemyCar[2]
-    # set starting stage for the enemies car
-    enemy = 0
-    # with this the enemies car will come randomly
-    enemy_position = enemyCar[1]
-    [[start_x1, start_x2], start_y] = enemy_position
-    enemy_startx = random.randrange(start_x1, (start_x2 - car_width))
-    # enemies car will come from negative y axis as it comes from opposite direction
-    enemy_starty = start_y
+def user_input(move_car_player, player_pos, player_start_pos):
+    for event in pygame.event.get():
+        # close the window and stop the loop if the window gets closed
+        if event.type == pygame.QUIT:
+            # quit the game
+            pygame.quit()
+            quit()
+        if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE:
+                # restart the game
+                start_game(player_start_pos)
+            else:
+                # arrows where pressed to move the players car
+                move_car_player = car.players_movement(event)
+    player_pos += move_car_player
+    # display the players car
+    car.disp_car(carclass, window, player_pos, pos_player[1], player_img)
+    return player_pos, move_car_player
 
-    # Bewegung des Fahrzeugs einstellen
-    # if the game doesn't have any problem to start
-    bumped = False
-    # start the game
-    while not bumped:
-        # defining the input of the game
-        for event in pygame.event.get():
-            # if quit input is given
-            if event.type == pygame.QUIT:
-                # bumped = True and game will stop
-                pygame.quit()
-                quit()
-            # defining the arrow keys
-            if event.type == pygame.KEYDOWN:
-                # if user is pressing the left arrow
-                if event.key == pygame.K_LEFT:
-                    # car will move to the left side
-                    x_change = -1
-                if event.key == pygame.K_RIGHT:
-                    # car will move to the right side
-                    x_change = 1
-            # if any key is not being pressed then stop the car
-            if event.type == pygame.KEYUP:
-                x_change = 0
-        x += x_change
 
-        # Beschränkungen auf das Fahrzeug anwenden
-        # setting the color of the road
-        window.fill(gray)
-        # car speed that are coming from opposite side (y axis)
-        display.position_background(window, bg_left, bg_left_pos, bg_right, bg_right_pos)
-        enemy_starty -= (enemy_car_speed / 1.2)
-        car.enemy_car(carclass, window, enemy_startx, enemy_starty, enemy)
-        # enemies car speed will increase slowly
-        enemy_starty += enemy_car_speed
-        car.player_car(carclass, window, x, y)
-        # if the car goes out of range (sidewall of the road)
-        if x < 130 or x > 700 - car_width:
+def crash_barrier(player_pos, timer):
+    # when car leaves the street and drives onto the grass and bike lane
+    if player_pos < road_size[0] or player_pos > (road_size[1] - size[0]):
+        # crash
+        crash(timer)
+
+
+def crash_cars(player_start_pos, player_pos, enemies_pos, timer):
+    # as soon as both cars are on the same height they are able to crash
+    player_pos_y = player_start_pos[1]
+    player_pos_x = player_pos
+    if (enemies_pos[1] + size_enemy[1]) >= player_pos_y:
+        if (enemies_pos[0] + size_enemy[0]) >= player_pos_x and enemies_pos[0] <= (player_pos_x + size[0]):
             # crash
-            display.Display("message").message_display(window, "crash")
-            # call the loop function to restart the game
-            loop()
-        # Feindliche Autos werden zufällig kommen
-        # setting how far the enemies car will go
-        if enemy_starty > 600:
-            # only one car will cross the road in one time
-            enemy_starty = 0 - enemy_height
-            # then other car will come
-            enemy_startx = random.randrange(start_x1, (start_x2 - car_width))
-            # set how many car will come
-            enemy = random.randrange(2, 4)
-
-        # if the enemies car doesn't cross the road then crash the car
-        if y < enemy_starty + enemy_height:
-            if enemy_startx < x < enemy_startx + enemy_width \
-                    or enemy_startx < x + car_width < enemy_startx + enemy_width:
-                # crash
-                display.Display("message").message_display(window, "crash")
-                # call the loop function to restart the game
-                loop()
-
-            # Quit-Code zum Beenden des Spiels
-            # restart the game
-            pygame.display.update()
+            crash(timer)
 
 
-loop()
-pygame.quit()
-quit()
+def crash(timer):
+    timer = round(timer, 4)
+    # print("Score:", timer)
+    display.Display("message").message_display(window, ["crash", "score"], timer)
+    # wait for the player to start a new game, else close the window
+    seconds_start = time.time()
+    seconds = 0
+    shutofftime = 60
+    while seconds < shutofftime:
+        player_pos, move_car_player = user_input(0, 0, pos_player)
+        seconds_end = time.time()
+        seconds = seconds_end - seconds_start
+    # quit the game
+    print("shut down the game due to no user input for longer than 1 minute")
+    pygame.quit()
+    quit()
+
+
+def start_game(car_pos):
+    # begin loop
+    player_start_pos = car_pos
+    car_pos_x = car_pos[0]
+    move_player = 0
+    move_enemy = [400, 0]
+    which_car = 2
+    start_timer = time.time()
+    while True:
+        try:
+            car_pos_x, move_player, which_car, move_enemy\
+                = loop(player_start_pos, car_pos_x, move_player, pos_enemy, which_car, move_enemy, start_timer)
+        except AttributeError:
+            print("oops, found an error")
+            break
+
+
+# Run this as the main module
+if __name__ == '__main__':
+    pygame.init()
+    # load the background images
+    [window, [bg_left, bg_left_pos, bg_left_size], [bg_right, bg_right_pos, bg_right_size]] \
+        = display.load_background_window()
+    # road starts with the end of the left_background until the right_background starts
+    display_size = display.Display("display").return_display_size()
+    road_size = [bg_left_size[0], bg_right_pos[0]]
+    # load players car
+    carclass = car.Car()
+    [rotation, pos_player, speed, size, player_img] = carclass.car_info("car_player")  # [x,y]=players car starting pos
+    [rotation_enemy, pos_enemy, speed_enemy, size_enemy, no_img] = carclass.car_info("car_enemy")
+    start_game(pos_player)
+
+

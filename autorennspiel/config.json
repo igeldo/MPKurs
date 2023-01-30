@@ -23,8 +23,8 @@
             "car_player": {
                 "rotation": 0,
                 "position": [
-                    465,
-                    550
+                    450,
+                    500
                 ],
                 "speed": 0
             },
@@ -35,9 +35,9 @@
                         200,
                         630
                     ],
-                    -200
+                    0
                 ],
-                "speed": 9
+                "speed": 4
             }
         },
         "background_left": {
