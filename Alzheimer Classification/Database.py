@@ -72,7 +72,7 @@ class Database:
         """
 
         self.cur.execute('DROP TABLE IF EXISTS alz_schema.img_table')
-
+        print("Dropped table")
         create_script = ''' CREATE TABLE IF NOT EXISTS alz_schema.img_table (
                                                     image      bytea,
                                                     label_class    int,
@@ -126,7 +126,10 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
-                    img[n] = open(mypath + data[n], 'rb').read()
+                    temp_img = Image.open(mypath + data[n]).resize((180, 180))
+                    resized_img = io.BytesIO()
+                    temp_img.save(resized_img, format='JPEG')
+                    img[n] = resized_img.getvalue()
                     self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "train"))
 
             for i in db.im_attributes["path_test"]:
@@ -146,7 +149,10 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
-                    img[n] = open(mypath + data[n], 'rb').read()
+                    temp_img = Image.open(mypath + data[n]).resize((180, 180))
+                    resized_img = io.BytesIO()
+                    temp_img.save(resized_img, format='JPEG')
+                    img[n] = resized_img.getvalue()
                     self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "test"))
 
             self.conn.commit()  # commit the changes to the database
@@ -181,7 +187,7 @@ class Database:
             img = Image.open(io.BytesIO(binary_img))
 
             train_images.append(np.array(img))
-            train_labels.append(row[1])
+            train_labels.append(str(row[1]))
 
         return train_images, train_labels
 
@@ -220,9 +226,11 @@ if __name__ == '__main__':
     db = Database()
     db.get_image_path()
     db.connection()
-
-    # db.create_table()
-    # db.send_files_to_postgresql()
+    print("Connection established")
+    db.create_table()
+    print("Table created")
+    db.send_files_to_postgresql()
+    print("All files uploaded")
 
     train_images, train_labels = db.get_train_files_from_postgresql()
     test_images, test_labels = db.get_test_files_from_postgresql()
