@@ -217,7 +217,7 @@ class Database:
             test_images.append(np.array(img))
             test_labels.append(row[1])
 
-        return np.asarray(test_images), np.asarray(test_labels)
+        return test_images, test_labels
 
 
 
