@@ -19,7 +19,7 @@ To achieve the aim, following requirements have to be met:
 Following utilities are used:
 - Pycharm 2022.3 Professional Edition
 - Python 3.10
-- PyQt6 (6.4.1)
+- PyQt5 (5.15.8)
 - matplotlib (3.6.2)
 - numpy (1.23.5)
 - packaging (21.3)
