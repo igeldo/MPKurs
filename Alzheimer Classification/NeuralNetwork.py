@@ -33,16 +33,16 @@ class NeuralNetwork:
 
         # in init schon einlesen? # ja
         self.traindata = self.rescale(train_images)
-        self.traindata_label = train_labels
+        self.traindata_label = np.array(train_labels)
 
-        self.testdata = self.rescale(test_images)
-        self.testdata_label = test_labels
+        self.testdata = self.rescale(test_images[0:10])
+        self.testdata_label = np.array(test_labels[0:10])
 
 
     def define_model_CNN(self):
 
         model = tf.keras.models.Sequential([
-            Conv2D(16, (3, 3), activation='relu', input_shape=(208, 176, 1)),  # 224, 224, 3
+            Conv2D(16, (3, 3), activation='relu', input_shape=(180, 180, 3)),  # 224, 224, 3
             MaxPooling2D(2, 2),
             Conv2D(32, (3, 3), activation='relu'),
             MaxPooling2D(2, 2),
@@ -64,9 +64,9 @@ class NeuralNetwork:
 
 
     def rescale(self, images):
-        datagen = ImageDataGenerator(rescale=1.0/255)
-        rescaled_images = datagen.flow(images,
-                            batch_size=1)
+
+        rescaled_images = np.array(images)/255.0
+
         return rescaled_images
 
 

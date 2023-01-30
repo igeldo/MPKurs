@@ -187,7 +187,7 @@ class Database:
             img = Image.open(io.BytesIO(binary_img))
 
             train_images.append(np.array(img))
-            train_labels.append(str(row[1]))
+            train_labels.append(row[1])
 
         return train_images, train_labels
 
@@ -217,7 +217,7 @@ class Database:
             test_images.append(np.array(img))
             test_labels.append(row[1])
 
-        return test_images, test_labels
+        return np.asarray(test_images), np.asarray(test_labels)
 
 
 
