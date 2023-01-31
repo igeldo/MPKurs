@@ -38,11 +38,11 @@ class NeuralNetwork:
         print("after")
 
         # in init schon einlesen? # ja
-        self.traindata = self.rescale(train_images[0:40])
-        self.traindata_label = np.array(train_labels[0:40])
+        self.traindata = self.rescale(train_images)
+        self.traindata_label = np.array(train_labels)
 
-        self.testdata = self.rescale(test_images[0:10])
-        self.testdata_label = np.array(test_labels[0:10])
+        self.testdata = self.rescale(test_images)
+        self.testdata_label = np.array(test_labels)
 
 
     def define_model_CNN(self):
@@ -66,7 +66,10 @@ class NeuralNetwork:
     def compile_fit_CNN(self, model, train_images, train_labels):
 
         model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
-        history = model.fit(train_images, train_labels, epochs=2)
+        history = model.fit(train_images, train_labels,
+                            epochs=2,
+                            batch_size=32,
+                            shuffle=True)
 
         return history
 
@@ -100,3 +103,13 @@ if __name__ == '__main__':
         history = network.compile_fit_CNN(model, network.traindata, network.traindata_label)
 
         print(history)
+
+        print("Evaluate model on test data")
+        results = model.evaluate(network.testdata, network.testdata_label, batch_size=128)
+        print("test loss, test acc:", results)
+
+        # Generate a prediction using model.predict()
+        # and calculate it's shape:
+        print("Generate a prediction")
+        prediction = model.predict(network.testdata[:1])
+        print("prediction shape:", prediction.shape)
