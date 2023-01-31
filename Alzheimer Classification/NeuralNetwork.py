@@ -10,7 +10,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, models
 from tensorflow.keras.preprocessing import image
+
 from tensorflow.image import rgb_to_grayscale
+from tensorflow.image import grayscale_to_rgb
+
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Flatten, MaxPooling2D, Dense, Dropout, GlobalAveragePooling2D
@@ -35,7 +38,7 @@ class NeuralNetwork:
         print("after")
 
         # in init schon einlesen? # ja
-        self.traindata = rgb_to_grayscale(self.rescale(train_images[0:40]))
+        self.traindata = self.rescale(train_images[0:40])
         self.traindata_label = np.array(train_labels[0:40])
 
         self.testdata = self.rescale(test_images[0:10])
@@ -56,7 +59,7 @@ class NeuralNetwork:
             Flatten(),
             Dense(512, activation='relu'),
             Dropout(0.2),
-            Dense(4, activation='softmax')
+            Dense(1, activation='softmax')
         ])
         return model
 
@@ -79,19 +82,19 @@ if __name__ == '__main__':
 
         network = NeuralNetwork()
 
-        plt.figure()
-        plt.imshow(network.traindata[0])
-        print(np.mean(network.traindata[0]))
-        print("Label: ", network.traindata_label[0])
-        plt.grid(False)
-        plt.show()
-
-        plt.figure()
-        plt.imshow(network.testdata[0])
-        print(np.mean(network.testdata[0]))
-        print("Label: ", network.testdata_label[0])
-        plt.grid(False)
-        plt.show()
+        # plt.figure()
+        # plt.imshow(network.traindata[0])
+        # print(np.mean(network.traindata[0]))
+        # print("Label: ", network.traindata_label[0])
+        # plt.grid(False)
+        # plt.show()
+        #
+        # plt.figure()
+        # plt.imshow(network.testdata[0])
+        # print(np.mean(network.testdata[0]))
+        # print("Label: ", network.testdata_label[0])
+        # plt.grid(False)
+        # plt.show()
 
         model = network.define_model_CNN()
         history = network.compile_fit_CNN(model, network.traindata, network.traindata_label)

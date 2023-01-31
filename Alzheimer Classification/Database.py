@@ -126,7 +126,7 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
-                    temp_img = Image.open(mypath + data[n]).resize((180, 180))
+                    temp_img = Image.open(mypath + data[n]).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
                     img[n] = resized_img.getvalue()
@@ -149,17 +149,54 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for n in range(0, len(img)):
-                    temp_img = Image.open(mypath + data[n]).resize((180, 180))
+                    temp_img = Image.open(mypath + data[n]).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
                     img[n] = resized_img.getvalue()
                     self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "test"))
+
+                # load assert image
+                temp_img = Image.open(db.path + "\\test_image.jfif").resize((180, 180)).convert('L')
+                resized_img = io.BytesIO()
+                temp_img.save(resized_img, format='JPEG')
+                img = resized_img.getvalue()
+                self.cur.execute(query, (psycopg2.Binary(img), 4, "assert_image"))
 
             self.conn.commit()  # commit the changes to the database
             count = self.cur.rowcount  # check that the images were all successfully added
             print(count, "Records inserted successfully into table")
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+
+    def get_assert_files_from_postgresql(self):
+        """
+        get train files from database
+        """
+
+        #select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
+
+        # Initialize the numpy arrays
+        train_images = []
+        train_labels = []
+
+        # Retrieve the training images from the database
+        sql = "SELECT image, label_class \
+                    FROM alz_schema.img_table \
+                    WHERE label_train_test = 'assert_image'"
+        self.cur.execute(sql)
+        result = self.cur.fetchall()
+
+        # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
+        for row in result:
+
+            # IMAGE:
+            binary_img = row[0] # result[0][0]  # or row[0] <- wenn in Schleife
+            img = Image.open(io.BytesIO(binary_img))
+
+            train_images.append(np.array(img))
+            train_labels.append(row[1])
+
+        return train_images, train_labels
 
     def get_train_files_from_postgresql(self):
         """
@@ -232,28 +269,28 @@ if __name__ == '__main__':
     db.send_files_to_postgresql()
     print("All files uploaded")
 
-    train_images, train_labels = db.get_train_files_from_postgresql()
-    test_images, test_labels = db.get_test_files_from_postgresql()
-
-    # show third train image
-    pic = 2
-    plt.figure()
-    plt.imshow(train_images[pic])
-    print(np.mean(train_images[pic]))
-    print("Label: ", train_labels[pic])
-    plt.colorbar()
-    plt.grid(False)
-    plt.show()
-
-    # show 2001 train image
-    pic_test = 2000
-    plt.figure()
-    plt.imshow(train_images[pic_test])
-    print(np.mean(train_images[pic_test]))
-    print("Label: ", train_labels[pic_test])
-    plt.colorbar()
-    plt.grid(False)
-    plt.show()
+    # train_images, train_labels = db.get_train_files_from_postgresql()
+    # test_images, test_labels = db.get_test_files_from_postgresql()
+    #
+    # # show third train image
+    # pic = 2
+    # plt.figure()
+    # plt.imshow(train_images[pic])
+    # print(np.mean(train_images[pic]))
+    # print("Label: ", train_labels[pic])
+    # plt.colorbar()
+    # plt.grid(False)
+    # plt.show()
+    #
+    # # show 2001 train image
+    # pic_test = 2000
+    # plt.figure()
+    # plt.imshow(train_images[pic_test])
+    # print(np.mean(train_images[pic_test]))
+    # print("Label: ", train_labels[pic_test])
+    # plt.colorbar()
+    # plt.grid(False)
+    # plt.show()
 
     print("finished")
     # before run -> create database called "alz"
