@@ -16,13 +16,13 @@ def loop(player_start_pos, player_pos, move_car_player, enemies_pos, which_car, 
     # update the timer
     timer = time.time() - start_timer
     # check if the car is still on the road
-    crash_barrier(player_pos, timer)
+    crash_barrier(player_pos, enemies_new_pos, which_car, timer)
     enemies_new_pos, which_car \
         = car.move_enemies_car(enemies_pos, display_size, size_enemy, which_car, enemies_new_pos)
     # display the enemies car
     car.disp_car(carclass, window, enemies_new_pos[0], enemies_new_pos[1], None, which_car)
     # check if the cars crashed into each other
-    crash_cars(player_start_pos, player_pos, enemies_new_pos, timer)
+    crash_cars(player_start_pos, player_pos, enemies_new_pos, which_car, timer)
     # update the display with the declared elements
     pygame.display.update()
     return player_pos, move_car_player, which_car, enemies_new_pos
@@ -48,26 +48,30 @@ def user_input(move_car_player, player_pos, player_start_pos):
     return player_pos, move_car_player
 
 
-def crash_barrier(player_pos, timer):
+def crash_barrier(player_pos, enemies_new_pos, which_car, timer):
     # when car leaves the street and drives onto the grass and bike lane
-    if player_pos < road_size[0] or player_pos > (road_size[1] - size[0]):
+    size_player = size[0]
+    if player_pos < road_size[0] or player_pos > (road_size[1] - size_player[0]):
         # crash
-        crash(timer)
+        crash(timer, player_pos, enemies_new_pos, which_car)
 
 
-def crash_cars(player_start_pos, player_pos, enemies_pos, timer):
+def crash_cars(player_start_pos, player_pos, enemies_pos, which_car, timer):
     # as soon as both cars are on the same height they are able to crash
     player_pos_y = player_start_pos[1]
     player_pos_x = player_pos
-    if (enemies_pos[1] + size_enemy[1]) >= player_pos_y:
-        if (enemies_pos[0] + size_enemy[0]) >= player_pos_x and enemies_pos[0] <= (player_pos_x + size[0]):
+    enemies_size = size_enemy[which_car]
+    size_player = size[0]
+    if (enemies_pos[1] + enemies_size[1]) >= player_pos_y:
+        if (enemies_pos[0] + enemies_size[0]) >= player_pos_x and enemies_pos[0] <= (player_pos_x + size_player[0]):
             # crash
-            crash(timer)
+            crash(timer, player_pos, enemies_pos, which_car)
 
 
-def crash(timer):
+def crash(timer, player_pos, enemies_new_pos, which_car):
     timer = round(timer, 4)
     # print("Score:", timer)
+    crash_animation(player_pos, enemies_new_pos, which_car)
     display.Display("message").message_display(window, ["crash", "score"], timer)
     # wait for the player to start a new game, else close the window
     seconds_start = time.time()
@@ -81,6 +85,22 @@ def crash(timer):
     print("shut down the game due to no user input for longer than 1 minute")
     pygame.quit()
     quit()
+
+
+def crash_animation(player_pos, enemies_new_pos, which_car):
+    i = 1
+    while i < 3:
+        display.disp_background(window, bg_left, bg_left_pos, bg_right, bg_right_pos)
+        car.disp_car(carclass, window, enemies_new_pos[0], enemies_new_pos[1], None, which_car)
+        crash_img = carclass.load_car("car_player", 20, i)
+        if i == 1:
+            shift = [57, 87]
+        else:
+            shift = [5, 10]
+        car.disp_car(carclass, window, (player_pos - shift[0]), (pos_player[1] - shift[1]), crash_img)
+        pygame.display.update()
+        # time.sleep(0.25)
+        i += 1
 
 
 def start_game(car_pos):

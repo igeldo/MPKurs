@@ -9,16 +9,32 @@
                     ]
             },
             "car_1": {
-                "path": "car_1.png"
+                "path": "car_1.png",
+                "size": [65,130]
+            },
+            "car_1_crash": {
+                "path": "car_1_crash.png",
+                "size": [170,200]
+            },
+            "car_1_wrecked": {
+                "path": "car_1_wrecked.png",
+                "size": [90,137]
             },
             "car_2": {
-                "path": "car_2.png"
+                "path": "car_2.png",
+                "size": [70,133]
             },
             "car_3": {
-                "path": "car_3.png"
+                "path": "car_3.png",
+                "size": [70,130]
             },
             "car_4": {
-                "path": "car_4.png"
+                "path": "car_4.png",
+                "size": [70,139]
+            },
+            "car_5": {
+                "path": "car_5.png",
+                "size": [75,160]
             },
             "car_player": {
                 "rotation": 0,
@@ -76,8 +92,8 @@
             "name": "freesansbold.ttf",
             "size": 80,
             "position": [
-                400,
-                300
+                450,
+                100
             ]
         }
     }
