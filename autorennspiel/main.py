@@ -12,13 +12,15 @@ def loop(player_start_pos, player_pos, move_car_player, enemies_pos, which_car, 
     # display the background in the window
     display.disp_background(window, bg_left, bg_left_pos, bg_right, bg_right_pos)
     # define the user's keyboard inputs and move and display the players car
-    player_pos, move_car_player = user_input(move_car_player, player_pos, player_start_pos)
+    player_pos, move_car_player, started_game = user_input(move_car_player, player_pos, player_start_pos)
+    # display the players car
+    car.disp_car(carclass, window, player_pos, pos_player[1], player_img)
     # update the timer
     timer = time.time() - start_timer
     # check if the car is still on the road
     crash_barrier(player_pos, enemies_new_pos, which_car, timer)
     enemies_new_pos, which_car \
-        = car.move_enemies_car(enemies_pos, display_size, size_enemy, which_car, enemies_new_pos)
+        = car.move_enemies_car(enemies_pos, display_size, size_enemy, which_car, enemies_new_pos, speed_enemy, timer)
     # display the enemies car
     car.disp_car(carclass, window, enemies_new_pos[0], enemies_new_pos[1], None, which_car)
     # check if the cars crashed into each other
@@ -29,6 +31,7 @@ def loop(player_start_pos, player_pos, move_car_player, enemies_pos, which_car, 
 
 
 def user_input(move_car_player, player_pos, player_start_pos):
+    started_game = False
     for event in pygame.event.get():
         # close the window and stop the loop if the window gets closed
         if event.type == pygame.QUIT:
@@ -41,11 +44,14 @@ def user_input(move_car_player, player_pos, player_start_pos):
                 start_game(player_start_pos)
             else:
                 # arrows where pressed to move the players car
-                move_car_player = car.players_movement(event)
+                move_car_player = car.players_movement(event, speed)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if text_rect.collidepoint(event.pos):
+                started_game = True
+            else:
+                started_game = False
     player_pos += move_car_player
-    # display the players car
-    car.disp_car(carclass, window, player_pos, pos_player[1], player_img)
-    return player_pos, move_car_player
+    return player_pos, move_car_player, started_game
 
 
 def crash_barrier(player_pos, enemies_new_pos, which_car, timer):
@@ -78,7 +84,7 @@ def crash(timer, player_pos, enemies_new_pos, which_car):
     seconds = 0
     shutofftime = 60
     while seconds < shutofftime:
-        player_pos, move_car_player = user_input(0, 0, pos_player)
+        user_input(0, 0, pos_player)
         seconds_end = time.time()
         seconds = seconds_end - seconds_start
     # quit the game
@@ -122,6 +128,7 @@ def start_game(car_pos):
 
 # Run this as the main module
 if __name__ == '__main__':
+    username = input("Please enter username:")
     pygame.init()
     # load the background images
     [window, [bg_left, bg_left_pos, bg_left_size], [bg_right, bg_right_pos, bg_right_size]] \
@@ -133,6 +140,11 @@ if __name__ == '__main__':
     carclass = car.Car()
     [rotation, pos_player, speed, size, player_img] = carclass.car_info("car_player")  # [x,y]=players car starting pos
     [rotation_enemy, pos_enemy, speed_enemy, size_enemy, no_img] = carclass.car_info("car_enemy")
+    game_started = False
+    text_rect = display.Display("message").start_button(window, game_started)
+    while game_started is False:
+        ni, ni, game_started = user_input(0, 0, [0, 0])
+    text_rect = display.Display("message").start_button(window, game_started)
     start_game(pos_player)
 
 

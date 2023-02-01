@@ -69,4 +69,7 @@ print(get_car_img_paths(3))
 
 print(get_car_img_paths_or_size("car_player", "path"))
 print(get_car_img_paths_or_size("car_player", "size"))
+
+my_file = Json('config.json')
+print(my_file.get_attribute("highscore", "path"))
 '''

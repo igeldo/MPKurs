@@ -9,27 +9,26 @@ class Display:
         # define colors in RGB form
         # self.gray = (60, 60, 60)
         self.red = (255, 0, 0)
-        self.black = (255, 255, 255)
+        self.white = (255, 255, 255)
+        self.black = (0, 0, 0)
         if name == "display" or "message":
             display_attributes = config.Json("config.json").get_attribute("display")
-        if name == "display":
             self.size = display_attributes["size"]
             self.window_name = display_attributes["window_name"]
-        elif name == "message":
             self.message_crash = display_attributes["message_crash"]
             font = display_attributes["font"]
             self.font_name = font["name"]
             self.font_size = font["size"]
             self.font_position = font["position"]
-        elif name == "background" and background is not None:
+        if name == "background" and background is not None:
             self.img_path = config.Json("config.json").get_attribute("images", "general_img_path")
             background_attributes = config.Json("config.json").get_attribute("images", background)
             self.bg_path = background_attributes["path"]
             self.bg_size = background_attributes["size"]
             self.bg_rotation = background_attributes["rotation"]
             self.bg_position = background_attributes["position"]
-        else:
-            raise ValueError('Class Display is missing parameters')
+        #else:
+        #    raise ValueError('Class Display is missing parameters')
 
     def return_display_size(self):
         display_size = self.size
@@ -64,7 +63,7 @@ class Display:
             # set font size and style of the message
             large_text = pygame.font.Font(self.font_name, self.font_size - 30)
             # set function to edit the message
-            text_surface = large_text.render(text, True, self.black)
+            text_surface = large_text.render(text, True, self.white)
             text_rect = text_surface.get_rect()
             # set the position of the text on the screen
             [x, y] = self.font_position
@@ -89,6 +88,31 @@ class Display:
         pygame.display.update()
         # after the car crashed wait 3s
         time.sleep(3)
+
+    def start_button(self, window, game_started):
+        # render at position stated in arguments
+        if game_started is False:
+            color_rect = self.white
+            color_text = self.red
+        else:
+            color_rect = self.red
+            color_text = self.white
+        text = "START"
+        large_text = pygame.font.Font(self.font_name, self.font_size)
+        text_surface = large_text.render(text, True, color_text)
+        text_rect = text_surface.get_rect()
+        text_rect.center = self.font_position
+        # create rectangle
+        # draw rectangle and argument passed which should
+        # be on screen
+        pygame.draw.rect(window, color_rect, text_rect)
+        window.blit(text_surface, text_rect)
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
+        if game_started is True:
+            time.sleep(1)
+        return text_rect
 
 
 def load_background_window():

@@ -2,12 +2,6 @@
     "images": {
         "general_img_path": "C:\\Users\\tvogt\\OneDrive\\Dokumente\\FH_Dortmund\\Programmierprojekt\\Auto-Rennspiel\\",
         "cars": {
-            "general": {
-                "size": [
-                    70,
-                    126
-                    ]
-            },
             "car_1": {
                 "path": "car_1.png",
                 "size": [65,130]
@@ -42,7 +36,7 @@
                     450,
                     500
                 ],
-                "speed": 0
+                "speed": 4
             },
             "car_enemy": {
                 "rotation": -180,
@@ -53,7 +47,7 @@
                     ],
                     0
                 ],
-                "speed": 4
+                "speed": 6
             }
         },
         "background_left": {
@@ -96,5 +90,9 @@
                 100
             ]
         }
+    },
+    "highscore": {
+        "path": "C:\\Users\\tvogt\\OneDrive\\Dokumente\\FH_Dortmund\\Programmierprojekt\\Auto-Rennspiel\\",
+        "name": "highscore_list.txt"
     }
 }

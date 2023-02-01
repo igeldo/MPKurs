@@ -57,24 +57,25 @@ def disp_car(carclass, window, x, y, car_img, enemy=None):
 
 
 # define how the user input moves the players car
-def players_movement(event):
+def players_movement(event, speed):
     move_car_player = 0
     # defining the arrow keys
     if event.type == pygame.KEYDOWN:
         # if user is pressing the left arrow
         if event.key == pygame.K_LEFT:
             # car will move to the left side
-            move_car_player = -3
+            move_car_player = - speed
         if event.key == pygame.K_RIGHT:
             # car will move to the right side
-            move_car_player = 3
+            move_car_player = speed
     # if any key is not being pressed then stop the car
     if event.type == pygame.KEYUP:
         move_car_player = 0
     return move_car_player
 
 
-def move_enemies_car(enemies_pos, display_size, car_size, which_car, enemy_current_pos):
+def move_enemies_car(enemies_pos, display_size, car_size, which_car, enemy_current_pos, speed_enemy, timer):
+
     x_range = enemies_pos[0]
     enemies_pos_x = enemy_current_pos[0]
     enemies_pos_y = enemy_current_pos[1]#
@@ -85,7 +86,10 @@ def move_enemies_car(enemies_pos, display_size, car_size, which_car, enemy_curre
         enemies_pos_x = random.randrange(x_range[0], (x_range[1] - car_size[0]))
         # set which car will come
         which_car = random.randrange(2, 4)
-    enemies_pos_y += 6
+    acceleration = round(timer/20) + (timer/1000)
+    if acceleration < 1:
+        acceleration = 1
+    enemies_pos_y += speed_enemy * acceleration
     enemies_new_pos = [enemies_pos_x, enemies_pos_y]
     return enemies_new_pos, which_car
 
