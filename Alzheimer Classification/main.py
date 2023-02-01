@@ -4,26 +4,43 @@ from matplotlib import pyplot as plt
 #import tensorflow as tf
 import os
 
-def load_images():
-
-    #base_path = "./data"
-    #img = io.imread(base_path + "/augmenteddata/MildDemented/0a0a0acd-8bd8-4b79-b724-cc5711e83bc7.jpg")
-    #io.imshow(img)
-    #io.show()
-
-    #print(np.mean(img))
-    print(os.environ.get('USERNAME'))
-    if (os.environ.get('USERNAME') == 'kubic'):
-        path_alzheimer_folder = 'C:\\Users\\kubic\\Documents\\Alzheimer'
-    elif (os.environ.get('USERNAME') == 'ivono'):
-        if (os.path.exists('D:\FH\Master Dortmund\Programmierprojekt')):
-            path_alzheimer_folder = 'D:\\FH\\Master Dortmund\\Programmierprojekt\\Alzheimer'
-        else:
-            path_alzheimer_folder = 'C:\\Users\\ivono\\FH\\Programmierkurs\\Alzheimer'
-    print(path_alzheimer_folder)
+from Database import Database
+from NeuralNetwork import NeuralNetwork
 
 if __name__ == '__main__':
 
-    print("Hello World")
+    db = Database()
+    db.get_image_path()
+    db.connection()
+    print("Connection established")
+    db.create_table()
+    print("Table created")
+    db.send_files_to_postgresql()
+    print("All files uploaded")
 
-    load_images()
+    print("before")
+    train_images, train_labels = db.get_train_files_from_postgresql()
+    test_images, test_labels = db.get_test_files_from_postgresql()
+    print("after")
+
+    # show images
+    # plt.figure()
+    # plt.imshow(network.train_images[0])
+    # print("Label: ", network.train_labels[0])
+    # plt.grid(False)
+    # plt.show()
+    #
+    # plt.figure()
+    # plt.imshow(network.test_images[0])
+    # print("Label: ", network.test_labels[0])
+    # plt.grid(False)
+    # plt.show()
+
+    network = NeuralNetwork(train_images, train_labels, test_images, test_labels)
+    network.define_model_CNN()
+    print("model defined")
+    history = network.compile_fit_CNN(network.traindata, network.traindata_label)
+    network.evaluate()
+    print("evaluate done")
+    network.predict()
+    print("prediction done")

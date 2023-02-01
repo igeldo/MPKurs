@@ -16,11 +16,12 @@ class Database:
 
     def __init__(self):
 
-        self.hostname = 'localhost'
-        self.database = 'alz'
-        self.username = 'postgres'
-        self.pwd = 'yay_python'
-        self.port_id = 5432
+        self._hostname = 'localhost'
+        self._database = 'alz'
+        self._username = 'postgres'
+        self._pwd = 'yay_python'
+        self._port_id = 5432
+
         self.conn = None
         self.cur = None
         self.path = None
@@ -58,11 +59,11 @@ class Database:
         """
 
         self.conn = psycopg2.connect(
-            host=self.hostname,
-            dbname=self.database,
-            user=self.username,
-            password=self.pwd,
-            port=self.port_id)
+            host=self._hostname,
+            dbname=self._database,
+            user=self._username,
+            password=self._pwd,
+            port=self._port_id)
 
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -109,9 +110,9 @@ class Database:
         query = "INSERT INTO alz_schema.img_table(image, label_class, label_train_test) " + "VALUES(%s, %s, %s)"
 
         try:
-            for i in db.im_attributes["path_train"]:
+            for i in self.im_attributes["path_train"]:
 
-                mypath = db.path + i
+                mypath = self.path + i
                 data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
                 if "NonDemented" in mypath:
@@ -151,12 +152,12 @@ class Database:
                     img_value = resized_img.getvalue()
                     self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "test"))
 
-                # load assert image
-                temp_img = Image.open(db.path + "\\test_image.jfif").resize((180, 180)).convert('L')
-                resized_img = io.BytesIO()
-                temp_img.save(resized_img, format='JPEG')
-                img = resized_img.getvalue()
-                self.cur.execute(query, (psycopg2.Binary(img), 4, "assert_image"))
+            # load assert image
+            temp_img = Image.open(db.path + "\\test_image.jfif").resize((180, 180)).convert('L')
+            resized_img = io.BytesIO()
+            temp_img.save(resized_img, format='JPEG')
+            img_value = resized_img.getvalue()
+            self.cur.execute(query, (psycopg2.Binary(img_value), 4, "assert_image"))
 
             self.conn.commit()  # commit the changes to the database
             count = self.cur.rowcount  # check that the images were all successfully added
@@ -168,8 +169,6 @@ class Database:
         """
         get train files from database
         """
-
-        #select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
 
         # Initialize the numpy arrays
         train_images = []
@@ -198,8 +197,6 @@ class Database:
         """
         get train files from database
         """
-
-        #select_script = """SELECT * from alz_schema.img_table where label_class = %s and label_train_test = %s"""
 
         # Initialize the numpy arrays
         train_images = []
