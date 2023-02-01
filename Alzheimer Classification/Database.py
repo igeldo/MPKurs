@@ -114,8 +114,6 @@ class Database:
                 mypath = db.path + i
                 data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
-                img = np.empty(len(data), dtype=object)
-
                 if "NonDemented" in mypath:
                     label_class = self.im_attributes["label"][0]
                 elif "VeryMildDemented" in mypath:
@@ -125,20 +123,18 @@ class Database:
                 elif "ModerateDemented" in mypath:
                     label_class = self.im_attributes["label"][3]
 
-                for n in range(0, len(img)):
-                    temp_img = Image.open(mypath + data[n]).resize((180, 180)).convert('L')
+                for file in data:
+                    temp_img = Image.open(mypath + file).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
-                    img[n] = resized_img.getvalue()
-                    self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "train"))
+                    img_value = resized_img.getvalue()
+                    self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "train"))
 
             for i in db.im_attributes["path_test"]:
 
                 mypath = db.path + i
                 data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
-                img = np.empty(len(data), dtype=object)
-
                 if "NonDemented" in mypath:
                     label_class = self.im_attributes["label"][0]
                 elif "VeryMildDemented" in mypath:
@@ -148,12 +144,12 @@ class Database:
                 elif "ModerateDemented" in mypath:
                     label_class = self.im_attributes["label"][3]
 
-                for n in range(0, len(img)):
-                    temp_img = Image.open(mypath + data[n]).resize((180, 180)).convert('L')
+                for file in data:
+                    temp_img = Image.open(mypath + file).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
-                    img[n] = resized_img.getvalue()
-                    self.cur.execute(query, (psycopg2.Binary(img[n]), label_class, "test"))
+                    img_value = resized_img.getvalue()
+                    self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "test"))
 
                 # load assert image
                 temp_img = Image.open(db.path + "\\test_image.jfif").resize((180, 180)).convert('L')
