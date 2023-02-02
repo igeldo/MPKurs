@@ -131,9 +131,9 @@ class Database:
                     img_value = resized_img.getvalue()
                     self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "train"))
 
-            for i in db.im_attributes["path_test"]:
+            for i in self.im_attributes["path_test"]:
 
-                mypath = db.path + i
+                mypath = self.path + i
                 data = [f for f in os.listdir(mypath) if isfile(join(mypath, f))]
 
                 if "NonDemented" in mypath:
@@ -153,7 +153,7 @@ class Database:
                     self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "test"))
 
             # load assert image
-            temp_img = Image.open(db.path + "\\test_image.jfif").resize((180, 180)).convert('L')
+            temp_img = Image.open(self.path + "\\test_image.jfif").resize((180, 180)).convert('L')
             resized_img = io.BytesIO()
             temp_img.save(resized_img, format='JPEG')
             img_value = resized_img.getvalue()
