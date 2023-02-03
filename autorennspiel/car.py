@@ -78,14 +78,14 @@ def move_enemies_car(enemies_pos, display_size, car_size, which_car, enemy_curre
 
     x_range = enemies_pos[0]
     enemies_pos_x = enemy_current_pos[0]
-    enemies_pos_y = enemy_current_pos[1]#
+    enemies_pos_y = enemy_current_pos[1]
     car_size = car_size[which_car]
     if enemies_pos_y > (display_size[1] - car_size[1]):
         enemies_pos_y = 0 - car_size[1]
         # then other car will come
         enemies_pos_x = random.randrange(x_range[0], (x_range[1] - car_size[0]))
         # set which car will come
-        which_car = random.randrange(2, 4)
+        which_car = random.randint(0, 3)
     acceleration = round(timer/20) + (timer/1000)
     if acceleration < 1:
         acceleration = 1

@@ -116,15 +116,32 @@ def return_users_highscore(username):
         if line_num > 0 and line != "":
             scores.append(get_score(line))
     # print(scores)
-    highscore = max(scores)
-    for line_num, line in enumerate(users_score.split("\n")):
-        if str(highscore) in line:
-            highscore_line = line
-    highscore_line = highscore_line.replace("\t", "   ")
+    if scores:
+        highscore = max(scores)
+        for line_num, line in enumerate(users_score.split("\n")):
+            if str(highscore) in line:
+                highscore_line = line
+        highscore_line = highscore_line.replace("\t", "   ")
+    else:
+        highscore = None
+        highscore_line = None
     return highscore, highscore_line
 
 
+def get_last_scores(username):
+    all_scores = score_user(username)
+    all_scores = all_scores.replace("\t", "   ")
+    # print(all_scores)
+    all_scores_list = all_scores.split("\n")
+    username_three_last_scores = [all_scores_list[0], "your latest scores:"]
+    all_scores_list = all_scores_list[1:]
+    num_lines = len(all_scores_list)
+    for i in range((num_lines - 4), num_lines - 1):
+        username_three_last_scores.append(all_scores_list[i])
+    return username_three_last_scores
 
+
+# for testing:
 '''
 print(Highscore().read_file())
 
@@ -133,10 +150,15 @@ print(Highscore().read_file())
 # score_user("christinebehrens08071966")
 # score_user("carolinwulfers14111997")
 
-
 print(return_users_highscore("tessavogt19031998"))
-# return_users_highscore("christinebehrens08071966")
-'''
+# print(return_users_highscore("carolinwulfers14111997"))
+
 add_score("christinebehrens08071966", 7.9374)
 add_score("tessavogt19031998", 28.7829)
 add_score("carolinwulfers14111997", 11.2905)
+
+print(get_last_scores("carolinwulfers14111997"))
+print(get_last_scores("tessavogt19031998"))
+print(get_last_scores("christinebehrens08071966"))
+print(get_last_scores("maximilianbrinkhoff10101995"))
+'''

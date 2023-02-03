@@ -6,6 +6,8 @@ import pygame
 import car
 import display
 import time
+import highscore
+import random
 
 
 def loop(player_start_pos, player_pos, move_car_player, enemies_pos, which_car, enemies_new_pos, start_timer):
@@ -69,6 +71,7 @@ def crash_cars(player_start_pos, player_pos, enemies_pos, which_car, timer):
     enemies_size = size_enemy[which_car]
     size_player = size[0]
     if (enemies_pos[1] + enemies_size[1]) >= player_pos_y:
+        # when the cars overlap they crash
         if (enemies_pos[0] + enemies_size[0]) >= player_pos_x and enemies_pos[0] <= (player_pos_x + size_player[0]):
             # crash
             crash(timer, player_pos, enemies_pos, which_car)
@@ -78,7 +81,12 @@ def crash(timer, player_pos, enemies_new_pos, which_car):
     timer = round(timer, 4)
     # print("Score:", timer)
     crash_animation(player_pos, enemies_new_pos, which_car)
-    display.Display("message").message_display(window, ["crash", "score"], timer)
+    highest_score = highscore.return_users_highscore(username)
+    last_scores = highscore.get_last_scores(username)
+    display.Display("message").message_display(window, ["crash", "score", "highscore", "last_scores"],\
+                                               timer, highest_score, last_scores)
+    # write score in highscore_list.txt
+    highscore.add_score(username, timer)
     # wait for the player to start a new game, else close the window
     seconds_start = time.time()
     seconds = 0
@@ -115,7 +123,7 @@ def start_game(car_pos):
     car_pos_x = car_pos[0]
     move_player = 0
     move_enemy = [400, 0]
-    which_car = 2
+    which_car = random.randint(0, 3)
     start_timer = time.time()
     while True:
         try:

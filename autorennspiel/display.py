@@ -52,39 +52,59 @@ class Display:
 
     def font(self, text, style):
         if style == "strong":
-            # set font size and style of the message
-            large_text = pygame.font.Font(self.font_name, self.font_size)
-            # set function to edit the message
-            text_surface = large_text.render(text, True, self.red)
-            text_rect = text_surface.get_rect()
-            # set the position of the text on the screen
-            text_rect.center = self.font_position
-        if style == "soft":
-            # set font size and style of the message
-            large_text = pygame.font.Font(self.font_name, self.font_size - 30)
-            # set function to edit the message
-            text_surface = large_text.render(text, True, self.white)
-            text_rect = text_surface.get_rect()
-            # set the position of the text on the screen
-            [x, y] = self.font_position
-            text_rect.center = [x, y + 100]
+            font_size = self.font_size
+            color = self.red
+            font_position = self.font_position
+        elif style == "soft":
+            font_size = self.font_size - 30
+            color = self.white
+            font_position = self.font_position
+            font_position[1] = font_position[1] + 100
+        elif style == "highscore" or "last_scores":
+            font_size = self.font_size - 60
+            color = self.white
+            font_position = self.font_position
+            font_position[1] = font_position[1] + 30
+            if style == "last_scores":
+                font_position[1] = font_position[1]
+        # set font size and style of the message
+        large_text = pygame.font.Font(self.font_name, font_size)
+        # set function to edit the message
+        text_surface = large_text.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        # set the position of the text on the screen
+        text_rect.center = font_position
         return text_surface, text_rect
 
-    def message_display(self, window, texts, score=None):
+    def message_display(self, window, texts, score=None, highest_score=None, last_scores=None):
         for text in texts:
             if text == "crash":
-                text = self.message_crash
+                message = self.message_crash
                 style = "strong"
-                text_surface, text_rect = Display.font(self, text, style)
+                text_surface, text_rect = Display.font(self, message, style)
                 # display the message
                 window.blit(text_surface, text_rect)
-            if text == "score":
+            if text == "score" and score is not None:
                 score = str(score)
-                text = "Score: " + score
+                message = "Score: " + score
                 style = "soft"
-                text_surface, text_rect = Display.font(self, text, style)
+                text_surface, text_rect = Display.font(self, message, style)
                 # display the message
                 window.blit(text_surface, text_rect)
+            if text == "highscore":
+                if highest_score is None and score is not None:
+                    highest_score = score
+                message = "your personal highscore: " + str(highest_score[0])
+                style = "highscore"
+                text_surface, text_rect = Display.font(self, message, style)
+                # display the message
+                window.blit(text_surface, text_rect)
+            if text == "last_scores" and last_scores is not None:
+                for message in last_scores:
+                    style = "last_scores"
+                    text_surface, text_rect = Display.font(self, message, style)
+                    # display the message
+                    window.blit(text_surface, text_rect)
         pygame.display.update()
         # after the car crashed wait 3s
         time.sleep(3)
