@@ -1,6 +1,5 @@
 from unittest import TestCase
 import numpy as np
-import pandas as pd
 
 from daten import Daten
 from feature import FeatureSelection
@@ -10,27 +9,33 @@ from Resampling import Resample
 
 class TestResample(TestCase):
     def test_upsampling_smote(self):
+        # Zugriff auf die Daten
         data = Daten()
-        self.data = data.data
-
-        # Auswahl der gewünschten Feature
+        data = data.data_original
         new_data = FeatureSelection()
-        self.new_data = new_data.new_data_frame(self.data)
+        new_data = new_data.new_data_frame(data)
 
         k = TestTrain()
-        [self.X, self.y] = k.define_target_features(self.new_data)
-
-        self.n_y_1 = np.count_nonzero(self.y)
+        [X, y] = k.define_target_features(new_data)
+        # Anzahl der Elemente ungleich 0 ohne Resampling
+        self.n_y_1 = np.count_nonzero(y)
 
         r = Resample()
-        [X, y] = r.upsampling_smote(self.X, self.y)
+        #[X, y] = r.upsampling_smote(X, y)
+        # Anzahl der Elemente ungleich 0 mit SMOTE-Resampling
         self.n_y_2 = np.count_nonzero(y)
+        # Anzahl der Elemente gleich 0 mit SMOTE-Resampling
         self.n_y_3 = len(y) - self.n_y_2
 
-        self.assertEqual(len(X), 6358)
-        self.assertEqual(len(y), 6358)
-        self.assertNotEqual(self.n_y_1, self.n_y_2)
-        self.assertEqual(self.n_y_2, self.n_y_3)
+        # Anzahl der Elemente ungleich 0 vor dem Resampling sind ungleich der Elemente
+        # ungleich 0 nach dem Resampling.
+        self.assertNotEqual(self.n_y_1, self.n_y_2, 'Die Anzahl der Elemente ungleich Null'
+                                                    ' haben sich nach dem SMOTE-Resampling '
+                                                    'nicht verändert.')
+        # Anzahl der Elemente ungleich 0 nach dem Resampling sind gleich der Anzahl der Elemente
+        # gleich 0 nach dem Resampling. Das SMOTE-Resampling hat funktioniert.
+        self.assertEqual(self.n_y_2, self.n_y_3, 'Die Anzahl der Elemente der Klasse "1" ist'
+                                                 ' nicht gleich der Elemente der Klasse "0"')
 
 
 

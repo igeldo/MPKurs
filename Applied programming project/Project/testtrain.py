@@ -6,35 +6,34 @@ class TestTrain:
 
     def __init__(self):
         # Definition der Test und Train Variablen
-        # y = Target-Variable
-        # X = Features
-        self.X = None
-        self.y = None
-        self.X_train = None
-        self.X_test = None
-        self.y_train = None
-        self.y_test = None
-        self.over_y_train = None
-        self.over_y_test = None
-        self.over_X_test = None
-        self.over_X_train = None
+        self.Feature = None
+        self.Target = None
+        self.Feature_train = None
+        self.Feature_test = None
+        self.Target_train = None
+        self.Target_test = None
+        self.over_Target_train = None
+        self.over_Target_test = None
+        self.over_Feature_test = None
+        self.over_Feature_train = None
 
-    def define_target_features(self, data):
-        # Funktion definiert die x und die y Komponente für den Random Forest
-        self.y = data['TenYearCHD']
-        self.X = data.drop(['TenYearCHD'], axis=1)
-        return self.X, self.y
+    def define_target_features(self, data_original):
+        # Funktion definiert die Feature- und die Target-Komponente für den Random Forest
+        self.Target = data_original['TenYearCHD']
+        self.Feature = data_original.drop(['TenYearCHD'], axis=1)
+        return self.Feature, self.Target
 
-    def define_train_test(self, x, y):
-        # Funktion splittet die x und y Komponente in einen Trainingssatz und einen Testsatz.
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.3)
+    def define_train_test(self, Feature, Target):
+        # Funktion splittet die Feature- und die Target-Komponente in einen Trainingssatz und einen Testsatz.
+        self.Feature_train, self.Feature_test, self.Target_train, self.Target_test = \
+            train_test_split(Feature, Target, test_size=0.3)
         # test size: % 30Testdatensatz, 70% Trainingsdatensatz
         # random_state = Steuert das Shuffling, das auf die Daten vor der Aufteilung angewendet wird.
-        return self.X_train, self.X_test, self.y_train, self.y_test
+        return self.Feature_train, self.Feature_test, self.Target_train, self.Target_test
 
-    def upsampling_Smote_over(self, over_x, over_y):
-        self.over_X_train, self.over_X_test, self.over_y_train, self.over_y_test = train_test_split(over_x, over_y,
-                                                                                                    test_size=0.3,
-                                                                                                    stratify=over_y)
+    def upsampling_Smote_over(self, over_Feature, over_Train):
+        # Funktion splittet die gesampelte Feature- und die Target-Komponente in einen Trainingssatz und einen Testsatz.
+        self.over_Feature_train, self.over_Feature_test, self.over_Target_train, self.over_Target_test = \
+            train_test_split(over_Feature, over_Train, test_size=0.3, stratify=over_Train)
 
-        return self.over_X_train, self.over_X_test, self.over_y_train, self.over_y_test
+        return self.over_Feature_train, self.over_Feature_test, self.over_Target_train, self.over_Target_test

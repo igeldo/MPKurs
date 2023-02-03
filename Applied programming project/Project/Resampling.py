@@ -2,14 +2,13 @@ from imblearn.over_sampling import SMOTE
 
 
 class Resample:
-
+    # Klasse soll die SMOTE_Methode auf den Datensatz anwenden, um die Minderheitsgruppe an die Mehrheit anzupassen.
     def __init__(self):
         self.oversample = SMOTE()
-        self.over_X = None
-        self.over_y = None
+        self.over_Feature = None
+        self.over_Target = None
 
+    def upsampling_smote(self, Feature, Target):
+        self.over_Feature, self.over_Target = self.oversample.fit_resample(Feature, Target)
 
-    def upsampling_smote(self, X, y):
-        self.over_X, self.over_y = self.oversample.fit_resample(X, y)
-
-        return self.over_X, self.over_y
+        return self.over_Feature, self.over_Target

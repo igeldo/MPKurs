@@ -15,9 +15,9 @@ class FeatureSelection:
         self.columns = None
         self.Scores = None
         self.features_list = None
-        self.data_new = None
+        self.data_best_features = None
 
-    def selection(self, X, y):
+    def selection(self, Feature, Target):
         # Search after the best features:
         # SelektKBest = Select features according to the k-highest scores
         # SelektKBest(score_func = chi2, k = 10)
@@ -26,10 +26,10 @@ class FeatureSelection:
         self.best_features = SelectKBest(score_func=chi2, k=10)
 
         # Anpassung der SelektKBest-Funktion an das Merkmal X und die Zielvariable
-        self.fit = self.best_features.fit(X, y)
+        self.fit = self.best_features.fit(Feature, Target)
 
         self.scores = pd.DataFrame(self.fit.scores_)
-        self.columns = pd.DataFrame(X.columns)
+        self.columns = pd.DataFrame(Feature.columns)
 
         # Erstellung eines Vektors mit dem Ergebnis. Zeigt, dass sysB das beste Merkmal ist
         # gefolgt von Glukose, Alter, totChol...
@@ -42,9 +42,9 @@ class FeatureSelection:
         # Auswahl der 10 besten Merkmale
         self.features_list = self.Scores["Specs"].tolist()[:10]
 
-    def new_data_frame(self, data):
+    def new_data_frame(self, data_original):
         # Erstellung eines neuen Datensatzes mit den 10 besten Merkmalen
-        self.data_new = data[
+        self.data_best_features = data_original[
             ['sysBP', 'glucose', 'age', 'totChol', 'cigsPerDay', 'diaBP', 'prevalentHyp', 'diabetes', 'BPMeds', 'male',
              'TenYearCHD']]
-        return self.data_new
+        return self.data_best_features
