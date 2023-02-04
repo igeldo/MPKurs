@@ -1,6 +1,3 @@
-# import other class
-from Database import Database
-
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -11,10 +8,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Flatten, MaxPooling2D, Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras import optimizers, losses
 
+
 class NeuralNetwork:
 
     def __init__(self, train_images, train_labels, test_images, test_labels):
-
         self.traindata = self.rescale(train_images)
         self.traindata_label = np.array(train_labels)
 
@@ -48,9 +45,9 @@ class NeuralNetwork:
         """
         self.model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
         history = self.model.fit(train_images, train_labels,
-                            epochs=1,
-                            batch_size=32,
-                            shuffle=True)
+                                 epochs=1,
+                                 batch_size=32,
+                                 shuffle=True)
 
         return history
 
@@ -64,10 +61,10 @@ class NeuralNetwork:
 
     def predict(self):
         """
-        Generate a prediction using model.predict() and calculate it's shape:
+        generate a prediction using model.predict() and calculate it's shape:
         """
         print("Generate a prediction")
-        prediction = self.model.predict(self.testdata[:1])
+        prediction = self.model.predict(self.testdata)
         print("prediction shape:", prediction.shape)
 
     def rescale(self, images):
@@ -77,31 +74,3 @@ class NeuralNetwork:
         rescaled_images = np.array(images) / 255.0
 
         return rescaled_images
-
-
-if __name__ == '__main__':
-    network = NeuralNetwork()
-
-    # plt.figure()
-    # plt.imshow(network.traindata[0])
-    # print(np.mean(network.traindata[0]))
-    # print("Label: ", network.traindata_label[0])
-    # plt.grid(False)
-    # plt.show()
-    #
-    # plt.figure()
-    # plt.imshow(network.testdata[0])
-    # print(np.mean(network.testdata[0]))
-    # print("Label: ", network.testdata_label[0])
-    # plt.grid(False)
-    # plt.show()
-
-    network.define_model_CNN()
-    history = network.compile_fit_CNN(network.traindata, network.traindata_label)
-    network.evaluate()
-    network.predict()
-
-    print(history)
-
-
-

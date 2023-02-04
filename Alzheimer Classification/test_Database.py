@@ -4,7 +4,6 @@ from Database import Database
 import PIL.Image as Image
 import numpy as np
 
-
 class TestDatabase(TestCase):
 
     def test_get_assert_files_from_postgresql(self):

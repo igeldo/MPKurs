@@ -5,10 +5,6 @@ import psycopg2.extras
 import os
 from os.path import isfile, join
 import numpy as np
-import tensorflow as tf
-import tempfile
-import tensorflow_io as tfio
-from matplotlib import pyplot as plt
 import PIL.Image as Image
 
 
@@ -125,10 +121,12 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for file in data:
+                    # load image, resize to 180 x 180 Pixel and convert to grayscale
                     temp_img = Image.open(mypath + file).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
                     img_value = resized_img.getvalue()
+                    # send image to database with label_class and "train" label
                     self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "train"))
 
             for i in self.im_attributes["path_test"]:
@@ -146,17 +144,21 @@ class Database:
                     label_class = self.im_attributes["label"][3]
 
                 for file in data:
+                    # load image, resize to 180 x 180 Pixel and convert to grayscale
                     temp_img = Image.open(mypath + file).resize((180, 180)).convert('L')
                     resized_img = io.BytesIO()
                     temp_img.save(resized_img, format='JPEG')
                     img_value = resized_img.getvalue()
+                    # send image to database with label_class and "test" label
                     self.cur.execute(query, (psycopg2.Binary(img_value), label_class, "test"))
 
-            # load assert image
+            # assert image:
+            # load image, resize to 180 x 180 Pixel and convert to grayscale
             temp_img = Image.open(self.path + "\\test_image.jfif").resize((180, 180)).convert('L')
             resized_img = io.BytesIO()
             temp_img.save(resized_img, format='JPEG')
             img_value = resized_img.getvalue()
+            # send image to database with label_class = 4 and "assert_image" label
             self.cur.execute(query, (psycopg2.Binary(img_value), 4, "assert_image"))
 
             self.conn.commit()  # commit the changes to the database
@@ -183,9 +185,7 @@ class Database:
 
         # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
         for row in result:
-
-            # IMAGE:
-            binary_img = row[0] # result[0][0]  # or row[0] <- wenn in Schleife
+            binary_img = row[0]
             img = Image.open(io.BytesIO(binary_img))
 
             train_images.append(np.array(img))
@@ -211,16 +211,13 @@ class Database:
 
         # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
         for row in result:
-
-            # IMAGE:
-            binary_img = row[0] # result[0][0]  # or row[0] <- wenn in Schleife
+            binary_img = row[0]
             img = Image.open(io.BytesIO(binary_img))
 
             train_images.append(np.array(img))
             train_labels.append(row[1])
 
         return train_images, train_labels
-
 
     def get_test_files_from_postgresql(self):
         """
@@ -240,7 +237,6 @@ class Database:
 
         # Populate the numpy arrays. row[0] contains the image, row[1] contains label_class
         for row in result:
-
             binary_img = row[0]
             img = Image.open(io.BytesIO(binary_img))
 
@@ -248,47 +244,3 @@ class Database:
             test_labels.append(row[1])
 
         return test_images, test_labels
-
-
-
-if __name__ == '__main__':
-
-    db = Database()
-    db.get_image_path()
-    db.connection()
-    print("Connection established")
-    db.create_table()
-    print("Table created")
-    db.send_files_to_postgresql()
-    print("All files uploaded")
-
-    # train_images, train_labels = db.get_train_files_from_postgresql()
-    # test_images, test_labels = db.get_test_files_from_postgresql()
-    #
-    # # show third train image
-    # pic = 2
-    # plt.figure()
-    # plt.imshow(train_images[pic])
-    # print(np.mean(train_images[pic]))
-    # print("Label: ", train_labels[pic])
-    # plt.colorbar()
-    # plt.grid(False)
-    # plt.show()
-    #
-    # # show 2001 train image
-    # pic_test = 2000
-    # plt.figure()
-    # plt.imshow(train_images[pic_test])
-    # print(np.mean(train_images[pic_test]))
-    # print("Label: ", train_labels[pic_test])
-    # plt.colorbar()
-    # plt.grid(False)
-    # plt.show()
-
-    print("finished")
-    # before run -> create database called "alz"
-
-    # Notizen:
-    # print Ausgabe implementieren -> als Backlog 18.01
-    # Blockgrafik erstellen für den Datenfluss -> als Backlog 18.01
-    # vielleicht auch Unittests?
