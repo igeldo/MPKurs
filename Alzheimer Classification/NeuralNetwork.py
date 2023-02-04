@@ -39,6 +39,8 @@ class NeuralNetwork:
             Dense(1, activation='softmax')
         ])
 
+        print("Model defined")
+
     def compile_fit_CNN(self, train_images, train_labels):
         """
         compile and fit model with train data
@@ -58,6 +60,7 @@ class NeuralNetwork:
         print("Evaluate model on test data")
         results = self.model.evaluate(self.testdata, self.testdata_label, batch_size=128)
         print("test loss, test acc:", results)
+        print("Evaluation done")
 
     def predict(self):
         """
@@ -66,6 +69,7 @@ class NeuralNetwork:
         print("Generate a prediction")
         prediction = self.model.predict(self.testdata)
         print("prediction shape:", prediction.shape)
+        print("Prediction done")
 
     def rescale(self, images):
         """

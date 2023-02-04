@@ -63,13 +63,15 @@ class Database:
 
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+        print("Connection established")
+
     def create_table(self):
         """
         create table in database with the columns: image, label_class and label_train_test
         """
 
         self.cur.execute('DROP TABLE IF EXISTS alz_schema.img_table')
-        print("Dropped table")
+        print("Dropped old table")
         create_script = ''' CREATE TABLE IF NOT EXISTS alz_schema.img_table (
                                                     image      bytea,
                                                     label_class    int,
@@ -78,7 +80,7 @@ class Database:
         try:
             self.cur.execute(create_script)
             self.conn.commit()  # commit the changes to the database
-            print("Created table")
+            print("Created new table")
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -164,6 +166,9 @@ class Database:
             self.conn.commit()  # commit the changes to the database
             count = self.cur.rowcount  # check that the images were all successfully added
             print(count, "Records inserted successfully into table")
+
+            print("All files uploaded")
+
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
 
@@ -217,6 +222,8 @@ class Database:
             train_images.append(np.array(img))
             train_labels.append(row[1])
 
+        print("All training files loaded from database")
+
         return train_images, train_labels
 
     def get_test_files_from_postgresql(self):
@@ -242,5 +249,7 @@ class Database:
 
             test_images.append(np.array(img))
             test_labels.append(row[1])
+
+        print("All test files loaded from database")
 
         return test_images, test_labels

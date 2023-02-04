@@ -9,15 +9,11 @@ if __name__ == '__main__':
     db = Database()
     db.get_image_path()
     db.connection()
-    print("Connection established")
     db.create_table()
-    print("Table created")
     db.send_files_to_postgresql()
-    print("All files uploaded")
 
     train_images, train_labels = db.get_train_files_from_postgresql()
     test_images, test_labels = db.get_test_files_from_postgresql()
-    print("All files from database loaded")
 
     # show images
     plt.figure()
@@ -35,9 +31,6 @@ if __name__ == '__main__':
     # create class NeuralNetwork
     network = NeuralNetwork(train_images, train_labels, test_images, test_labels)
     network.define_model_CNN()
-    print("model defined")
     history = network.compile_fit_CNN(network.traindata, network.traindata_label)
     network.evaluate()
-    print("evaluate done")
     network.predict()
-    print("prediction done")
