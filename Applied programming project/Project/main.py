@@ -28,6 +28,9 @@ RS = Resample()
 # Erstellung des Random Forest Klassifikator
 RFC = RandomForest()
 rf_model = RFC.random_forest(over_Feature_train, over_Target_train)
+prediction = rf_model.predict(Feature_test)
+accuracy = RFC.accuracy(Target_test, prediction)
+print(accuracy)
 
 
 def question():

@@ -21,7 +21,7 @@ class TestResample(TestCase):
         self.n_y_1 = np.count_nonzero(y)
 
         r = Resample()
-        #[X, y] = r.upsampling_smote(X, y)
+        # [X, y] = r.upsampling_smote(X, y)
         # Anzahl der Elemente ungleich 0 mit SMOTE-Resampling
         self.n_y_2 = np.count_nonzero(y)
         # Anzahl der Elemente gleich 0 mit SMOTE-Resampling
@@ -36,6 +36,3 @@ class TestResample(TestCase):
         # gleich 0 nach dem Resampling. Das SMOTE-Resampling hat funktioniert.
         self.assertEqual(self.n_y_2, self.n_y_3, 'Die Anzahl der Elemente der Klasse "1" ist'
                                                  ' nicht gleich der Elemente der Klasse "0"')
-
-
-
