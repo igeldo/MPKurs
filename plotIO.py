@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
 
     OUTPATH = 'out'
-    FILENAME = 'test.csv'
+    FILENAME = 'test2.csv'
     SAVE = False
 
     df = pd.read_csv(
@@ -36,10 +36,10 @@ if __name__ == '__main__':
     ax.quiver(pos_x, pos_y, u/norm, v/norm, angles="xy", zorder=5, pivot="mid")
     plt.show()
     
-    print(df['z'].head())
+    #print(df['z'].head())
     fig, ax = plt.subplots(dpi=200)
-    df.plot.scatter(x = 'y', y = 'z', s=0.1, c = 'weight', colormap='viridis', ax=ax)
-    plt.xlabel('y [mm]')
+    df.plot.scatter(x = 'x', y = 'z', s=0.1, c = 'weight', colormap='viridis', ax=ax)
+    plt.xlabel('x [mm]')
     plt.ylabel('z [mm]')
     if SAVE:
         plt.savefig(os.path.join(OUTPATH, FILENAME))
