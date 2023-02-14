@@ -3,8 +3,11 @@ import numpy.random
 
 from vector import Vec3d
 
-COSZERO = (1-1E-12)
-COS90D = (1E-6)
+numpy.random.seed(0)
+COSZERO = 1-1E-12
+COS90D = 1E-6
+CHANCE = 0.1 # Chance of surviving the roulette
+WEIGHT = 1E-4 # Critical weight for roulette
 
 # TODO: for testing -> set random seed for uniform variable, calculate the algorithm "by hand" for that variable, then test for algorithm
 
@@ -37,7 +40,7 @@ class PhotonPack:
             Returns the x,y,z coordinates of the PhotonPackage in its current layer.
     """
 
-    def __init__(self, pos=Vec3d(0,0,0), layer=1, stepSize=0, stepSizeL=0,
+    def __init__(self, pos=Vec3d(0,0,0), layer=0, stepSize=0, stepSizeL=0,
                  dvec=Vec3d(0,0,1), w=1, dead=0):
         self._pos = pos  # coordinates [mm]
         self._dvec = dvec  # directional cosines of photonpack
@@ -79,6 +82,15 @@ class PhotonPack:
 
     def alive(self):
         return self._dead
+
+    def roulette(self):
+        rnd = np.random.uniform()
+        if self._w == 0:
+            self._dead = 1
+        elif rnd < CHANCE:
+            self._w /= CHANCE
+        else:
+            self._dead = 1
 
 class Medium:
     """
@@ -142,22 +154,26 @@ class Medium:
             self._crossDown(photonPack, layers)
 
     def _crossDown(self, photonPack, layers):
+        #ni = self.n
+        #nt = layers[photonPack._layer+1].n
+        out_uz = 0
+
         if photonPack._dvec.z() <= self.cos_crit1:
             r = 1 # total reflection!
         else:
-            r, out_uz = RFresnel() # TODO: do the fresnel
+            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer+1].n, photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
 
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
         if np.random.uniform() > r:
-            if photonPack._layer == len(layers): # letzter Layer
+            if photonPack._layer == len(layers):  # letzter Layer
                 photonPack._dvec._z = out_uz
                 # TODO: save data on "leaving" photons
                 photonPack._dead = 1 # RIP
             else:
                 photonPack._dvec *= Vec3d(
-                    self.n/layers[photonPack._layer+1],
-                    self.n/layers[photonPack._layer+1],
+                    self.n / layers[photonPack._layer+1].n,
+                    self.n / layers[photonPack._layer+1].n,
                     out_uz
                 )
                 photonPack._layer += 1
@@ -166,27 +182,63 @@ class Medium:
 
 
     def _crossUp(self, photonPack, layers):
+        #ni = self.n
+        #nt = layers[photonPack._layer - 1].n
+        out_uz = 0
+
         if -photonPack._dvec.z() <= self.cos_crit0:
             r = 1
         else:
-            r, out_uz = RFresnel()  # TODO: do the fresnel
+            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer - 1].n, -photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
 
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
         if np.random.uniform() > r:
-            if photonPack._layer == 0:  # letzter Layer
+            if photonPack._layer == 0:  # erster Layer # REMINDER: in MCML steht hier eine 1, also nicht "erster" layer?
                 photonPack._dvec._z = -out_uz
                 # TODO: save data on "leaving" photons
                 photonPack._dead = 1  # RIP
             else:
                 photonPack._dvec *= Vec3d(
-                    self.n / layers[photonPack._layer + 1],
-                    self.n / layers[photonPack._layer + 1],
+                    self.n / layers[photonPack._layer - 1].n,
+                    self.n / layers[photonPack._layer - 1].n,
                     -out_uz
                 )
                 photonPack._layer -= 1
         else:
             photonPack._dvec._z = -photonPack._dvec._z
+
+    def _RFresnel(self, ni, nt, cosi, cost):
+        r = 0  # reflectance
+
+        # ....
+        if (ni == nt):  # matched boundry case
+            cost = cosi
+            r = 0
+        elif (cosi > COSZERO):  # normal incident, "nearly" orthogonal angle to boundry border
+            cost = cosi
+            r = (nt - ni) / (nt + ni)  # MCman p.18, eq. 3.25
+            r *= r
+        elif (cosi < COS90D): # very slant, "nearly" horizontal to boundry border
+            cost = 0
+            r = 1
+        else:
+            sini = np.sqrt(1 - cosi*cosi)
+            sint = ni * sini / nt
+            if (sint >= 1.0):  # TODO: why double check? rundungsfehler?
+                cost = 0
+                r = 1
+            else:
+                cost = np.sqrt(1 - sint*sint)
+
+                cosp = cosi*cost - sini*sint
+                cosm = cosi*cost + sini*sint
+                sinp = sini*cost + cosi*sint
+                sinm = sini*cost - cosi*sint
+
+                r = 0.5 * sinm**2 * (cosm**2 + cosp**2)/(sinp**2 * cosm**2)
+
+        return r, cost
 
 class Glas(Medium):
 
