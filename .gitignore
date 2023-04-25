@@ -54,3 +54,4 @@ Thumbs.db
 kalk_venv/
 data/output*
 data/images/
+out/
