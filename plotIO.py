@@ -1,7 +1,5 @@
 import os
-import csv
 
-import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -50,7 +48,7 @@ if __name__ == '__main__':
     # plt.show()
 
     fig, ax = plt.subplots(dpi=200)
-    df.plot.scatter(x = 'x', y = 'z', s=2, c = 'weight', colormap='viridis', ax=ax)
+    df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
     ax.quiver(x, z, ux, uz, angles="xy", pivot="mid", color='black', alpha=0.3)
     plt.gca().invert_yaxis()
     plt.xlabel('x [mm]')
@@ -59,4 +57,3 @@ if __name__ == '__main__':
         plt.savefig(os.path.join(OUTPATH, FILENAME))
     else:
         plt.show()
-
