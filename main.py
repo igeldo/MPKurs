@@ -1,6 +1,11 @@
 import os
 import csv
 from model import Tissue, PhotonPack, WEIGHT
+import numpy as np
+
+np.random.seed(42)
+# random seeds of interest
+# 42 photon exiting top direction
 
 if __name__ == '__main__':
 
@@ -10,6 +15,8 @@ if __name__ == '__main__':
 
     # define params
     photon1 = PhotonPack(stepSize=1, w=1)
+    photon2 = PhotonPack(stepSize=1, w=1)
+
     layer1 = Tissue(z0=0, z1=50, mua=1, mus=100, g=0.9, cos_crit0=0, cos_crit1=0)
     layer2 = Tissue(z0=0, z1=50, mua=1, mus=100, g=0.9, cos_crit0=0, cos_crit1=0)
 

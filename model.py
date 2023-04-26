@@ -3,7 +3,6 @@ import numpy.random
 
 from vector import Vec3d
 
-numpy.random.seed(0)
 COSZERO = 1-1E-12
 COS90D = 1E-6
 CHANCE = 0.1 # Chance of surviving the roulette
