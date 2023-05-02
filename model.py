@@ -159,22 +159,30 @@ class Medium:
 
         if photonPack._dvec.z() <= self.cos_crit1:
             r = 1 # total reflection!
+        elif photonPack._layer == len(layers)-1:
+            photonPack._dead = 1
+            r = 0
         else:
             r, out_uz = self._RFresnel(self.n, layers[photonPack._layer+1].n, photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
-
+            # TODO: if only 1 layer DO NOT check for cross or not instead set to dead?
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
         if np.random.uniform() > r:
-            if photonPack._layer == len(layers):  # letzter Layer
+            if photonPack._layer == len(layers)-1:  # letzter Layer
                 photonPack._dvec._z = out_uz
                 # TODO: save data on "leaving" photons
                 photonPack._dead = 1 # RIP
             else:
-                photonPack._dvec *= Vec3d(
-                    self.n / layers[photonPack._layer+1].n,
-                    self.n / layers[photonPack._layer+1].n,
+                photonPack._dvec = Vec3d(
+                    photonPack._dvec._x * (self.n / layers[photonPack._layer+1].n),
+                    photonPack._dvec._y * (self.n / layers[photonPack._layer + 1].n),
                     out_uz
-                )
+                ) # NICHT Skalarprodukt, deswegen Komponenten einzeln berechnet
+                # photonPack._dvec *= Vec3d(
+                #     self.n / layers[photonPack._layer+1].n,
+                #     self.n / layers[photonPack._layer+1].n,
+                #     out_uz
+                # )
                 photonPack._layer += 1
         else:
             photonPack._dvec._z = -photonPack._dvec._z
@@ -187,8 +195,11 @@ class Medium:
 
         if -photonPack._dvec.z() <= self.cos_crit0:
             r = 1
+        elif photonPack._layer == 0:
+            photonPack._dead = 1
+            r = 0
         else:
-            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer - 1].n, -photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
+            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer - 1].n, -photonPack._dvec.z(), out_uz)
 
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
@@ -198,11 +209,16 @@ class Medium:
                 # TODO: save data on "leaving" photons
                 photonPack._dead = 1  # RIP
             else:
-                photonPack._dvec *= Vec3d(
-                    self.n / layers[photonPack._layer - 1].n,
-                    self.n / layers[photonPack._layer - 1].n,
+                photonPack._dvec = Vec3d(
+                    photonPack._dvec._x * (self.n / layers[photonPack._layer - 1].n),
+                    photonPack._dvec._y * (self.n / layers[photonPack._layer - 1].n),
                     -out_uz
                 )
+                # photonPack._dvec *= Vec3d(
+                #     self.n / layers[photonPack._layer - 1].n,
+                #     self.n / layers[photonPack._layer - 1].n,
+                #     -out_uz
+                # )
                 photonPack._layer -= 1
         else:
             photonPack._dvec._z = -photonPack._dvec._z
@@ -257,14 +273,14 @@ class Glas(Medium):
 
 class Tissue(Medium):
 
-    def __int__(self):
-        super().__init__() #TODO: siehe TODO hop
+    def __int__(self, z0, z1, mua, mus, g, cos_crit0, cos_crit1, n=1):
+        super().__init__(z0, z1, mua, mus, g, cos_crit0, cos_crit1, n=1) #TODO: siehe TODO hop
 
-    def hop(self, photonPack):
-        super().hop(photonPack)  # TODO: Warum hier mit Argument, aber nicht bei __init()__? @vincent @alex
-
-    def hitBoundry(self, photonPack):
-        super().hitBoundry(photonPack)
+    # def hop(self, photonPack):
+    #     super().hop(photonPack)  # TODO: Warum hier mit Argument, aber nicht bei __init()__? @vincent @alex
+    #
+    # def hitBoundry(self, photonPack):
+    #     super().hitBoundry(photonPack)
 
     def absorption(self, photonPack):
         dw = photonPack._w * self.mua / (self.mua + self.mus)
