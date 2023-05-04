@@ -36,15 +36,16 @@ if __name__ == '__main__':
     #print(p.__repr__()) # TODO: check repr
 
     for p in photons:
-        while not layers[p._layer].hitBoundry(p) and p.alive() == 0:
+        print(layers[p._layer].hitBoundry(p)) # TODO: strange
+        while not layers[p._layer].hitBoundry(p) and p.alive() == 1:
             layers[p._layer].hop(p)
             layers[p._layer].absorption(p)
             layers[p._layer].scatter(p)
             writer.writerow(p.__repr__())
-            if p._w < WEIGHT and p.alive() == 0:
+            if p._w < WEIGHT and p.alive() == 1:
                 p.roulette()
 
-        if p.alive() == 0:
+        if p.alive() == 1: # and hitBoundry(p)==1
             layers[p._layer].hop(p) # swapped hop and cross or not, smart?
             layers[p._layer].crossOrNot(p, layers)
             writer.writerow(p.__repr__())

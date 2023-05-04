@@ -80,7 +80,7 @@ class PhotonPack:
         ]
 
     def alive(self):
-        return self._dead
+        return not self._dead
 
     def roulette(self):
         rnd = np.random.uniform()
