@@ -51,9 +51,11 @@ if __name__ == '__main__':
     df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
     ax.quiver(x, z, ux, uz, angles="xy", pivot="mid", color='black', alpha=0.3)
     plt.gca().invert_yaxis()
-    plt.xlabel('x [mm]')
-    plt.ylabel('z [mm]')
+    plt.xlabel('x in mm')
+    plt.ylabel('z in mm')
     if SAVE:
         plt.savefig(os.path.join(OUTPATH, FILENAME))
     else:
         plt.show()
+
+# TODO: "heatmap" anzahl photon/tiefe, "heatmap" bzgl eindringtiefe
