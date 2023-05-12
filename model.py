@@ -114,12 +114,12 @@ class Medium:
     -------
     """
 
-    def __init__(self, z0, z1, mua, mus, g, cos_crit0, cos_crit1, n=1):
+    def __init__(self, z0, z1, mua, mus, g, n=1):
         self.z0, self.z1 = z0, z1  # z coordinates of the upper (z0) and lower (z1) boundary of the respective layer [mm]
         self.n = n  # refractive index (Brechungsindex) of the respective layer
         self.mua, self.mus = mua, mus  # absorption and scattering coefficient [1/mm]
         self.g = g  # anisotropy of the layer material
-        self.cos_crit0, self.cos_crit1 = cos_crit0, cos_crit1  # critical angles under which total reflection occurs(?) so there is nothing to compute in this layer
+        self.cos_crit0, self.cos_crit1 = 0, 0  # critical angles under which total reflection occurs(?) so there is nothing to compute in this layer
 
     def hop(self, photonPack):
         photonPack._stepSize = -np.log(np.random.uniform()) / (self.mua+self.mus)
@@ -336,3 +336,6 @@ class Tissue(Medium):
 #         super.__init__()
 #
 #     def stepSize(self):
+
+# TODO: - siehe plot
+#       -

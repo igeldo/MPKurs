@@ -58,4 +58,5 @@ if __name__ == '__main__':
     else:
         plt.show()
 
-# TODO: "heatmap" anzahl photon/tiefe, "heatmap" bzgl eindringtiefe
+# TODO: - "heatmap" anzahl photon/tiefe, "heatmap" bzgl eindringtiefe
+#
