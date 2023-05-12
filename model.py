@@ -238,7 +238,7 @@ class Medium:
             cost = 0
             r = 1
         else:
-            sini = np.sqrt(1 - cosi*cosi)
+            sini = np.sqrt(1 - cosi*cosi) # sqrt instead of sine cuz it is faster
             sint = ni * sini / nt
             if (sint >= 1.0):  # TODO: why double check? rundungsfehler?
                 cost = 0

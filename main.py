@@ -13,7 +13,7 @@ def calcCritAngles(layer_list):
         n1 = layer_list[l].n # this layer
         n2 = layer_list[l-1].n # previous upwards layer
         if n1>n2:
-            layer.cos_crit0 = np.sqrt(1.0 - n2*n2/(n1*n1)) # crit0 upwards
+            layer.cos_crit0 = np.sqrt(1.0 - n2*n2/(n1*n1)) # crit0 upwards; sqrt instead of sine because it is faster
         else:
             layer.cos_crit0 = 0
 
