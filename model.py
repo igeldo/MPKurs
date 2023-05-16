@@ -40,7 +40,7 @@ class PhotonPack:
     """
 
     def __init__(self, pos=Vec3d(0,0,0), layer=0, stepSize=0, stepSizeL=0,
-                 dvec=Vec3d(0,0,1), w=1, dead=0):
+                 dvec=Vec3d(0,0,1), w=1, dead=0, exits=0):
         self._pos = pos  # coordinates [mm]
         self._dvec = dvec  # directional cosines of photonpack
         self._w = w  # "weight", more like energy?
@@ -49,6 +49,7 @@ class PhotonPack:
         # stepSize is handled and calculated in each layer based on its properties and the photon energy/weight
         self._stepSize = stepSize  # current step size [mm]
         self._stepSizeL = stepSizeL  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
+        self._exits = exits  # 1 if the photon exits 1st layer in the top direction
 
     def __repr__(self):
         """
@@ -76,7 +77,8 @@ class PhotonPack:
             str(self._dvec.z()),
             str(self._layer),
             str(self._w),
-            str(self._dead)
+            str(self._dead),
+            str(self._exits)
         ]
 
     def alive(self):
@@ -123,7 +125,6 @@ class Medium:
 
     def hop(self, photonPack):
         photonPack._stepSize = -np.log(np.random.uniform()) / (self.mua+self.mus)
-        #print(s)
         photonPack._pos += photonPack._dvec * photonPack._stepSize
         # TODO: hier war mal ein s, s -> photonPack._stepSize geändert
 
@@ -164,13 +165,11 @@ class Medium:
             r = 0
         else:
             r, out_uz = self._RFresnel(self.n, layers[photonPack._layer+1].n, photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
-            # TODO: if only 1 layer DO NOT check for cross or not instead set to dead?
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
         if np.random.uniform() > r:
             if photonPack._layer == len(layers)-1:  # letzter Layer
                 photonPack._dvec._z = out_uz
-                # TODO: save data on "leaving" photons
                 photonPack._dead = 1 # RIP
             else:
                 photonPack._dvec = Vec3d(
@@ -206,8 +205,8 @@ class Medium:
         if np.random.uniform() > r:
             if photonPack._layer == 0:  # erster Layer # REMINDER: in MCML steht hier eine 1, also nicht "erster" layer?
                 photonPack._dvec._z = -out_uz
-                # TODO: save data on "leaving" photons
                 photonPack._dead = 1  # RIP
+                photonPack._exits = 1
             else:
                 photonPack._dvec = Vec3d(
                     photonPack._dvec._x * (self.n / layers[photonPack._layer - 1].n),
@@ -338,4 +337,4 @@ class Tissue(Medium):
 #     def stepSize(self):
 
 # TODO: - siehe plot
-#       -
+#       - remove starting point of layer, when enough time

@@ -32,29 +32,26 @@ if __name__ == '__main__':
 
     # define params
     photons = list()
-    for p in range(0, 100):
+    for p in range(0, 1):
         photons.append(PhotonPack(stepSize=0.01, w=1))
-
-    #photon2 = PhotonPack(stepSize=0.01, w=1)
 
     layer1 = Tissue(z0=0, z1=0.2, n=1, mua=1, mus=100, g=0.9)
     layer2 = Tissue(z0=0.2, z1=0.5, n=1.37, mua=1, mus=100, g=0.9)
     layer3 = Tissue(z0=0.5, z1=4, n=1.37, mua=1, mus=100, g=0.9)
 
-
-    #
     layers = [layer1, layer2, layer3]
-    #photons = [photon1, photon2]
 
     # create output
     if not os.path.exists(os.path.join(OUTPATH)):
         os.makedirs(os.path.join(OUTPATH))
     outfile = open(os.path.join(OUTPATH, FILENAME), 'w', newline='')
     writer = csv.writer(outfile, delimiter=';')
-    writer.writerow(['x', 'y', 'z', 'ux', 'uy', 'uz', 'layer', 'weight', 'dead'])
-
-    # start sim
-    #print(p.__repr__()) # TODO: check repr
+    # write layer specifications
+    writer.writerow(['#', 'd', 'n', 'mu_a', 'mu_s', 'g'])
+    for layer in layers:
+        writer.writerow(['#', layer.z1, layer.n, layer.mua, layer.mus, layer.g])
+    # write photon header
+    writer.writerow(['x', 'y', 'z', 'ux', 'uy', 'uz', 'layer', 'weight', 'dead', 'exits'])
 
     # calculate critical angles one time for given layers
     calcCritAngles(layers)
@@ -68,8 +65,8 @@ if __name__ == '__main__':
             writer.writerow(p.__repr__())
             if p._w < WEIGHT and p.alive() == 1:
                 p.roulette()
-            if layers[p._layer].hitBoundry(p) and p.alive() == 1: # and hitBoundry(p)==1
 
+            if layers[p._layer].hitBoundry(p) and p.alive() == 1: # and hitBoundry(p)==1
                 layers[p._layer].hop(p) # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
                 layers[p._layer].crossOrNot(p, layers)
                 writer.writerow(p.__repr__())
