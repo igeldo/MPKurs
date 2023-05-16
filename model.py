@@ -155,86 +155,78 @@ class Medium:
             self._crossDown(photonPack, layers)
 
     def _crossDown(self, photonPack, layers):
-        #n1 = self.n  # this layer
-        #n2 = layers[photonPack._layer+1].n  # next layer
-        out_uz = 0
+        n1 = self.n  # this layer
+        n2 = layers[photonPack._layer+1].n  # next layer
+
 
         if photonPack._dvec.z() <= self.cos_crit1:
             r = 1 # total reflection!
+            out_uz = 0
         elif photonPack._layer == len(layers)-1:
             photonPack._dead = 1
             r = 0
+            out_uz = 0
         else:
-            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer+1].n, photonPack._dvec.z(), out_uz)  # TODO: do the fresnel
+            r, out_uz = self._RFresnel(n1, n2, photonPack._dvec.z())
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
         if np.random.uniform() > r:
             if photonPack._layer == len(layers)-1:  # letzter Layer
                 photonPack._dvec._z = out_uz
-                photonPack._dead = 1 # RIP
+                photonPack._dead = 1  # RIP
             else:
                 photonPack._dvec = Vec3d(
-                    photonPack._dvec._x * (self.n / layers[photonPack._layer+1].n),
-                    photonPack._dvec._y * (self.n / layers[photonPack._layer + 1].n),
+                    photonPack._dvec._x * (n1 / n2),
+                    photonPack._dvec._y * (n1 / n2),
                     out_uz
-                ) # NICHT Skalarprodukt, deswegen Komponenten einzeln berechnet
-                # photonPack._dvec *= Vec3d(
-                #     self.n / layers[photonPack._layer+1].n,
-                #     self.n / layers[photonPack._layer+1].n,
-                #     out_uz
-                # )
+                )  # NICHT Skalarprodukt, deswegen Komponenten einzeln berechnet
                 photonPack._layer += 1
         else:
             photonPack._dvec._z = -photonPack._dvec._z
 
 
     def _crossUp(self, photonPack, layers):
-        #ni = self.n
-        #nt = layers[photonPack._layer - 1].n
-        out_uz = 0
+        n1 = self.n  # this layer
+        n2 = layers[photonPack._layer - 1].n  # next layer
 
         if -photonPack._dvec.z() <= self.cos_crit0:
             r = 1
+            out_uz = 0
         elif photonPack._layer == 0:
             photonPack._dead = 1
             r = 0
+            out_uz = 0
         else:
-            r, out_uz = self._RFresnel(self.n, layers[photonPack._layer - 1].n, -photonPack._dvec.z(), out_uz)
-
+            r, out_uz = self._RFresnel(n1, n2, -photonPack._dvec.z())
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
-        if np.random.uniform() > r:
+        if np.random.uniform() > r:  # chance for photon to be reflected
             if photonPack._layer == 0:  # erster Layer # REMINDER: in MCML steht hier eine 1, also nicht "erster" layer?
                 photonPack._dvec._z = -out_uz
                 photonPack._dead = 1  # RIP
                 photonPack._exits = 1
             else:
                 photonPack._dvec = Vec3d(
-                    photonPack._dvec._x * (self.n / layers[photonPack._layer - 1].n),
-                    photonPack._dvec._y * (self.n / layers[photonPack._layer - 1].n),
+                    photonPack._dvec._x * (n1 / n2),
+                    photonPack._dvec._y * (n1 / n2),
                     -out_uz
                 )
-                # photonPack._dvec *= Vec3d(
-                #     self.n / layers[photonPack._layer - 1].n,
-                #     self.n / layers[photonPack._layer - 1].n,
-                #     -out_uz
-                # )
                 photonPack._layer -= 1
         else:
             photonPack._dvec._z = -photonPack._dvec._z
 
-    def _RFresnel(self, ni, nt, cosi, cost):
+    def _RFresnel(self, ni, nt, cosi):
         r = 0  # reflectance
 
         # ....
-        if (ni == nt):  # matched boundry case
+        if (ni == nt):  # matched boundary case
             cost = cosi
             r = 0
-        elif (cosi > COSZERO):  # normal incident, "nearly" orthogonal angle to boundry border
+        elif (cosi > COSZERO):  # normal incident, "nearly" orthogonal angle to boundary border
             cost = cosi
             r = (nt - ni) / (nt + ni)  # MCman p.18, eq. 3.25
             r *= r
-        elif (cosi < COS90D): # very slant, "nearly" horizontal to boundry border
+        elif (cosi < COS90D): # very slant, "nearly" horizontal to boundary border
             cost = 0
             r = 1
         else:

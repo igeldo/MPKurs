@@ -6,7 +6,7 @@ import numpy as np
 np.random.seed(42)
 # random seeds of interest
 # 17: casual
-# 42: photon exiting top direction
+# 42, ab 3 Stk: photon exiting top direction
 
 def calcCritAngles(layer_list):
     for l, layer in enumerate(layer_list[1:-2]):
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     # define params
     photons = list()
-    for p in range(0, 1):
+    for p in range(0, 3):  # number of photons to simulate
         photons.append(PhotonPack(stepSize=0.01, w=1))
 
     layer1 = Tissue(z0=0, z1=0.2, n=1, mua=1, mus=100, g=0.9)

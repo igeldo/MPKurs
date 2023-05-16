@@ -25,25 +25,27 @@ if __name__ == '__main__':
     )
     
     # https://stackoverflow.com/questions/58342419/show-direction-arrows-in-a-scatterplot
-    
-    x = df['x'].values
-    y = df['y'].values
-    z = df['z'].values
-    w = df['weight'].values
 
-    ux = df['ux'].values
-    uy = df['uy'].values
-    uz = df['uz'].values
+    runaways = df.where(df['exits'] == 1).dropna()
+
+    # x = df['x'].values
+    # y = df['y'].values
+    # z = df['z'].values
+    # w = df['weight'].values
+
+    # ux = df['ux'].values
+    # uy = df['uy'].values
+    # uz = df['uz'].values
 
     fig, ax = plt.subplots(dpi=200)
     df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
-    #ax.quiver(x, z, ux, uz, angles="xy", pivot="mid", color='black', alpha=0.3)
+    if not runaways.empty:
+        ax.quiver(runaways['x'].values, runaways['z'].values, runaways['ux'].values, runaways['uz'].values,
+                  angles="xy", pivot="mid", color='black', alpha=0.3
+                  )
     ylims = ax.get_ylim()
     plt.xlabel('x in mm')
     plt.ylabel('z in mm')
-
-    #layers_df.apply(lambda row: layers_df.loc[row.name,'d'], axis=1)
-    #plt.axhline(layers_df['z'], linestyle = '--', alpha = .5)
 
     borders = []
     for layer in layers[1:-1]:
