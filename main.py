@@ -4,21 +4,25 @@ from model import Tissue, PhotonPack, WEIGHT
 import numpy as np
 
 np.random.seed(42)
+
+
 # random seeds of interest
 # 17: casual
 # 42, ab 3 Stk: photon exiting top direction
 
+
 def calcCritAngles(layer_list):
     for l, layer in enumerate(layer_list[1:-2]):
-        n1 = layer_list[l].n # this layer
-        n2 = layer_list[l-1].n # previous upwards layer
-        if n1>n2:
-            layer.cos_crit0 = np.sqrt(1.0 - n2*n2/(n1*n1)) # crit0 upwards; sqrt instead of sine because it is faster
+        n1 = layer_list[l].n  # this layer
+        n2 = layer_list[l - 1].n  # previous upwards layer
+        if n1 > n2:
+            layer.cos_crit0 = np.sqrt(
+                1.0 - n2 * n2 / (n1 * n1))  # crit0 upwards; sqrt instead of sine because it is faster
         else:
             layer.cos_crit0 = 0
 
-        n2 = layer_list[l+1].n # next layer downwards
-        if n1>n2:
+        n2 = layer_list[l + 1].n  # next layer downwards
+        if n1 > n2:
             layer.cos_crit1 = np.sqrt(1.0 - n2 * n2 / (n1 * n1))  # crit1 downwards
         else:
             layer.cos_crit1 = 0
@@ -59,7 +63,7 @@ if __name__ == '__main__':
     calcCritAngles(layers)
 
     for p in photons:
-        #print(layers[p._layer].hitBoundry(p)) #
+        # print(layers[p._layer].hitBoundry(p)) #
         while not layers[p._layer].hitBoundry(p) and p.alive() == 1:
             layers[p._layer].calcStepSize(p)
             layers[p._layer].hop(p)
@@ -70,7 +74,8 @@ if __name__ == '__main__':
                 p.roulette()
 
             if layers[p._layer].hitBoundry(p) and p.alive() == 1:  # and hitBoundry(p)==1
-                layers[p._layer].hop(p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
+                layers[p._layer].hop(
+                    p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
                 layers[p._layer].crossOrNot(p, layers)
                 writer.writerow(p.__repr__())
 
