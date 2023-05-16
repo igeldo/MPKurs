@@ -124,9 +124,10 @@ class Medium:
         self.cos_crit0, self.cos_crit1 = 0, 0  # critical angles under which total reflection occurs(?) so there is nothing to compute in this layer
 
     def hop(self, photonPack):
-        photonPack._stepSize = -np.log(np.random.uniform()) / (self.mua+self.mus)
         photonPack._pos += photonPack._dvec * photonPack._stepSize
-        # TODO: hier war mal ein s, s -> photonPack._stepSize geändert
+
+    def calcStepSize(self, photonPack):
+        photonPack._stepSize = -np.log(np.random.uniform()) / (self.mua + self.mus)
 
     def hitBoundry(self, photonPack):
         dl_b = 0
@@ -154,8 +155,8 @@ class Medium:
             self._crossDown(photonPack, layers)
 
     def _crossDown(self, photonPack, layers):
-        #ni = self.n
-        #nt = layers[photonPack._layer+1].n
+        #n1 = self.n  # this layer
+        #n2 = layers[photonPack._layer+1].n  # next layer
         out_uz = 0
 
         if photonPack._dvec.z() <= self.cos_crit1:

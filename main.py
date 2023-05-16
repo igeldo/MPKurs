@@ -59,6 +59,7 @@ if __name__ == '__main__':
     for p in photons:
         #print(layers[p._layer].hitBoundry(p)) #
         while not layers[p._layer].hitBoundry(p) and p.alive() == 1:
+            layers[p._layer].calcStepSize(p)
             layers[p._layer].hop(p)
             layers[p._layer].absorption(p)
             layers[p._layer].scatter(p)
