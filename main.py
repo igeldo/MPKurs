@@ -73,11 +73,4 @@ if __name__ == '__main__':
                 writer.writerow(p.__repr__())
                 #writer.writerow(50*'-') #  TODO: sinnvoller print mit layer nr?
 
-    # for i in range(0, 100):
-    #     layer1.hop(photon1)
-    #     layer1.absorption(photon1)
-    #     layer1.scatter(photon1)
-    #     writer.writerow(photon1.__repr__())
-    #     #print(photon1)
-
     outfile.close()

@@ -5,8 +5,8 @@ from vector import Vec3d
 
 COSZERO = 1-1E-12
 COS90D = 1E-6
-CHANCE = 0.1 # Chance of surviving the roulette
-WEIGHT = 1E-4 # Critical weight for roulette
+CHANCE = 0.1  # Chance of surviving the roulette
+WEIGHT = 1E-4  # Critical weight for roulette
 
 # TODO: for testing -> set random seed for uniform variable, calculate the algorithm "by hand" for that variable, then test for algorithm
 

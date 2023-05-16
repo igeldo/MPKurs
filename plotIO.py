@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # read layers
     layers = []
-    with open(os.path.join(OUTPATH,FILENAME), newline='') as csvfile:
+    with open(os.path.join(OUTPATH, FILENAME), newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
         for row in reader:
             if '#' in row[0]:
@@ -27,15 +27,6 @@ if __name__ == '__main__':
     # https://stackoverflow.com/questions/58342419/show-direction-arrows-in-a-scatterplot
 
     runaways = df.where(df['exits'] == 1).dropna()
-
-    # x = df['x'].values
-    # y = df['y'].values
-    # z = df['z'].values
-    # w = df['weight'].values
-
-    # ux = df['ux'].values
-    # uy = df['uy'].values
-    # uz = df['uz'].values
 
     fig, ax = plt.subplots(dpi=200)
     df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
@@ -52,17 +43,11 @@ if __name__ == '__main__':
         borders.append(float(layer[0]))
     borders.append(round(float(ylims[1]), 2))
 
-    last_border=0
-    colors=['b','r','g']
+    last_border = 0
+    colors = ['b', 'r', 'g']
     for layer, c in zip(borders, colors):
         plt.axhspan(last_border, layer, color=c, alpha=.1)
         last_border = layer
-
-
-
-    # plt.axhspan(0, 0.2, color='b', alpha=.5)
-    # plt.axhspan(0.2, 0.5, color='r', alpha=.5)
-    # plt.axhspan(0.5, ylims[1], color='g', alpha=.5)
 
     plt.gca().invert_yaxis()
 
