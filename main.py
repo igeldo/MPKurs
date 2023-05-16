@@ -46,10 +46,12 @@ if __name__ == '__main__':
         os.makedirs(os.path.join(OUTPATH))
     outfile = open(os.path.join(OUTPATH, FILENAME), 'w', newline='')
     writer = csv.writer(outfile, delimiter=';')
+
     # write layer specifications
     writer.writerow(['#', 'd', 'n', 'mu_a', 'mu_s', 'g'])
     for layer in layers:
         writer.writerow(['#', layer.z1, layer.n, layer.mua, layer.mus, layer.g])
+
     # write photon header
     writer.writerow(['x', 'y', 'z', 'ux', 'uy', 'uz', 'layer', 'weight', 'dead', 'exits'])
 
@@ -67,10 +69,9 @@ if __name__ == '__main__':
             if p._w < WEIGHT and p.alive() == 1:
                 p.roulette()
 
-            if layers[p._layer].hitBoundry(p) and p.alive() == 1: # and hitBoundry(p)==1
-                layers[p._layer].hop(p) # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
+            if layers[p._layer].hitBoundry(p) and p.alive() == 1:  # and hitBoundry(p)==1
+                layers[p._layer].hop(p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
                 layers[p._layer].crossOrNot(p, layers)
                 writer.writerow(p.__repr__())
-                #writer.writerow(50*'-') #  TODO: sinnvoller print mit layer nr?
 
     outfile.close()
