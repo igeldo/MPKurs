@@ -42,8 +42,9 @@ if __name__ == '__main__':
     layer1 = Tissue(z0=0, z1=0.2, n=1, mua=1, mus=100, g=0.9)
     layer2 = Tissue(z0=0.2, z1=0.5, n=1.37, mua=1, mus=100, g=0.9)
     layer3 = Tissue(z0=0.5, z1=4, n=1.37, mua=1, mus=100, g=0.9)
+    layer4 = Tissue(z0=4, z1=4.2, n=1.37, mua=1, mus=100, g=0.9)
 
-    layers = [layer1, layer2, layer3]
+    layers = [layer1, layer2, layer3, layer4]
 
     # create output
     if not os.path.exists(os.path.join(OUTPATH)):
@@ -63,7 +64,6 @@ if __name__ == '__main__':
     calcCritAngles(layers)
 
     for p in photons:
-        # print(layers[p._layer].hitBoundry(p)) #
         while not layers[p._layer].hitBoundry(p) and p.alive() == 1:
             layers[p._layer].calcStepSize(p)
             layers[p._layer].hop(p)
@@ -74,8 +74,7 @@ if __name__ == '__main__':
                 p.roulette()
 
             if layers[p._layer].hitBoundry(p) and p.alive() == 1:  # and hitBoundry(p)==1
-                layers[p._layer].hop(
-                    p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
+                layers[p._layer].hop(p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
                 layers[p._layer].crossOrNot(p, layers)
                 writer.writerow(p.__repr__())
 

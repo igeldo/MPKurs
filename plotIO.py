@@ -30,9 +30,10 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(dpi=200)
     df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
+    ax.quiver(0,0,0,1, angles="xy", pivot="tip", color='black', alpha=1)
     if not runaways.empty:
         ax.quiver(runaways['x'].values, runaways['z'].values, runaways['ux'].values, runaways['uz'].values,
-                  angles="xy", pivot="mid", color='black', alpha=0.3
+                  angles="xy", pivot="tail", color='black', alpha=1
                   )
     ylims = ax.get_ylim()
     plt.xlabel('x in mm')
@@ -44,7 +45,7 @@ if __name__ == '__main__':
     borders.append(round(float(ylims[1]), 2))
 
     last_border = 0
-    colors = ['b', 'r', 'g']
+    colors = ['b', 'r', 'g', 'y']
     for layer, c in zip(borders, colors):
         plt.axhspan(last_border, layer, color=c, alpha=.1)
         last_border = layer

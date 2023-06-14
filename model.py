@@ -155,18 +155,19 @@ class Medium:
             self._crossDown(photonPack, layers)
 
     def _crossDown(self, photonPack, layers):
-        n1 = self.n  # this layer
-        n2 = layers[photonPack._layer+1].n  # next layer
-
+        out_uz = 0
 
         if photonPack._dvec.z() <= self.cos_crit1:
-            r = 1 # total reflection!
-            out_uz = 0
+            r = 1  # total reflection!
+
         elif photonPack._layer == len(layers)-1:
             photonPack._dead = 1
             r = 0
-            out_uz = 0
+            out_uz = photonPack._dvec.z()  # Pfeil in richtige "exit"-Richtung
+
         else:
+            n1 = self.n  # this layer
+            n2 = layers[photonPack._layer + 1].n  # next layer
             r, out_uz = self._RFresnel(n1, n2, photonPack._dvec.z())
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
@@ -174,6 +175,8 @@ class Medium:
             if photonPack._layer == len(layers)-1:  # letzter Layer
                 photonPack._dvec._z = out_uz
                 photonPack._dead = 1  # RIP
+                photonPack._exits = 1
+
             else:
                 photonPack._dvec = Vec3d(
                     photonPack._dvec._x * (n1 / n2),
@@ -181,22 +184,24 @@ class Medium:
                     out_uz
                 )  # NICHT Skalarprodukt, deswegen Komponenten einzeln berechnet
                 photonPack._layer += 1
+
         else:
             photonPack._dvec._z = -photonPack._dvec._z
 
 
     def _crossUp(self, photonPack, layers):
-        n1 = self.n  # this layer
-        n2 = layers[photonPack._layer - 1].n  # next layer
+        out_uz = 0
 
         if -photonPack._dvec.z() <= self.cos_crit0:
             r = 1
-            out_uz = 0
         elif photonPack._layer == 0:
             photonPack._dead = 1
             r = 0
-            out_uz = 0
+            out_uz = -photonPack._dvec.z()  # Pfeil in richtiger "exit"-Richtung
+
         else:
+            n1 = self.n  # this layer
+            n2 = layers[photonPack._layer - 1].n  # next layer
             r, out_uz = self._RFresnel(n1, n2, -photonPack._dvec.z())
         # NO PARTIAL REFLECTION IMPLEMENTED RIGHT NOW
 
@@ -212,6 +217,7 @@ class Medium:
                     -out_uz
                 )
                 photonPack._layer -= 1
+
         else:
             photonPack._dvec._z = -photonPack._dvec._z
 
