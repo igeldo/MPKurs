@@ -44,7 +44,7 @@ if __name__ == '__main__':
     layer3 = Tissue(z0=0.5, z1=4, n=1.37, mua=1, mus=100, g=0.9)
     layer4 = Tissue(z0=4, z1=4.2, n=1.37, mua=1, mus=100, g=0.9)
 
-    layers = [layer1, layer2, layer3, layer4]
+    layers = [layer1, layer2, layer3]
 
     # create output
     if not os.path.exists(os.path.join(OUTPATH)):

@@ -3,6 +3,7 @@ import csv
 import pandas as pd
 
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 
 if __name__ == '__main__':
@@ -40,18 +41,33 @@ if __name__ == '__main__':
         ax.quiver(runaways['x'].values, runaways['z'].values, runaways['ux'].values, runaways['uz'].values,
                   angles="xy", pivot="tail", color='black', alpha=1
                   )
+    # im = plt.imshow()
+    # fig.colorbar(ax, orientation="horizontal", pad=0.2)
     ylims = ax.get_ylim()
+    xlims = ax.get_xlim()
     plt.xlabel('x in mm')
     plt.ylabel('z in mm')
 
     last_border = 0
     colors = ['b', 'r', 'g', 'y']
+    legend_elements = []
     for layer, c in zip(layers[1:], colors):
         plt.axhspan(last_border, layer[0], color=c, alpha=.1)
+        # plt.text(
+        #     xlims[1] - 0.5, last_border + 0.1,
+        #     "$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3])
+        # )
+        legend_elements.append(Line2D([0], [0], color=c, lw=4, alpha=.3,
+                                      label="$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3])))
         last_border = layer[0]
 
+    # plt.xlim(xlims[0], xlims[1]+0.5)
     plt.ylim(ylims)
     plt.gca().invert_yaxis()
+    ax.legend(handles=legend_elements, loc='upper center',
+              bbox_to_anchor=(0.5, -0.15), ncol=2,
+              fancybox=True, shadow=True)
+    plt.tight_layout()
 
     if SAVE:
         plt.savefig(os.path.join(OUTPATH, FILENAME))
