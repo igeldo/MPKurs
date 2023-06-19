@@ -19,6 +19,11 @@ if __name__ == '__main__':
             if '#' in row[0]:
                 layers.append((row[1:]))
 
+    # convert strings into floats
+    for layer in layers[1:]:
+        for i in layer:
+            layer[layer.index(i)] = float(i)
+
     # read photon data
     df = pd.read_csv(
         os.path.join(OUTPATH, FILENAME), sep=';', header=0, skip_blank_lines=True, comment='#'
@@ -39,25 +44,14 @@ if __name__ == '__main__':
     plt.xlabel('x in mm')
     plt.ylabel('z in mm')
 
-    borders = []
-    for layer in layers[1:-1]:
-        borders.append(float(layer[0]))
-    borders.append(round(float(ylims[1]), 2))
-
     last_border = 0
     colors = ['b', 'r', 'g', 'y']
-    for layer, c in zip(borders, colors):
-        plt.axhspan(last_border, layer, color=c, alpha=.1)
-        last_border = layer
+    for layer, c in zip(layers[1:], colors):
+        plt.axhspan(last_border, layer[0], color=c, alpha=.1)
+        last_border = layer[0]
 
+    plt.ylim(ylims)
     plt.gca().invert_yaxis()
-
-    # for l, layer in enumerate(layers_df):
-    #     plt.axhline(
-    #         layers_df.loc[l, 'd'],
-    #         xmin=ax.get_xlim()[0],
-    #         xmax=ax.get_xlim()[1],
-    #         linestyle='--', alpha=.5)
 
     if SAVE:
         plt.savefig(os.path.join(OUTPATH, FILENAME))
