@@ -11,6 +11,7 @@ if __name__ == '__main__':
     OUTPATH = 'out'
     FILENAME = 'test2.csv'
     SAVE = False
+    PLOT_RUNAWAYS = True
 
     # read layers
     layers = []
@@ -35,14 +36,13 @@ if __name__ == '__main__':
     runaways = df.where(df['exits'] == 1).dropna()
 
     fig, ax = plt.subplots(dpi=200)
-    df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)
-    ax.quiver(0,0,0,1, angles="xy", pivot="tip", color='black', alpha=1)
-    if not runaways.empty:
+    df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)  # plot photon paths
+    if not runaways.empty and PLOT_RUNAWAYS:
         ax.quiver(runaways['x'].values, runaways['z'].values, runaways['ux'].values, runaways['uz'].values,
                   angles="xy", pivot="tail", color='black', alpha=1
-                  )
-    # im = plt.imshow()
-    # fig.colorbar(ax, orientation="horizontal", pad=0.2)
+                  )  # plot runaways
+    ax.quiver(0, 0, 0, 1, angles="xy", pivot="tip", color='red', alpha=1)  # plot entry point
+
     ylims = ax.get_ylim()
     xlims = ax.get_xlim()
     plt.xlabel('x in mm')
@@ -52,17 +52,14 @@ if __name__ == '__main__':
     colors = ['b', 'r', 'g', 'y']
     legend_elements = []
     for layer, c in zip(layers[1:], colors):
-        plt.axhspan(last_border, layer[0], color=c, alpha=.1)
-        # plt.text(
-        #     xlims[1] - 0.5, last_border + 0.1,
-        #     "$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3])
-        # )
-        legend_elements.append(Line2D([0], [0], color=c, lw=4, alpha=.3,
-                                      label="$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3])))
+        plt.axhspan(last_border, layer[0], color=c, alpha=.1)   # plot layer backgrounds
+        legend_elements.append(
+            Line2D([0], [0], color=c, lw=4, alpha=.3,
+                   label="$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3]))
+        )  # create layer legend elements
         last_border = layer[0]
 
-    # plt.xlim(xlims[0], xlims[1]+0.5)
-    plt.ylim(ylims)
+    plt.ylim(-0.2, ylims[1])
     plt.gca().invert_yaxis()
     ax.legend(handles=legend_elements, loc='upper center',
               bbox_to_anchor=(0.5, -0.15), ncol=2,
@@ -73,6 +70,3 @@ if __name__ == '__main__':
         plt.savefig(os.path.join(OUTPATH, FILENAME))
     else:
         plt.show()
-
-# TODO: - "heatmap" anzahl photon/tiefe, "heatmap" bzgl eindringtiefe
-#

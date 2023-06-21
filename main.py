@@ -34,11 +34,13 @@ if __name__ == '__main__':
     OUTPATH = 'out'
     FILENAME = 'test2.csv'
 
-    # define params
+    # create photons
+    NUM_PHOTONS = 10
     photons = list()
-    for p in range(0, 3):  # number of photons to simulate
+    for p in range(0, NUM_PHOTONS):  # number of photons to simulate
         photons.append(PhotonPack(stepSize=0.01, w=1))
 
+    # create layers
     layer1 = Tissue(z0=0, z1=0.2, n=1, mua=1, mus=100, g=0.9)
     layer2 = Tissue(z0=0.2, z1=0.5, n=1.37, mua=1, mus=100, g=0.9)
     layer3 = Tissue(z0=0.5, z1=4, n=1.37, mua=1, mus=100, g=0.9)
