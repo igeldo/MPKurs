@@ -3,7 +3,7 @@ import numpy.random
 
 from vector import Vec3d
 
-COSZERO = 1-1E-12
+COSZERO = 1 - 1E-12
 COS90D = 1E-6
 CHANCE = 0.1  # Chance of surviving the roulette
 WEIGHT = 1E-4  # Critical weight for roulette
