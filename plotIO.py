@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 
-if __name__ == '__main__':
-
+#if __name__ == '__main__':
+def plot():
     OUTPATH = 'out'
     FILENAME = 'test2.csv'
     SAVE = False
