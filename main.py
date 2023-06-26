@@ -3,6 +3,8 @@ import csv
 from model import Tissue, PhotonPack, WEIGHT
 import numpy as np
 
+from plotIO import plot
+
 np.random.seed(42)
 
 
@@ -48,6 +50,9 @@ if __name__ == '__main__':
 
     layers = [layer1, layer2, layer3]
 
+    # calculate critical angles one time for given layers
+    calcCritAngles(layers)
+
     # create output
     if not os.path.exists(os.path.join(OUTPATH)):
         os.makedirs(os.path.join(OUTPATH))
@@ -62,22 +67,21 @@ if __name__ == '__main__':
     # write photon header
     writer.writerow(['x', 'y', 'z', 'ux', 'uy', 'uz', 'layer', 'weight', 'dead', 'exits'])
 
-    # calculate critical angles one time for given layers
-    calcCritAngles(layers)
-
     for p in photons:
-        while not layers[p._layer].hitBoundry(p) and p.alive() == 1:
+        while p.alive():
             layers[p._layer].calcStepSize(p)
             layers[p._layer].hop(p)
             layers[p._layer].absorption(p)
             layers[p._layer].scatter(p)
             writer.writerow(p.__repr__())
-            if p._w < WEIGHT and p.alive() == 1:
+
+            if p._w < WEIGHT:
                 p.roulette()
 
-            if layers[p._layer].hitBoundry(p) and p.alive() == 1:  # and hitBoundry(p)==1
+            if layers[p._layer].hitBoundry(p):  # and hitBoundry(p)==1
                 layers[p._layer].hop(p)  # swapped hop and cross or not, smart!!! es muss erst noch der restliche weg im alten layer zurück gelegt werden (bis zur grenze des layers) und dann kann der layer erhöht werden
                 layers[p._layer].crossOrNot(p, layers)
-                writer.writerow(p.__repr__())
+            writer.writerow(p.__repr__())
 
     outfile.close()
+    plot()
