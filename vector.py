@@ -17,7 +17,7 @@ class Vec3d:
 
     def __mul__(self, other):
         if isinstance(other, Vec3d):
-            return Vec3d(self._x * other._x + self._y * other._y + self._z * other._z)
+            return self._x * other._x + self._y * other._y + self._z * other._z
         elif isinstance(other, (float, int)):
             return Vec3d(self._x * other, self._y * other, self._z * other)
     def __abs__(self):
