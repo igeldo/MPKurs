@@ -7,11 +7,12 @@ from matplotlib.lines import Line2D
 
 
 #if __name__ == '__main__':
-def plot():
+def plot(filename, save=True, runaways=True, trace=False):
     OUTPATH = 'out'
-    FILENAME = 'test2.csv'
-    SAVE = False
-    PLOT_RUNAWAYS = True
+    FILENAME = filename
+    SAVE = save
+    PLOT_RUNAWAYS = runaways
+    TRACE = trace
 
     # read layers
     layers = []
@@ -36,6 +37,8 @@ def plot():
     runaways = df.where(df['exits'] == 1).dropna()
 
     fig, ax = plt.subplots(dpi=200)
+    if TRACE:
+        df.plot.line(x='x', y='z', ax=ax, color='k', linewidth=0.2, linestyle='dashed')
     df.plot.scatter(x='x', y='z', s=2, c='weight', colormap='viridis', ax=ax)  # plot photon paths
     if not runaways.empty and PLOT_RUNAWAYS:
         ax.quiver(runaways['x'].values, runaways['z'].values, runaways['ux'].values, runaways['uz'].values,
@@ -55,7 +58,7 @@ def plot():
         plt.axhspan(last_border, layer[0], color=c, alpha=.1)   # plot layer backgrounds
         legend_elements.append(
             Line2D([0], [0], color=c, lw=4, alpha=.3,
-                   label="$n$: {:.2f}, $g$: {:.2f},\n$\mu_s$: {:.2f}, $\mu_a$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3]))
+                   label="$n$: {:.2f}, $g$: {:.2f},\n$\mu_a$: {:.2f}, $\mu_s$: {:.2f}".format(layer[1], layer[4], layer[2], layer[3]))
         )  # create layer legend elements
         last_border = layer[0]
 
@@ -67,6 +70,7 @@ def plot():
     plt.tight_layout()
 
     if SAVE:
-        plt.savefig(os.path.join(OUTPATH, FILENAME))
+        plt.savefig(os.path.splitext(os.path.join(OUTPATH, FILENAME))[0], dpi=300)
+        plt.show(dpi=300)
     else:
-        plt.show()
+        plt.show(dpi=300)

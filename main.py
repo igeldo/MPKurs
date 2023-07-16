@@ -34,21 +34,23 @@ if __name__ == '__main__':
 
     # define IOfiles
     OUTPATH = 'out'
-    FILENAME = 'test2.csv'
+
 
     # create photons
-    NUM_PHOTONS = 10
+    NUM_PHOTONS = 1
     photons = list()
     for photon in range(0, NUM_PHOTONS):  # number of photons to simulate
         photons.append(PhotonPack(stepSize=0.01, weight=1))
 
     # create layers
-    layer1 = Tissue(z0=0, z1=0.2, n=1, mua=1, mus=100, anisotropy=0.9)
-    layer2 = Tissue(z0=0.2, z1=0.5, n=1.37, mua=1, mus=100, anisotropy=0.9)
-    layer3 = Tissue(z0=0.5, z1=4, n=1.37, mua=1, mus=100, anisotropy=0.9)
+    layer1 = Tissue(z0=0, z1=0.2, n=0.1, mua=1, mus=25, anisotropy=0.9)
+    layer2 = Tissue(z0=0.2, z1=0.5, n=1.2, mua=1, mus=25, anisotropy=0.9)
+    layer3 = Tissue(z0=0.5, z1=4, n=1, mua=1, mus=100, anisotropy=0.9)
     layer4 = Tissue(z0=4, z1=4.2, n=1.37, mua=1, mus=100, anisotropy=0.9)
 
-    layers = [layer1, layer2, layer3]
+    layers = [layer1, layer2]
+
+    FILENAME = f'{NUM_PHOTONS}p_{len(layers)}l6.csv'
 
     # calculate critical angles one time for given layers
     calcCritAngles(layers)
@@ -84,4 +86,4 @@ if __name__ == '__main__':
             writer.writerow(photon.__repr__())
 
     outfile.close()
-    plot()
+    plot(FILENAME, trace=True, save=True)

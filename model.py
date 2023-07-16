@@ -1,12 +1,46 @@
 import numpy as np
 import numpy.random
 
-from vector import Vec3d
+import math
 
 COSZERO = 1 - 1E-12
 COS90D = 1E-6
 CHANCE = 0.1  # Chance of surviving the roulette
 WEIGHT = 1E-4  # Critical weight for roulette
+
+class Vec3d:
+    def __init__(self, x=0, y=0, z=0):
+        self._x = x
+        self._y = y
+        self._z = z
+
+    def __add__(self, other):
+        if isinstance(other, Vec3d):
+            return Vec3d(self._x + other._x, self._y + other._y, self._z + other._z)
+
+    def __sub__(self, other):
+        if isinstance(other, Vec3d):
+            return Vec3d(self._x - other._x, self._y - other._y, self._z - other._z)
+
+    def __mul__(self, other):
+        if isinstance(other, Vec3d):
+            return self._x * other._x + self._y * other._y + self._z * other._z
+        elif isinstance(other, (float, int)):
+            return Vec3d(self._x * other, self._y * other, self._z * other)
+    def __abs__(self):
+        return math.sqrt(self._x ** 2 + self._y ** 2 + self._z ** 2)
+
+    def __repr__(self):
+        return "({},{},{})".format(self._x, self._y, self._z)
+
+    def x(self):
+        return self._x
+
+    def y(self):
+        return self._y
+
+    def z(self):
+        return self._z
 
 class PhotonPack:
     """
@@ -117,7 +151,7 @@ class PhotonPack:
 
 class Medium:
     """
-    Basic class to simulate a layer.
+    Basic class to simulate photon movement in and between layers the model.
 
     Attributes
     ----------
@@ -352,12 +386,10 @@ class Tissue(Medium):
         Absorption and scattering coefficient in 1/mm. Typically these are given in 1/cm.
     anisotropy :
         Anisotropy of the material
-    cos_crit0, cos_crit1 :
-        Critical angles under which the total reflection occurs
     """
 
-    def __int__(self, z0, z1, mua, mus, anisotropy, cos_crit0, cos_crit1, n=1):
-        super().__init__(z0, z1, mua, mus, anisotropy, cos_crit0, cos_crit1, n=1)
+    def __init__(self, z0, z1, mua, mus, anisotropy, n=1):
+        super().__init__(z0, z1, mua, mus, anisotropy, n=1)
 
     def absorption(self, photonPack):
         """
