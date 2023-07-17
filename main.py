@@ -1,34 +1,11 @@
 import os
 import csv
-from model import Tissue, PhotonPack, WEIGHT
+from model import Tissue, PhotonPack, calcCritAngles, WEIGHT
 import numpy as np
 
 from plotIO import plot
 
 np.random.seed(42)
-
-
-# random seeds of interest
-# 17: casual
-# 42, ab 3 Stk: photon exiting top direction
-
-
-def calcCritAngles(layer_list):
-    for l, layer in enumerate(layer_list[1:-2]):
-        n1 = layer_list[l].n  # this layer
-        n2 = layer_list[l - 1].n  # previous upwards layer
-        if n1 > n2:
-            layer.cos_crit0 = np.sqrt(
-                1.0 - n2 * n2 / (n1 * n1))  # crit0 upwards; sqrt instead of sine because it is faster
-        else:
-            layer.cos_crit0 = 0
-
-        n2 = layer_list[l + 1].n  # next layer downwards
-        if n1 > n2:
-            layer.cos_crit1 = np.sqrt(1.0 - n2 * n2 / (n1 * n1))  # crit1 downwards
-        else:
-            layer.cos_crit1 = 0
-
 
 if __name__ == '__main__':
 
@@ -40,7 +17,7 @@ if __name__ == '__main__':
     NUM_PHOTONS = 1
     photons = list()
     for photon in range(0, NUM_PHOTONS):  # number of photons to simulate
-        photons.append(PhotonPack(stepSize=0.01, weight=1))
+        photons.append(PhotonPack())
 
     # create layers
     layer1 = Tissue(z0=0, z1=0.2, n=0.1, mua=1, mus=25, anisotropy=0.9)

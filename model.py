@@ -8,6 +8,22 @@ COS90D = 1E-6
 CHANCE = 0.1  # Chance of surviving the roulette
 WEIGHT = 1E-4  # Critical weight for roulette
 
+def calcCritAngles(layer_list):
+    for l, layer in enumerate(layer_list[1:-2]):
+        n1 = layer_list[l].n  # this layer
+        n2 = layer_list[l - 1].n  # previous upwards layer
+        if n1 > n2:
+            layer.cos_crit0 = np.sqrt(
+                1.0 - n2 * n2 / (n1 * n1))  # crit0 upwards; sqrt instead of sine because it is faster
+        else:
+            layer.cos_crit0 = 0
+
+        n2 = layer_list[l + 1].n  # next layer downwards
+        if n1 > n2:
+            layer.cos_crit1 = np.sqrt(1.0 - n2 * n2 / (n1 * n1))  # crit1 downwards
+        else:
+            layer.cos_crit1 = 0
+
 class Vec3d:
     def __init__(self, x=0, y=0, z=0):
         self._x = x
@@ -71,17 +87,16 @@ class PhotonPack:
             Returns the x,y,z coordinates of the PhotonPackage in its current layer.
     """
 
-    def __init__(self, pos=Vec3d(0,0,0), layer=0, stepSize=0, stepSizeL=0,
-                 dvec=Vec3d(0,0,1), weight=1, dead=0, exits=0):
+    def __init__(self, pos=Vec3d(0,0,0), dvec=Vec3d(0,0,1), weight=1, layer=0):
         self._pos = pos  # coordinates [mm]
         self._dvec = dvec  # directional cosines of photonpack
         self.weight = weight  # "weight", more like energy?
-        self._dead = dead  # 1 if photon is "terminated"(absorpted or reflected)
-        self._exits = exits  # 1 if the photon exits 1st layer in the top direction
+        self._dead = 0  # 1 if photon is "terminated"(absorpted or reflected)
+        self._exits = 0  # 1 if the photon exits 1st layer in the top direction
         self.layer = layer  # layer in with the PhotonPack currently is
         # stepSize is handled and calculated in each layer based on its properties and the photon energy/weight
-        self._stepSize = stepSize  # current step size [mm]
-        self._stepSizeL = stepSizeL  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
+        self._stepSize = 0  # current step size [mm]
+        self._stepSizeL = 0  # step size left, dimensionless, because it's relative to layer material stepSizeL = ()
 
     def __repr__(self) -> list:
         """
