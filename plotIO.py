@@ -71,6 +71,6 @@ def plot(filename, save=True, runaways=True, trace=False):
 
     if SAVE:
         plt.savefig(os.path.splitext(os.path.join(OUTPATH, FILENAME))[0], dpi=300)
-        plt.show(dpi=300)
+        plt.show()
     else:
-        plt.show(dpi=300)
+        plt.show()
